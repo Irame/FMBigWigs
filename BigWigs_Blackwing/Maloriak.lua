@@ -173,7 +173,7 @@ function mod:Blue()
 	self:SendMessage("BigWigs_StopBar", self, scorchingBlast)
 	self:Bar(77699, flashFreeze, 28, 77699)
 	self:Message("phase", L["blue_phase"], "Positive", "Interface\\Icons\\INV_POTION_20", "Long")
-	self:OpenProximity(5)
+	self:OpenProximity(5, 77699)
 	nextPhase(47)
 end
 

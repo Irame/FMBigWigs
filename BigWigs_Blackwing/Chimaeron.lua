@@ -56,7 +56,7 @@ end
 function mod:Warmup(_, msg)
 	if msg == L["bileotron_engage"] then
 		self:Bar("warmup", self.displayName, 30, "achievement_dungeon_blackwingdescent_raid_chimaron")
-		self:OpenProximity(6)
+		self:OpenProximity(6, 82935)
 	end
 end
 
@@ -68,6 +68,7 @@ function mod:OnEngage(diff)
 	end
 	self:Bar(82848, GetSpellInfo(82848), 30, 82848) --Massacre
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
+	self:OpenProximity(6, 82935)
 end
 
 --------------------------------------------------------------------------------
@@ -88,7 +89,7 @@ function mod:SystemFailureEnd(_, spellId)
 			self:Bar(88853, L["next_system_failure"], 65, spellId)
 		end
 		self:FlashShake(88853)
-		self:OpenProximity(6)
+		self:OpenProximity(6, 82935)
 	end
 end
 
