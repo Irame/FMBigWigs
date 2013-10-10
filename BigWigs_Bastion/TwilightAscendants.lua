@@ -120,7 +120,7 @@ end
 
 function mod:OnEngage(diff)
 	if diff > 2 then
-		self:OpenProximity(10)
+		self:OpenProximity(10, 92067)
 	end
 
 	self:Bar(82631, L["shield_bar"], 30, 82631)
@@ -150,7 +150,7 @@ do
 		if UnitIsUnit(player, "player") then
 			self:Say(83099, CL["say"]:format(spellName))
 			self:FlashShake(83099)
-			self:OpenProximity(10)
+			self:OpenProximity(10, 83099)
 		end
 	end
 end
@@ -350,7 +350,7 @@ function mod:LastPhase()
 	self:SendMessage("BigWigs_StopBar", self, hardenSkin)
 	self:CancelAllTimers()
 	self:Bar(84948, gravityCrush, 43, 84948)
-	self:OpenProximity(9)
+	self:OpenProximity(9, 92480)
 	self:UnregisterEvent("UNIT_HEALTH")
 end
 
