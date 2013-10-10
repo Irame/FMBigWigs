@@ -123,7 +123,7 @@ function mod:OnEngage(diff)
 		self:OpenProximity(10, 92067)
 	end
 
-	self:Bar(82631, L["shield_bar"], 30, 82631)
+	self:Bar(82631, L["shield_bar"], 34, 82631)
 	self:Bar(82746, glaciate, 30, 82746)
 
 	first = nil
