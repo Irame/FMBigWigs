@@ -242,7 +242,7 @@ do
 end
 
 function mod:FlameShield(_, spellId)
-	self:Bar(82631, L["shield_bar"], 62, spellId)
+	self:Bar(82631, L["shield_bar"], 65, spellId)
 	self:Message(82631, L["shield_up_message"], "Important", spellId, "Alert")
 end
 
