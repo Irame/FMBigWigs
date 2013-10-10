@@ -38,8 +38,8 @@ if L then
 
 	L.thundershock_quake_soon = "%s in 10sec!"
 
-	L.quake_trigger = "The ground beneath you rumbles ominously...."
-	L.thundershock_trigger = "The surrounding air crackles with energy...."
+	L.quake_trigger = "The ground beneath you rumbles ominously..."
+	L.thundershock_trigger = "The surrounding air crackles with energy..."
 
 	L.thundershock_quake_spam = "%s in %d"
 
