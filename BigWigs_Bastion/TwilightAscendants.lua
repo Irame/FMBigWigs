@@ -256,7 +256,7 @@ function mod:HardenSkinStart(_, spellId, _, _, spellName)
 end
 
 function mod:Glaciate(_, spellId, _, _, spellName)
-	self:Bar(82746, spellName, 33, spellId)
+	self:Bar(82746, spellName, 40, spellId)
 	self:Message(82746, spellName, "Attention", spellId, "Alert")
 end
 
