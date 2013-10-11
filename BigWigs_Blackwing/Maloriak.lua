@@ -40,13 +40,13 @@ if L then
 	L.next_phase = "Next phase"
 	L.green_phase_bar = "Green phase"
 
-	L.red_phase_trigger = "Mix and stir, apply heat..."
+	L.red_phase_trigger = "There will never be another like me..." --Mix and stir, apply heat...
 	L.red_phase_emote_trigger = "red"
 	L.red_phase = "|cFFFF0000Red|r phase"
-	L.blue_phase_trigger = "How well does the mortal shell handle extreme temperature change? Must find out! For science!"
+	L.blue_phase_trigger = "Strip the flesh, harvest the organs!" --How well does the mortal shell handle extreme temperature change? Must find out! For science!
 	L.blue_phase_emote_trigger = "blue"
 	L.blue_phase = "|cFF809FFEBlue|r phase"
-	L.green_phase_trigger = "This one's a little unstable, but what's progress without failure?"
+	L.green_phase_trigger = "Mix and stir, apply heat..." --This one's a little unstable, but what's progress without failure?
 	L.green_phase_emote_trigger = "green"
 	L.green_phase = "|cFF33FF00Green|r phase"
 	L.dark_phase_trigger = "Your mixtures are weak, Maloriak! They need a bit more... kick!"
@@ -98,12 +98,13 @@ function mod:OnBossEnable()
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
+	-- Emotes are wrong on Frostmourne!!!
 	-- We keep the emotes in case the group uses Curse of Tongues, in which
 	-- case the yells become Demonic.
-	self:Emote("Red", L["red_phase_emote_trigger"])
-	self:Emote("Blue", L["blue_phase_emote_trigger"])
-	self:Emote("Green", L["green_phase_emote_trigger"])
-	self:Emote("Dark", L["dark_phase_emote_trigger"])
+	--self:Emote("Red", L["red_phase_emote_trigger"])
+	--self:Emote("Blue", L["blue_phase_emote_trigger"])
+	--self:Emote("Green", L["green_phase_emote_trigger"])
+	--self:Emote("Dark", L["dark_phase_emote_trigger"])
 
 	-- We keep the yell triggers around because sometimes he does them far ahead
 	-- of the emote.
@@ -164,7 +165,7 @@ function mod:Red()
 	if not isChilled then
 		self:CloseProximity()
 	end
-	nextPhase(47)
+	nextPhase(53)
 end
 
 function mod:Blue()
@@ -174,7 +175,7 @@ function mod:Blue()
 	self:Bar(77699, flashFreeze, 28, 77699)
 	self:Message("phase", L["blue_phase"], "Positive", "Interface\\Icons\\INV_POTION_20", "Long")
 	self:OpenProximity(5, 77699)
-	nextPhase(47)
+	nextPhase(53)
 end
 
 function mod:Green()
@@ -186,7 +187,7 @@ function mod:Green()
 	if not isChilled then
 		self:CloseProximity()
 	end
-	nextPhase(47)
+	nextPhase(53)
 	-- Make sure to reset after the nextPhase() call, which increments it
 	phaseCounter = 0
 end
