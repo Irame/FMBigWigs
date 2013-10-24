@@ -58,25 +58,25 @@ function mod:GetOptions()
 		-- Feludius
 		82746, {82665, "FLASHSHAKE"}, 82762,
 		-- Arion
-		83067, {83099, "SAY", "FLASHSHAKE"},
+		83067, {83099, "SAY", "FLASHSHAKE", "PROXIMITY"},
 		-- Terrastra
 		83565, 83718,
 		-- Monstrosity
 		{84948, "ICON"},
+		{92480, "PROXIMITY"},
 		-- Heroic
-		{92067, "FLASHSHAKE", "SAY", "ICON"},
+		{92067, "FLASHSHAKE", "SAY", "ICON", "PROXIMITY"},
 		{92075, "FLASHSHAKE", "SAY", "ICON"},
 		{92307, "FLASHSHAKE", "ICON", "WHISPER"},
 		-- General
-		"proximity", "switch", "bosskill"
+		"switch", "bosskill"
 	}, {
 		[82631] = "ej:3118", -- Ignacious
 		[82746] = "ej:3110", -- Feludius
 		[83067] = "ej:3123", -- Arion
 		[83565] = "ej:3125", -- Terrastra
 		[84948] = "ej:3145", -- Elementium Monstrosity
-		[92067] = "heroic",
-		proximity = "general",
+		[92067] = "heroic"
 	}
 end
 
@@ -350,7 +350,7 @@ function mod:LastPhase()
 	self:SendMessage("BigWigs_StopBar", self, hardenSkin)
 	self:CancelAllTimers()
 	self:Bar(84948, gravityCrush, 43, 84948)
-	self:OpenProximity(9, 92480)
+	self:OpenProximity(10, 92480)
 	self:UnregisterEvent("UNIT_HEALTH")
 end
 

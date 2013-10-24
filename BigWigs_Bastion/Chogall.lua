@@ -64,7 +64,7 @@ function mod:GetOptions(CL)
 	}, {
 		[91303] = CL.phase:format(1),
 		[82630] = CL.phase:format(2),
-		orders = "general",
+		orders = "general"
 	}
 end
 

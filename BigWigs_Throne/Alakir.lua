@@ -50,7 +50,7 @@ function mod:GetOptions(CL)
 		87904,
 		"stormling",
 		88301,
-		{89668, "ICON", "FLASHSHAKE", "WHISPER"}, 89588, 87770, "proximity",
+		{89668, "ICON", "FLASHSHAKE", "WHISPER", "PROXIMITY"}, 89588, 87770,
 		95764, --XXX this is probably the WRONG id, need a log to find the right MoP new one
 		88427, "phase", "berserk", "bosskill"
 	}, {
@@ -120,7 +120,7 @@ end
 function mod:LightningRod(player, spellId, _, _, spellName)
 	if UnitIsUnit(player, "player") then
 		self:FlashShake(89668)
-		self:OpenProximity(20)
+		self:OpenProximity(20, 89668)
 	end
 	self:TargetMessage(89668, spellName, player, "Personal", spellId, "Long")
 	self:Whisper(89668, player, spellName)

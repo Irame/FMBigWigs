@@ -61,7 +61,7 @@ L = mod:GetLocale()
 
 function mod:GetOptions()
 	return {
-		{77699, "ICON"}, {77760, "FLASHSHAKE", "WHISPER", "SAY"}, "proximity",
+		{77699, "ICON", "PROXIMITY"}, {77760, "FLASHSHAKE", "WHISPER", "SAY"},
 		{77786, "FLASHSHAKE", "WHISPER", "ICON"}, 77679,
 		77991, 78194,
 		{"sludge", "FLASHSHAKE"},

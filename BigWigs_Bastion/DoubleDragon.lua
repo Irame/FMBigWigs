@@ -48,13 +48,12 @@ L = mod:GetLocale()
 function mod:GetOptions()
 	return {
 		{86788, "ICON", "FLASHSHAKE", "WHISPER"}, {88518, "FLASHSHAKE"}, 86059, 86840,
-		{86622, "FLASHSHAKE", "SAY", "WHISPER"}, 86408, 86369, 93051,
-		"proximity", "phase_switch", "berserk", "bosskill"
+		{86622, "FLASHSHAKE", "SAY", "WHISPER", "PROXIMITY"}, 86408, {86369, "PROXIMITY"}, 93051,
+		"phase_switch", "berserk", "bosskill"
 	}, {
 		[86788] = valiona,
 		[86622] = theralion,
-		[93051] = "heroic",
-		proximity = "general",
+		[93051] = "heroic"
 	}
 end
 
