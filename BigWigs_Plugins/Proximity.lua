@@ -1113,7 +1113,8 @@ end
 function plugin:Close()
 	updater:Stop()
 
-	anchor:UnregisterEvent("GROUP_ROSTER_CHANGED")
+	anchor:UnregisterEvent("RAID_ROSTER_UPDATE")
+	anchor:UnregisterEvent("PARTY_MEMBERS_CHANGED")
 	anchor:UnregisterEvent("RAID_TARGET_UPDATE")
 
 	for i = 1, 40 do
