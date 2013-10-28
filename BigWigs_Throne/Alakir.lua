@@ -121,6 +121,8 @@ function mod:LightningRod(player, spellId, _, _, spellName)
 	if UnitIsUnit(player, "player") then
 		self:FlashShake(89668)
 		self:OpenProximity(20, 89668)
+	else
+		self:OpenProximity(20, 89668, player)
 	end
 	self:TargetMessage(89668, spellName, player, "Personal", spellId, "Long")
 	self:Whisper(89668, player, spellName)
