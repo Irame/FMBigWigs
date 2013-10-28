@@ -79,7 +79,7 @@ function mod:SystemFailureStart(_, spellId, _, _, spellName)
 	self:Bar(88853, spellName, 30, spellId)
 	self:Message(88853, spellName, "Important", spellId, "Alarm")
 	self:FlashShake(88853)
-	self:CloseProximity()
+	self:OpenProximity(6, 82935, nil, true)
 end
 
 function mod:SystemFailureEnd(_, spellId)

@@ -136,10 +136,13 @@ end
 --
 
 do
-	local scheduled = nil
+	local scheduled, playerIsTarget = nil, nil
 	local function lrWarn(spellName)
+		if not playerIsTarget then
+			self:OpenProximity(10, 83099, lrTargets)
+		end
 		mod:TargetMessage(83099, spellName, lrTargets, "Important", 83099, "Alert")
-		scheduled = nil
+		scheduled, playerIsTarget = nil, nil
 	end
 	function mod:LightningRodApplied(player, _, _, _, spellName)
 		lrTargets[#lrTargets + 1] = player
@@ -148,6 +151,7 @@ do
 			self:ScheduleTimer(lrWarn, 0.3, spellName)
 		end
 		if UnitIsUnit(player, "player") then
+			playerIsTarget = true
 			self:Say(83099, CL["say"]:format(spellName))
 			self:FlashShake(83099)
 			self:OpenProximity(10, 83099)
@@ -181,7 +185,11 @@ end
 
 function mod:LightningRodRemoved(player, spellId)
 	if UnitIsUnit(player, "player") then
-		self:CloseProximity()
+		if self:Difficulty() > 2 then
+			self:OpenProximity(10, 92067)
+		else
+			self:CloseProximity()
+		end
 	end
 end
 

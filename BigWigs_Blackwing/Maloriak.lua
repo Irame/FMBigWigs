@@ -123,6 +123,7 @@ function mod:OnEngage(diff)
 	else
 		self:Berserk(420)
 	end
+	self:OpenProximity(5, 77699)
 	aberrations = 18
 	phaseCounter = 0
 	isChilled, currentPhase = nil, nil

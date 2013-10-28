@@ -164,14 +164,15 @@ end
 function mod:BlackoutApplied(player, spellId, _, _, spellName)
 	if UnitIsUnit(player, "player") then
 		self:FlashShake(86788)
+		self:OpenProximity(8, 86788, nil, true)
 	else
 		self:PlaySound(86788, "Alert")
+		self:OpenProximity(8, 86788, player, true) -- No need to close Proximity it should do it anyway
 	end
 	self:TargetMessage(86788, spellName, player, "Personal", spellId, "Alert")
 	self:Bar(86788, spellName, 45, spellId)
 	self:Whisper(86788, player, spellName)
 	self:PrimaryIcon(86788, player)
-	self:CloseProximity()
 end
 
 function mod:BlackoutRemoved(player, spellId, _, _, spellName)
