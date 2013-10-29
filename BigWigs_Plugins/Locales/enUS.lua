@@ -7,6 +7,8 @@ local L = LibStub("AceLocale-3.0"):NewLocale("Big Wigs: Plugins", "enUS", true)
 L["altpower"] = "Alternative energy"
 L["altpower_desc"] = "In some bossfights you have to keep track of an alternative energy. This display shows you the status of this energy for the whole raid."
 L["altpower_name"] = "AltPower"
+L["fontSizeContracted"] = "Fontsize (contracted)"
+L["fontSizeExpanded"] = "Fontsize (expanded)"
 
 -----------------------------------------------------------------------
 -- Bars.lua

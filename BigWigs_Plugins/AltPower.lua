@@ -15,7 +15,8 @@ plugin.defaultDB = {
 	heightExpanded = 210,
 	heightContracted = 80,
 	font = nil,
-	fontSize = nil,
+	fontSizeExpanded = nil,
+	fontSizeContracted = nil,
 }
 
 --------------------------------------------------------------------------------
@@ -35,6 +36,7 @@ local UnitPower = UnitPower
 local db = nil
 local L = LibStub("AceLocale-3.0"):GetLocale("Big Wigs: Plugins")
 plugin.displayName = L.altpower_name
+local media = LibStub("LibSharedMedia-3.0")
 
 local roleIcons = {
 	["TANK"] = INLINE_TANK_ICON,
@@ -47,10 +49,43 @@ local roleIcons = {
 -- Initialization
 --
 
+local function updateProfile()
+	db = plugin.db.profile
+
+	if display then
+		display:SetSize(db.width, db.expanded and db.heightExpanded or db.heightContracted)
+
+		local x = db.posx
+		local y = db.posy
+		if x and y then
+			local s = display:GetEffectiveScale()
+			display:ClearAllPoints()
+			display:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
+		else
+			display:ClearAllPoints()
+			display:SetPoint("CENTER", UIParent, "CENTER", 300, -80)
+		end
+
+		plugin:RestyleWindow()
+	end
+
+	if not db.font then
+		db.font = media:GetDefault("font")
+	end
+	if not db.fontSizeExpanded then
+		local _, size = GameFontNormal:GetFont()
+		db.fontSizeExpanded = size
+	end
+	if not db.fontSizeContracted then
+		local _, size = GameFontNormal:GetFont()
+		db.fontSizeContracted = size
+	end
+end
+
 function plugin:OnRegister()
 	BigWigs:RegisterBossOption("altpower", L.altpower, L.altpower_desc, OnOptionToggled, "Interface\\Icons\\Spell_Arcane_ArcaneTorrent")
-	--self:RegisterMessage("BigWigs_ProfileUpdate", updateProfile)
-	--updateProfile()
+	self:RegisterMessage("BigWigs_ProfileUpdate", updateProfile)
+	updateProfile()
 end
 
 function plugin:OnPluginEnable()
@@ -89,8 +124,12 @@ local function OnDragHandleMouseDown(self) self.frame:StartSizing("BOTTOMRIGHT")
 local function OnDragHandleMouseUp(self, button) self.frame:StopMovingOrSizing() end
 local function onResize(self, width, height)
 	db.width = width
-	db.height = height
-	RestyleWindow()
+	if db.expanded then
+		db.heightExpanded = height
+	else 
+		db.heightContracted = height
+	end
+	plugin:RestyleWindow()
 end
 
 local locked = nil
@@ -118,9 +157,14 @@ local function unlockDisplay()
 end
 
 function plugin:RestyleWindow()
+	local font = media:Fetch("font", db.font)
+	local fontSize = (db.expanded and db.fontSizeExpanded or db.fontSizeContracted)
+	local width = db.width/2
+	local height = (db.expanded and db.heightExpanded or db.heightContracted) / (db.expanded and 13 or 5)
 	for i = 1, 25 do
 		local text = display.text[i]
-		text:SetSize(db.width/2, (db.expanded and db.heightExpanded or db.heightContracted) / (db.expanded and 13 or 5))
+		text:SetFont(font, fontSize)
+		text:SetSize(width, height)
 		if i == 1 then
 			text:SetPoint("TOPLEFT", display, "TOPLEFT", 5, 0)
 		elseif i % 2 == 0 then
@@ -234,7 +278,7 @@ do
 	-- This module is rarely used, and opened once during an encounter where it is.
 	-- We will prefer on-demand variables over permanent ones.
 	function plugin:BigWigs_ShowAltPower(event, module, title)
-		if not self:IsInGroup() then return end -- Solo runs of old content
+		if not self:IsInGroup() or db.disabled then return end -- Solo runs of old content
 		if createFrame then createFrame() createFrame = nil end
 		self:Close()
 
@@ -346,7 +390,33 @@ do
 						name = L.lock,
 						desc = L.lockDesc,
 						order = 2,
-					}
+					},
+					font = {
+						type = "select",
+						name = L.font,
+						order = 4,
+						values = media:List("font"),
+						width = "full",
+						itemControl = "DDI-Font",
+					},
+					fontSizeContracted = {
+						type = "range",
+						name = L.fontSizeContracted,
+						order = 5,
+						max = 40,
+						min = 8,
+						step = 1,
+						width = "full",
+					},
+					fontSizeExpanded = {
+						type = "range",
+						name = L.fontSizeExpanded,
+						order = 6,
+						max = 40,
+						min = 8,
+						step = 1,
+						width = "full",
+					},
 				}
 			}
 		end
@@ -382,52 +452,24 @@ do
 	end
 end
 
-local function updateProfile()
-	db = plugin.db.profile
-
-	if display then
-		display:SetWidth(db.width)
-		display:SetHeight(db.height)
-
-		local x = db.posx
-		local y = db.posy
-		if x and y then
-			local s = display:GetEffectiveScale()
-			display:ClearAllPoints()
-			display:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
-		else
-			display:ClearAllPoints()
-			display:SetPoint("CENTER", UIParent, "CENTER", 300, -80)
-		end
-
-		plugin:RestyleWindow()
-	end
-
-	if not db.font then
-		db.font = media:GetDefault("font")
-	end
-	if not db.fontSize then
-		local _, size = GameFontNormalHuge:GetFont()
-		db.fontSize = size
-	end
-end
-
 function plugin:Expand()
 	db.expanded = true
-	display:SetHeight(210)
+	display:SetHeight(db.heightExpanded)
 	display.expand:SetNormalTexture("Interface\\AddOns\\BigWigs\\Textures\\icons\\arrows_up")
 	if inTestMode then
 		self:Test()
 	end
+	plugin:RestyleWindow()
 end
 
 function plugin:Contract()
 	db.expanded = false
-	display:SetHeight(80)
+	display:SetHeight(db.heightContracted)
 	display.expand:SetNormalTexture("Interface\\AddOns\\BigWigs\\Textures\\icons\\arrows_down")
 	for i = 11, 25 do
 		display.text[i]:SetText("")
 	end
+	plugin:RestyleWindow()
 end
 
 function plugin:Close()

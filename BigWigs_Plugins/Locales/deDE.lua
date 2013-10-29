@@ -9,6 +9,9 @@ if not L then return end
 L["altpower"] = "Alternative Energie"
 L["altpower_desc"] = "In manchen Bosskämpfen muss man auf eine Alternative Energie achten. Diese Anzeige zeigt einem hier den Status dieser Enegie des ganzen Raids."
 L["altpower_name"] = "AltPower"
+L["fontSizeContracted"] = "Schriftgröße (Zugeklappt)"
+L["fontSizeExpanded"] = "Schriftgröße (Aufgeklappt)"
+
 
 
 -----------------------------------------------------------------------
