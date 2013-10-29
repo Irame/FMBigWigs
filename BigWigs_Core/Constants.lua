@@ -4,7 +4,7 @@ local names = {}
 local descriptions = {}
 
 -- Option bitflags
-local coreToggles = { "BAR", "MESSAGE", "ICON", "WHISPER", "SOUND", "SAY", "PROXIMITY", "FLASHSHAKE", "PING", "EMPHASIZE" }
+local coreToggles = { "BAR", "MESSAGE", "ICON", "WHISPER", "SOUND", "SAY", "PROXIMITY", "FLASHSHAKE", "PING", "EMPHASIZE", "ALTPOWER" }
 for i, toggle in next, coreToggles do
 	C[toggle] = bit.lshift(1, i - 1)
 	if L[toggle] then
@@ -14,7 +14,7 @@ for i, toggle in next, coreToggles do
 end
 
 -- Toggles that should actually be shown in the interface options
-local listToggles = { "MESSAGE", "BAR", "FLASHSHAKE", "ICON", "WHISPER", "SAY", "PING", "PROXIMITY" }
+local listToggles = { "MESSAGE", "BAR", "FLASHSHAKE", "ICON", "WHISPER", "SAY", "PING", "PROXIMITY", "ALTPOWER" }
 
 local used = nil
 function BigWigs:RegisterOption(key, name, desc)

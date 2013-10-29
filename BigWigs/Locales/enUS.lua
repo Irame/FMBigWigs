@@ -86,6 +86,8 @@ L["PING_desc"] = "Sometimes locations can be important, Big Wigs will ping the m
 L["EMPHASIZE_desc"] = "Enabling this will SUPER EMPHASIZE any messages or bars associated with this encounter ability. Messages will be bigger, bars will flash and have a different color, sounds will be used to count down when the ability is imminent. Basically you will notice it."
 L["PROXIMITY"] = "Proximity display"
 L["PROXIMITY_desc"] = "Abilities will sometimes require you to spread out. The proximity display will be set up specifically for this ability so that you will be able to tell at-a-glance whether or not you are safe."
+L["ALTPOWER"] = "Alternative energy"
+L["ALTPOWER"] = "In some bossfights you have to keep track of an alternative energy. This display shows you the status of this energy for the whole raid."
 L["Advanced options"] = true
 L["<< Back"] = true
 

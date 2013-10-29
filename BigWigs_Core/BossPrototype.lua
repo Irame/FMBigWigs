@@ -30,6 +30,18 @@ local icons = setmetatable({}, {__index =
 		return value
 	end
 })
+local spells = setmetatable({}, {__index =
+	function(self, key)
+		local value
+		if key > 0 then
+			value = GetSpellInfo(key)
+		else
+			value = EJ_GetSectionInfo(-key)
+		end
+		self[key] = value
+		return value
+	end
+})
 
 local boss = {}
 core.bossCore:SetDefaultModulePrototype(boss)
@@ -54,7 +66,7 @@ function boss:OnDisable()
 	self:SendMessage("BigWigs_OnBossDisable", self)
 end
 function boss:GetOption(spellId)
-	return self.db.profile[(GetSpellInfo(spellId))]
+	return self.db.profile[(spells[spellId])]
 end
 function boss:Reboot()
 	if debug then dbg(self, ":Reboot()") end
@@ -440,7 +452,7 @@ do
 		if type(key) == "nil" then error(nilKeyError:format(self.name)) end
 		if type(flag) ~= "number" then error(invalidFlagError:format(self.name, type(flag), tostring(flag))) end
 		if silencedOptions[key] then return end
-		if type(key) == "number" then key = GetSpellInfo(key) end
+		if type(key) == "number" then key = spells[key] end
 		if type(self.db) ~= "table" then error(noDBError:format(self.name)) end
 		if type(self.db.profile[key]) ~= "number" then
 			if not self.toggleDefaults[key] then
@@ -452,6 +464,19 @@ do
 			self.db.profile[key] = self.toggleDefaults[key]
 		end
 		return bit.band(self.db.profile[key], flag) == flag
+	end
+end
+
+-- ALT POWER
+function boss:OpenAltPower(title)
+	if checkFlag(self, "altpower", C.ALTPOWER) then
+		self:SendMessage("BigWigs_ShowAltPower", self, type(title) == "number" and spells[title] or title)
+	end
+end
+
+function boss:CloseAltPower()
+	if checkFlag(self, "altpower", C.ALTPOWER) then
+		self:SendMessage("BigWigs_HideAltPower", self)
 	end
 end
 
@@ -618,12 +643,12 @@ function boss:Berserk(seconds, noEngageMessage, customBoss, customBerserk)
 
 	-- There are many Berserks, but we use 26662 because Brutallus uses this one.
 	-- Brutallus is da bomb.
-	local berserk, icon = (GetSpellInfo(26662)), 26662
+	local berserk, icon = (spells[26662]), 26662
 	-- XXX "Interface\\EncounterJournal\\UI-EJ-Icons" ?
 	-- http://static.wowhead.com/images/icons/ej-enrage.png
 	if type(customBerserk) == "number" then
 		key = customBerserk
-		berserk, icon = (GetSpellInfo(customBerserk)), customBerserk
+		berserk, icon = (spells[customBerserk]), customBerserk
 	elseif type(customBerserk) == "string" then
 		berserk = customBerserk
 	end

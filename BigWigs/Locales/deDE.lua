@@ -88,6 +88,8 @@ L["PING_desc"] = "Manchmal können bestimmte Orte wichtig sein und Big Wigs kann
 L["EMPHASIZE_desc"] = "Sobald aktiviert, werden entsprechende Nachrichten und Leisten stark HERVORGEHOBEN. Nachrichten werden größer, Leisten werden blinken und eine andere Farbe bekommen und Sounds werden als Countdown verwendet. Du wirst die Fähigkeit definitiv bemerken."
 L["PROXIMITY"] = "Näheanzeige"
 L["PROXIMITY_desc"] = "Fähigkeiten von Begegnungen erfordern manchmal, dass alle Mitspieler auseinander stehen. Die Näheanzeige wird speziell für diese Fähigkeit eingestellt, so dass du auf einen Blick siehst, ob du sicher bist oder nicht."
+L["ALTPOWER"] = "Alternative Energie"
+L["ALTPOWER"] = "In manchen Bosskämpfen muss man auf eine Alternative Energie achten. Diese Anzeige zeigt einem hier den Status dieser Enegie des ganzen Raids."
 L["Advanced options"] = "Erweiterte Optionen"
 L["<< Back"] = "<< Zurück"
 

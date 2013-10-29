@@ -448,6 +448,7 @@ do
 				berserk = C.BAR + C.MESSAGE,
 				bosskill = C.MESSAGE,
 				proximity = C.PROXIMITY,
+				altpower = C.ALTPOWER,
 			}, {__index = function(self, key)
 				return C.BAR + C.MESSAGE
 			end})
