@@ -2,6 +2,8 @@
 local L = BigWigs:NewBossLocale("Atramedes", "deDE")
 if not L then return end
 if L then
+	L.alt_energy_title = "Geräuschpegel"
+	
 	L.ground_phase = "Bodenphase"
 	L.ground_phase_desc = "Warnt, wenn Atramedes landet."
 	L.air_phase = "Luftphase"

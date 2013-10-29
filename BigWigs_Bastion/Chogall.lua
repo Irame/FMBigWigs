@@ -24,6 +24,8 @@ local oozecount = 1
 
 local L = mod:NewLocale("enUS", true)
 if L then
+	L.alt_energy_title = "Corrupted Blood"
+
 	L.orders = "Stance changes"
 	L.orders_desc = "Warning for when Cho'gall changes between Shadow/Flame Orders stances."
 
@@ -60,7 +62,7 @@ function mod:GetOptions(CL)
 	return {
 		91303, {81538, "FLASHSHAKE"}, {81685, "FLASHSHAKE", "ICON", "SAY"}, 81571, 82524, 81628, 82299,
 		82630, 82414,
-		"orders", {82235, "FLASHSHAKE", "PROXIMITY"}, "berserk", "bosskill"
+		"orders", {82235, "FLASHSHAKE", "PROXIMITY"}, "altpower", "berserk", "bosskill"
 	}, {
 		[91303] = CL.phase:format(1),
 		[82630] = CL.phase:format(2),
@@ -97,6 +99,8 @@ function mod:OnEngage(diff)
 
 	self:RegisterEvent("UNIT_AURA")
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
+	
+	self:OpenAltPower(L["alt_energy_title"])
 end
 
 --------------------------------------------------------------------------------

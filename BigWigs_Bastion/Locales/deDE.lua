@@ -2,6 +2,8 @@
 local L = BigWigs:NewBossLocale("Cho'gall", "deDE")
 if not L then return end
 if L then
+	L.alt_energy_title = "Verderbtes Blut"
+
 	L.orders = "Schatten- / Flammenbefehl"
 	L.orders_desc = "Warnt, wenn Cho'gall zwischen Befehle des Schattens und Flammenbefehl wechselt."
 

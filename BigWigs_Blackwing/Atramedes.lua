@@ -15,6 +15,8 @@ local sonicBreath = "~"..GetSpellInfo(78075)
 
 local L = mod:NewLocale("enUS", true)
 if L then
+	L.alt_energy_title = "Sound"
+	
 	L.ground_phase = "Ground Phase"
 	L.ground_phase_desc = "Warning for when Atramedes lands."
 	L.air_phase = "Air Phase"
@@ -37,7 +39,7 @@ function mod:GetOptions()
 		"ground_phase", 78075, 77840,
 		"air_phase",
 		{92677, "ICON", "SAY"},
-		{78092, "FLASHSHAKE", "ICON", "SAY"}, "berserk", "bosskill"
+		{78092, "FLASHSHAKE", "ICON", "SAY"}, "altpower", "berserk", "bosskill"
 	}, {
 		ground_phase = L["ground_phase"],
 		air_phase = L["air_phase"],
@@ -64,6 +66,7 @@ function mod:OnEngage(diff)
 	self:Bar(77840, searingFlame, 45, 77840)
 	self:DelayedMessage(77840, 35, L["searing_soon"], "Attention", 77840)
 	self:Bar("air_phase", L["air_phase"], 92, 5740) -- Rain of Fire Icon
+	self:OpenAltPower(L["alt_energy_title"])
 	if diff > 2 then
 		self:RegisterEvent("UNIT_AURA")
 		self:Berserk(600)
