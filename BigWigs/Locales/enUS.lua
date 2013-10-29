@@ -87,7 +87,7 @@ L["EMPHASIZE_desc"] = "Enabling this will SUPER EMPHASIZE any messages or bars a
 L["PROXIMITY"] = "Proximity display"
 L["PROXIMITY_desc"] = "Abilities will sometimes require you to spread out. The proximity display will be set up specifically for this ability so that you will be able to tell at-a-glance whether or not you are safe."
 L["ALTPOWER"] = "Alternative energy"
-L["ALTPOWER"] = "In some bossfights you have to keep track of an alternative energy. This display shows you the status of this energy for the whole raid."
+L["ALTPOWER_desc"] = "In some bossfights you have to keep track of an alternative energy. This display shows you the status of this energy for the whole raid."
 L["Advanced options"] = true
 L["<< Back"] = true
 

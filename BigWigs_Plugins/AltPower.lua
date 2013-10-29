@@ -9,6 +9,13 @@ plugin.defaultDB = {
 	posx = nil,
 	posy = nil,
 	expanded = false,
+	disabled = false,
+	lock = true,
+	width = 230,
+	heightExpanded = 210,
+	heightContracted = 80,
+	font = nil,
+	fontSize = nil,
 }
 
 --------------------------------------------------------------------------------
@@ -21,10 +28,14 @@ local maxPlayers = 0
 local display, updater = nil, nil
 local opener = nil
 local inTestMode = nil
+local inConfigMode = nil
 local UpdateDisplay
 local tsort = table.sort
 local UnitPower = UnitPower
 local db = nil
+local L = LibStub("AceLocale-3.0"):GetLocale("Big Wigs: Plugins")
+plugin.displayName = L.altpower_name
+
 local roleIcons = {
 	["TANK"] = INLINE_TANK_ICON,
 	["HEALER"] = INLINE_HEALER_ICON,
@@ -36,13 +47,19 @@ local roleIcons = {
 -- Initialization
 --
 
+function plugin:OnRegister()
+	BigWigs:RegisterBossOption("altpower", L.altpower, L.altpower_desc, OnOptionToggled, "Interface\\Icons\\Spell_Arcane_ArcaneTorrent")
+	--self:RegisterMessage("BigWigs_ProfileUpdate", updateProfile)
+	--updateProfile()
+end
+
 function plugin:OnPluginEnable()
 	self:RegisterMessage("BigWigs_ShowAltPower")
 	self:RegisterMessage("BigWigs_HideAltPower", "Close")
 	self:RegisterMessage("BigWigs_OnBossDisable")
 
-	self:RegisterMessage("BigWigs_StartConfigureMode", "Test")
-	self:RegisterMessage("BigWigs_StopConfigureMode", "Close")
+	self:RegisterMessage("BigWigs_StartConfigureMode")
+	self:RegisterMessage("BigWigs_StopConfigureMode")
 	self:RegisterMessage("BigWigs_SetConfigureTarget")
 
 	db = self.db.profile
@@ -53,24 +70,85 @@ function plugin:OnPluginDisable()
 end
 
 -------------------------------------------------------------------------------
+-- Display Window
+--
+
+local function setConfigureTarget(self, button)
+	if not inConfigMode or button ~= "LeftButton" then return end
+	plugin:SendMessage("BigWigs_SetConfigureTarget", plugin)
+end
+
+local function onDragStart(self) self:StartMoving() end
+local function onDragStop(self)
+	self:StopMovingOrSizing()
+	local s = self:GetEffectiveScale()
+	db.posx = self:GetLeft() * s
+	db.posy = self:GetTop() * s
+end
+local function OnDragHandleMouseDown(self) self.frame:StartSizing("BOTTOMRIGHT") end
+local function OnDragHandleMouseUp(self, button) self.frame:StopMovingOrSizing() end
+local function onResize(self, width, height)
+	db.width = width
+	db.height = height
+	RestyleWindow()
+end
+
+local locked = nil
+local function lockDisplay()
+	if locked then return end
+	display:SetMovable(false)
+	display:SetResizable(false)
+	display:RegisterForDrag()
+	display:SetScript("OnSizeChanged", nil)
+	display:SetScript("OnDragStart", nil)
+	display:SetScript("OnDragStop", nil)
+	display.drag:Hide()
+	locked = true
+end
+local function unlockDisplay()
+	if not locked then return end
+	display:SetMovable(true)
+	display:SetResizable(true)
+	display:RegisterForDrag("LeftButton")
+	display:SetScript("OnSizeChanged", onResize)
+	display:SetScript("OnDragStart", onDragStart)
+	display:SetScript("OnDragStop", onDragStop)
+	display.drag:Show()
+	locked = nil
+end
+
+function plugin:RestyleWindow()
+	for i = 1, 25 do
+		local text = display.text[i]
+		text:SetSize(db.width/2, (db.expanded and db.heightExpanded or db.heightContracted) / (db.expanded and 13 or 5))
+		if i == 1 then
+			text:SetPoint("TOPLEFT", display, "TOPLEFT", 5, 0)
+		elseif i % 2 == 0 then
+			text:SetPoint("LEFT", display.text[i-1], "RIGHT")
+		else
+			text:SetPoint("TOP", display.text[i-2], "BOTTOM")
+		end
+	end
+	if db.lock then
+		locked = nil
+		lockDisplay()
+	else
+		locked = true
+		unlockDisplay()
+	end
+end
+
+-------------------------------------------------------------------------------
 -- Event Handlers
 --
 
 do
 	local function createFrame()
 		display = CreateFrame("Frame", "BigWigsAltPower", UIParent)
-		display:SetSize(230, db.expanded and 210 or 80)
+		display:SetSize(db.width, db.expanded and db.heightExpanded or db.heightContracted)
 		display:SetClampedToScreen(true)
 		display:EnableMouse(true)
-		display:SetMovable(true)
-		display:RegisterForDrag("LeftButton")
-		display:SetScript("OnDragStart", function(self) self:StartMoving() end)
-		display:SetScript("OnDragStop", function(self)
-			self:StopMovingOrSizing()
-			local s = self:GetEffectiveScale()
-			db.posx = self:GetLeft() * s
-			db.posy = self:GetTop() * s
-		end)
+		display:SetScript("OnMouseUp", setConfigureTarget)
 
 		updater = display:CreateAnimationGroup()
 		updater:SetLooping("REPEAT")
@@ -111,23 +189,36 @@ do
 		local header = display:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		header:SetPoint("BOTTOM", display, "TOP", 0, 4)
 		display.title = header
-
+		
+		local drag = CreateFrame("Frame", nil, display)
+		drag.frame = display
+		drag:SetFrameLevel(display:GetFrameLevel() + 10) -- place this above everything
+		drag:SetWidth(16)
+		drag:SetHeight(16)
+		drag:SetPoint("BOTTOMRIGHT", display, -1, 1)
+		drag:EnableMouse(true)
+		drag:SetScript("OnMouseDown", OnDragHandleMouseDown)
+		drag:SetScript("OnMouseUp", OnDragHandleMouseUp)
+		drag:SetAlpha(0.5)
+		display.drag = drag
+		
+		local tex = drag:CreateTexture(nil, "OVERLAY")
+		tex:SetTexture("Interface\\AddOns\\BigWigs\\Textures\\draghandle")
+		tex:SetWidth(16)
+		tex:SetHeight(16)
+		tex:SetBlendMode("ADD")
+		tex:SetPoint("CENTER", drag)
+		
 		display.text = {}
 		for i = 1, 25 do
 			local text = display:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 			text:SetText("")
-			text:SetSize(115, 16)
 			text:SetJustifyH("LEFT")
-			if i == 1 then
-				text:SetPoint("TOPLEFT", display, "TOPLEFT", 5, 0)
-			elseif i % 2 == 0 then
-				text:SetPoint("LEFT", display.text[i-1], "RIGHT")
-			else
-				text:SetPoint("TOP", display.text[i-2], "BOTTOM")
-			end
 			display.text[i] = text
 		end
-
+	
+		plugin:RestyleWindow()
+	
 		local x = db.posx
 		local y = db.posy
 		if x and y then
@@ -143,11 +234,11 @@ do
 	-- This module is rarely used, and opened once during an encounter where it is.
 	-- We will prefer on-demand variables over permanent ones.
 	function plugin:BigWigs_ShowAltPower(event, module, title)
-		if not IsInGroup() then return end -- Solo runs of old content
+		if not self:IsInGroup() then return end -- Solo runs of old content
 		if createFrame then createFrame() createFrame = nil end
 		self:Close()
 
-		maxPlayers = GetNumGroupMembers()
+		maxPlayers = self:GetNumGroupMembers()
 		opener = module
 		unitList = IsInRaid() and self:GetRaidList() or self:GetPartyList()
 		powerList, sortedUnitList, roleColoredList = {}, {}, {}
@@ -186,6 +277,24 @@ do
 	end
 end
 
+-------------------------------------------------------------------------------
+-- Options
+--
+
+function plugin:BigWigs_StartConfigureMode()
+	if display and display:IsShown() then
+		print("Cannot enter configure mode whilst AltPower is active.")
+		return
+	end
+	inConfigMode = true
+	self:Test()
+end
+
+function plugin:BigWigs_StopConfigureMode()
+	inConfigMode = nil
+	self:Close()
+end
+
 function plugin:BigWigs_SetConfigureTarget(event, module)
 	if module == self then
 		display.background:SetTexture(0.2, 1, 0.2, 0.3)
@@ -193,6 +302,61 @@ function plugin:BigWigs_SetConfigureTarget(event, module)
 		display.background:SetTexture(0, 0, 0, 0.3)
 	end
 end
+
+do
+	local pluginOptions = nil
+	function plugin:GetPluginConfig()
+		if not pluginOptions then
+			pluginOptions = {
+				type = "group",
+				get = function(info)
+					local key = info[#info]
+					if key == "font" then
+						for i, v in next, media:List("font") do
+							if v == db.font then return i end
+						end
+					elseif key == "soundName" then
+						for i, v in next, media:List("sound") do
+							if v == db.soundName then return i end
+						end
+					else
+						return db[key]
+					end
+				end,
+				set = function(info, value)
+					local key = info[#info]
+					if key == "font" then
+						db.font = media:List("font")[value]
+					elseif key == "soundName" then
+						db.soundName = media:List("sound")[value]
+					else
+						db[key] = value
+					end
+					plugin:RestyleWindow()
+				end,
+				args = {
+					disabled = {
+						type = "toggle",
+						name = L.disabled,
+						desc = L.disabledDesc,
+						order = 1,
+					},
+					lock = {
+						type = "toggle",
+						name = L.lock,
+						desc = L.lockDesc,
+						order = 2,
+					}
+				}
+			}
+		end
+		return pluginOptions
+	end
+end
+
+-------------------------------------------------------------------------------
+-- AltPower Updater
+--
 
 do
 	local function sortTbl(x,y)
@@ -215,6 +379,36 @@ do
 			if not name then return end
 			display.text[i]:SetFormattedText("[%d] %s", powerList[name], roleColoredList[name])
 		end
+	end
+end
+
+local function updateProfile()
+	db = plugin.db.profile
+
+	if display then
+		display:SetWidth(db.width)
+		display:SetHeight(db.height)
+
+		local x = db.posx
+		local y = db.posy
+		if x and y then
+			local s = display:GetEffectiveScale()
+			display:ClearAllPoints()
+			display:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x / s, y / s)
+		else
+			display:ClearAllPoints()
+			display:SetPoint("CENTER", UIParent, "CENTER", 300, -80)
+		end
+
+		plugin:RestyleWindow()
+	end
+
+	if not db.font then
+		db.font = media:GetDefault("font")
+	end
+	if not db.fontSize then
+		local _, size = GameFontNormalHuge:GetFont()
+		db.fontSize = size
 	end
 end
 

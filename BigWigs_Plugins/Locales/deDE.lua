@@ -3,6 +3,15 @@ local L = LibStub("AceLocale-3.0"):NewLocale("Big Wigs: Plugins", "deDE")
 if not L then return end
 
 -----------------------------------------------------------------------
+-- AltPower.lua
+--
+
+L["altpower"] = "Alternative Energie"
+L["altpower_desc"] = "In manchen Bosskämpfen muss man auf eine Alternative Energie achten. Diese Anzeige zeigt einem hier den Status dieser Enegie des ganzen Raids."
+L["altpower_name"] = "AltPower"
+
+
+-----------------------------------------------------------------------
 -- Bars.lua
 --
 

@@ -89,7 +89,7 @@ L["EMPHASIZE_desc"] = "Sobald aktiviert, werden entsprechende Nachrichten und Le
 L["PROXIMITY"] = "Näheanzeige"
 L["PROXIMITY_desc"] = "Fähigkeiten von Begegnungen erfordern manchmal, dass alle Mitspieler auseinander stehen. Die Näheanzeige wird speziell für diese Fähigkeit eingestellt, so dass du auf einen Blick siehst, ob du sicher bist oder nicht."
 L["ALTPOWER"] = "Alternative Energie"
-L["ALTPOWER"] = "In manchen Bosskämpfen muss man auf eine Alternative Energie achten. Diese Anzeige zeigt einem hier den Status dieser Enegie des ganzen Raids."
+L["ALTPOWER_desc"] = "In manchen Bosskämpfen muss man auf eine Alternative Energie achten. Diese Anzeige zeigt einem hier den Status dieser Enegie des ganzen Raids."
 L["Advanced options"] = "Erweiterte Optionen"
 L["<< Back"] = "<< Zurück"
 
