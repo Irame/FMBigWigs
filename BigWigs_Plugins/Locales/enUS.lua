@@ -9,6 +9,11 @@ L["altpower_desc"] = "In some bossfights you have to keep track of an alternativ
 L["altpower_name"] = "AltPower"
 L["fontSizeContracted"] = "Fontsize (contracted)"
 L["fontSizeExpanded"] = "Fontsize (expanded)"
+L["useBars"] = "Use bras"
+L["useBarsDesc"] = "Use bars to support the text showing the power"
+L["colorEmpty"] = "Barcolor (Empty)"
+L["colorFull"] = "Barcolor (Full)"
+
 
 -----------------------------------------------------------------------
 -- Bars.lua

@@ -11,8 +11,8 @@ L["altpower_desc"] = "In manchen Bosskämpfen muss man auf eine Alternative Ener
 L["altpower_name"] = "AltPower"
 L["fontSizeContracted"] = "Schriftgröße (Zugeklappt)"
 L["fontSizeExpanded"] = "Schriftgröße (Aufgeklappt)"
-
-
+L["useBars"] = "Benutze Balken"
+L["useBarsDesc"] = "Benutze Balken um den Text beim anzeigen der Energie zu unterstützen"
 
 -----------------------------------------------------------------------
 -- Bars.lua

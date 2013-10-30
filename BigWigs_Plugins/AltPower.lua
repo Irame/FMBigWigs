@@ -14,11 +14,14 @@ plugin.defaultDB = {
 	width = 230,
 	heightExpanded = 210,
 	heightContracted = 80,
+	useBars = true;
 	texture = "BantoBar",
 	font = nil,
 	fontSizeExpanded = nil,
 	fontSizeContracted = nil,
-	textFormat = "[#CV] #UN"
+	textFormat = "[#CV] #UN",
+	colorEmpty = {0, 1, 0 ,1},
+	colorFull = {1, 0, 0 ,1},
 }
 
 --------------------------------------------------------------------------------
@@ -167,7 +170,7 @@ function plugin:RestyleWindow()
 	local height = (db.expanded and db.heightExpanded or db.heightContracted) / (db.expanded and 13 or 5)
 	for i = 1, 25 do
 		local bar = display.bars[i]
-		bar:SetStatusBarTexture(media:Fetch("statusbar", db.texture))
+		bar:SetStatusBarTexture(db.useBars and media:Fetch("statusbar", db.texture) or nil)
 		bar:SetSize(width, height)
 		bar.text:SetFont(font, fontSize)
 		if i == 1 then
@@ -185,11 +188,20 @@ function plugin:RestyleWindow()
 		locked = true
 		unlockDisplay()
 	end
+	if inTestMode then self:Test() end
 end
 
 -------------------------------------------------------------------------------
 -- Event Handlers
 --
+local function mixColor(ratio, colors1, colors2)
+	local r,b,g = nil,nil,nil
+	r = ratio*colors1[1] + colors2[1]*(1-ratio)
+	g = ratio*colors1[2] + colors2[2]*(1-ratio)
+	b = ratio*colors1[3] + colors2[3]*(1-ratio)
+	
+	return r, g, b
+end
 
 local function setBarStatus(index, curValue, maxValue, unit, textFormat)
 	if createFrame then return end
@@ -199,9 +211,12 @@ local function setBarStatus(index, curValue, maxValue, unit, textFormat)
 	builtString = builtString:gsub("#UN", unit)
 	
 	local bar = display.bars[index]
+	if db.useBars then
+		bar:SetMinMaxValues(0,maxValue)
+		bar:SetValue(curValue)
+		bar:SetStatusBarColor(mixColor(curValue/maxValue, db.colorFull, db.colorEmpty))
+	end
 	
-	bar:SetMinMaxValues(0,maxValue)
-	bar:SetValue(curValue)
 	bar.text:SetText(builtString)
 	
 	bar:Show()
@@ -339,7 +354,7 @@ do
 
 		unitList = self:GetRaidList()
 		for i = 1, db.expanded and 25 or 10 do
-			setBarStatus(i, 100-i, 100, unitList[i], db.textFormat)
+			setBarStatus(i, 100-i*2, 100, unitList[i], db.textFormat)
 		end
 		display.title:SetText("Alt Power")
 		display:Show()
@@ -389,18 +404,24 @@ do
 						for i, v in next, media:List("statusbar") do
 							if v == db.texture then return i end
 						end
+					elseif type(db[key]) == "table" then
+						return unpack(db[key])
 					else
 						return db[key]
 					end
 				end,
-				set = function(info, value)
+				set = function(info, ...)
 					local key = info[#info]
-					if key == "font" then
-						db.font = media:List("font")[value]
+					if select("#", ...) > 1 then
+						for i = 1, select("#", ...) do
+							db[info[#info]][i] = select(i, ...)
+						end
+					elseif key == "font" then
+						db.font = media:List("font")[...]
 					elseif key == "texture" then
-						db.texture = media:List("statusbar")[value]
+						db.texture = media:List("statusbar")[...]
 					else
-						db[key] = value
+						db[key] = ...
 					end
 					plugin:RestyleWindow()
 				end,
@@ -417,10 +438,16 @@ do
 						desc = L.lockDesc,
 						order = 2,
 					},
+					useBars = {
+						type = "toggle",
+						name = L.useBars,
+						desc = L.useBarsDesc,
+						order = 3,
+					},
 					texture = {
 						type = "select",
 						name = L["Texture"],
-						order = 3,
+						order = 10,
 						values = media:List("statusbar"),
 						width = "full",
 						itemControl = "DDI-Statusbar",
@@ -428,7 +455,7 @@ do
 					font = {
 						type = "select",
 						name = L.font,
-						order = 4,
+						order = 11,
 						values = media:List("font"),
 						width = "full",
 						itemControl = "DDI-Font",
@@ -436,7 +463,7 @@ do
 					fontSizeContracted = {
 						type = "range",
 						name = L.fontSizeContracted,
-						order = 5,
+						order = 12,
 						max = 40,
 						min = 8,
 						step = 1,
@@ -445,11 +472,25 @@ do
 					fontSizeExpanded = {
 						type = "range",
 						name = L.fontSizeExpanded,
-						order = 6,
+						order = 13,
 						max = 40,
 						min = 8,
 						step = 1,
 						width = "full",
+					},
+					colorEmpty = {
+						type = "color",
+						name = L.colorEmpty,
+						order = 14,
+						hasAlpha = false,
+						width = "half"
+					},
+					colorFull = {
+						type = "color",
+						name = L.colorFull,
+						order = 15,
+						hasAlpha = false,
+						width = "half"
 					},
 				}
 			}
@@ -492,9 +533,6 @@ function plugin:Expand()
 	db.expanded = true
 	display:SetHeight(db.heightExpanded)
 	display.expand:SetNormalTexture("Interface\\AddOns\\BigWigs\\Textures\\icons\\arrows_up")
-	if inTestMode then
-		self:Test()
-	end
 	plugin:RestyleWindow()
 end
 
