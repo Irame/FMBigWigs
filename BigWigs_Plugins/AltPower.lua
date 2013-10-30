@@ -14,9 +14,11 @@ plugin.defaultDB = {
 	width = 230,
 	heightExpanded = 210,
 	heightContracted = 80,
+	texture = "BantoBar",
 	font = nil,
 	fontSizeExpanded = nil,
 	fontSizeContracted = nil,
+	textFormat = "[#CV] #UN"
 }
 
 --------------------------------------------------------------------------------
@@ -89,6 +91,8 @@ function plugin:OnRegister()
 end
 
 function plugin:OnPluginEnable()
+	if not media:Fetch("statusbar", db.texture, true) then db.texture = "BantoBar" end
+
 	self:RegisterMessage("BigWigs_ShowAltPower")
 	self:RegisterMessage("BigWigs_HideAltPower", "Close")
 	self:RegisterMessage("BigWigs_OnBossDisable")
@@ -162,15 +166,16 @@ function plugin:RestyleWindow()
 	local width = db.width/2
 	local height = (db.expanded and db.heightExpanded or db.heightContracted) / (db.expanded and 13 or 5)
 	for i = 1, 25 do
-		local text = display.text[i]
-		text:SetFont(font, fontSize)
-		text:SetSize(width, height)
+		local bar = display.bars[i]
+		bar:SetStatusBarTexture(media:Fetch("statusbar", db.texture))
+		bar:SetSize(width, height)
+		bar.text:SetFont(font, fontSize)
 		if i == 1 then
-			text:SetPoint("TOPLEFT", display, "TOPLEFT", 5, 0)
+			bar:SetPoint("TOPLEFT", display, "TOPLEFT")
 		elseif i % 2 == 0 then
-			text:SetPoint("LEFT", display.text[i-1], "RIGHT")
+			bar:SetPoint("LEFT", display.bars[i-1], "RIGHT")
 		else
-			text:SetPoint("TOP", display.text[i-2], "BOTTOM")
+			bar:SetPoint("TOP", display.bars[i-2], "BOTTOM")
 		end
 	end
 	if db.lock then
@@ -186,6 +191,22 @@ end
 -- Event Handlers
 --
 
+local function setBarStatus(index, curValue, maxValue, unit, textFormat)
+	if createFrame then return end
+	local builtString = textFormat
+	builtString = builtString:gsub("#CV", curValue)
+	builtString = builtString:gsub("#MV", maxValue)
+	builtString = builtString:gsub("#UN", unit)
+	
+	local bar = display.bars[index]
+	
+	bar:SetMinMaxValues(0,maxValue)
+	bar:SetValue(curValue)
+	bar.text:SetText(builtString)
+	
+	bar:Show()
+end
+
 do
 	local function createFrame()
 		display = CreateFrame("Frame", "BigWigsAltPower", UIParent)
@@ -193,6 +214,7 @@ do
 		display:SetClampedToScreen(true)
 		display:EnableMouse(true)
 		display:SetScript("OnMouseUp", setConfigureTarget)
+		display:SetMinResize(80, 30)
 
 		updater = display:CreateAnimationGroup()
 		updater:SetLooping("REPEAT")
@@ -253,12 +275,16 @@ do
 		tex:SetBlendMode("ADD")
 		tex:SetPoint("CENTER", drag)
 		
-		display.text = {}
+		display.bars = {}
 		for i = 1, 25 do
-			local text = display:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+			local bar = CreateFrame("StatusBar", "BigWigsAltPowerBar"..i, display)
+			local text = bar:CreateFontString("BigWigsAltPowerBar"..i.."Text", "OVERLAY", "GameFontNormal")
+			text:SetPoint("LEFT", bar, "LEFT", 5, 0)
+			text:SetPoint("RIGHT", bar, "RIGHT", -5, 0)
 			text:SetText("")
 			text:SetJustifyH("LEFT")
-			display.text[i] = text
+			bar.text = text
+			display.bars[i] = bar
 		end
 	
 		plugin:RestyleWindow()
@@ -306,14 +332,14 @@ do
 		updater:Play()
 		UpdateDisplay()
 	end
-
+	
 	function plugin:Test()
 		if createFrame then createFrame() createFrame = nil end
 		self:Close()
 
 		unitList = self:GetRaidList()
 		for i = 1, db.expanded and 25 or 10 do
-			display.text[i]:SetFormattedText("[%d] %s", 100-i, unitList[i])
+			setBarStatus(i, 100-i, 100, unitList[i], db.textFormat)
 		end
 		display.title:SetText("Alt Power")
 		display:Show()
@@ -359,9 +385,9 @@ do
 						for i, v in next, media:List("font") do
 							if v == db.font then return i end
 						end
-					elseif key == "soundName" then
-						for i, v in next, media:List("sound") do
-							if v == db.soundName then return i end
+					elseif key == "texture" then
+						for i, v in next, media:List("statusbar") do
+							if v == db.texture then return i end
 						end
 					else
 						return db[key]
@@ -371,8 +397,8 @@ do
 					local key = info[#info]
 					if key == "font" then
 						db.font = media:List("font")[value]
-					elseif key == "soundName" then
-						db.soundName = media:List("sound")[value]
+					elseif key == "texture" then
+						db.texture = media:List("statusbar")[value]
 					else
 						db[key] = value
 					end
@@ -390,6 +416,14 @@ do
 						name = L.lock,
 						desc = L.lockDesc,
 						order = 2,
+					},
+					texture = {
+						type = "select",
+						name = L["Texture"],
+						order = 3,
+						values = media:List("statusbar"),
+						width = "full",
+						itemControl = "DDI-Statusbar",
 					},
 					font = {
 						type = "select",
@@ -430,7 +464,7 @@ end
 
 do
 	local function sortTbl(x,y)
-		local px, py = powerList[x], powerList[y]
+		local px, py = powerList[x].cur, powerList[y].cur
 		if px == py then
 			return x > y
 		else
@@ -441,13 +475,15 @@ do
 	function UpdateDisplay()
 		for i = 1, maxPlayers do
 			local unit = unitList[i]
-			powerList[unit] = UnitPower(unit, 10) -- ALTERNATE_POWER_INDEX = 10
+			if not powerList[unit] then powerList[unit] = {} end 
+			powerList[unit].cur = UnitPower(unit, 10) -- ALTERNATE_POWER_INDEX = 10
+			powerList[unit].max = UnitPowerMax(unit, 10)
 		end
 		tsort(sortedUnitList, sortTbl)
 		for i = 1, db.expanded and 25 or 10 do
 			local name = sortedUnitList[i]
 			if not name then return end
-			display.text[i]:SetFormattedText("[%d] %s", powerList[name], roleColoredList[name])
+			setBarStatus(i, powerList[name].cur, powerList[name].max, roleColoredList[name], db.textFormat)
 		end
 	end
 end
@@ -467,7 +503,7 @@ function plugin:Contract()
 	display:SetHeight(db.heightContracted)
 	display.expand:SetNormalTexture("Interface\\AddOns\\BigWigs\\Textures\\icons\\arrows_down")
 	for i = 11, 25 do
-		display.text[i]:SetText("")
+		display.bars[i]:Hide()
 	end
 	plugin:RestyleWindow()
 end
@@ -481,7 +517,7 @@ function plugin:Close()
 	opener = nil
 	inTestMode = nil
 	for i = 1, 25 do
-		display.text[i]:SetText("")
+		display.bars[i]:Hide()
 	end
 end
 
