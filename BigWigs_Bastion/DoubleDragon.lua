@@ -122,7 +122,7 @@ local function theralionHasLanded()
 	mod:SendMessage("BigWigs_StopBar", mod, blackout)
 	mod:SendMessage("BigWigs_StopBar", mod, devouringFlames)
 	mod:Bar("phase_switch", L["phase_bar"]:format(valiona), 130, 60639)
-	mod:CloseProximity()
+	mod:CloseProximity(86369)
 end
 
 function mod:TwilightShift(player, spellId, _, _, spellName, stack)
@@ -167,7 +167,7 @@ function mod:BlackoutApplied(player, spellId, _, _, spellName)
 		self:OpenProximity(8, 86788, nil, true)
 	else
 		self:PlaySound(86788, "Alert")
-		self:OpenProximity(8, 86788, player, true) -- No need to close Proximity it should do it anyway
+		self:OpenProximity(8, 86788, player, true)
 	end
 	self:TargetMessage(86788, spellName, player, "Personal", spellId, "Alert")
 	self:Bar(86788, spellName, 45, spellId)

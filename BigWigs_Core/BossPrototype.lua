@@ -488,7 +488,7 @@ function boss:OpenProximity(range, key, player, isReverse)
 end
 
 function boss:CloseProximity(key)
-	if checkFlag(self, key or "proximity", C.PROXIMITY) then
+	if not key or checkFlag(self, key or "proximity", C.PROXIMITY) then
 		self:SendMessage("BigWigs_HideProximity", self, key or "proximity")
 	end
 end

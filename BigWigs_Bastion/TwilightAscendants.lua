@@ -188,7 +188,7 @@ function mod:LightningRodRemoved(player, spellId)
 		if self:Difficulty() > 2 then
 			self:OpenProximity(10, 92067)
 		else
-			self:CloseProximity()
+			self:CloseProximity(83099)
 		end
 	end
 end

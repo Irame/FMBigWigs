@@ -164,7 +164,7 @@ function mod:Red()
 	self:Bar(77679, scorchingBlast, 25, 77679)
 	self:Message("phase", L["red_phase"], "Positive", "Interface\\Icons\\INV_POTION_24", "Long")
 	if not isChilled then
-		self:CloseProximity()
+		self:CloseProximity(77699)
 	end
 	nextPhase(53)
 end
@@ -186,7 +186,7 @@ function mod:Green()
 	self:SendMessage("BigWigs_StopBar", self, flashFreeze)
 	self:Message("phase", L["green_phase"], "Positive", "Interface\\Icons\\INV_POTION_162", "Long")
 	if not isChilled then
-		self:CloseProximity()
+		self:CloseProximity(77699)
 	end
 	nextPhase(53)
 	-- Make sure to reset after the nextPhase() call, which increments it
@@ -198,7 +198,7 @@ function mod:Dark()
 	currentPhase = "dark"
 	self:Message("phase", L["dark_phase"], "Positive", "Interface\\Icons\\INV_ELEMENTAL_PRIMAL_SHADOW", "Long")
 	if not isChilled then
-		self:CloseProximity()
+		self:CloseProximity(77699)
 	end
 	nextPhase(100)
 end
@@ -285,7 +285,7 @@ function mod:BitingChillRemoved(player)
 	if UnitIsUnit(player, "player") then
 		isChilled = nil
 		if currentPhase ~= "blue" then
-			self:CloseProximity()
+			self:CloseProximity(77699)
 		end
 	end
 end

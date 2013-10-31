@@ -188,7 +188,6 @@ function plugin:RestyleWindow()
 		locked = true
 		unlockDisplay()
 	end
-	if inTestMode then self:Test() end
 end
 
 -------------------------------------------------------------------------------
@@ -534,6 +533,7 @@ function plugin:Expand()
 	display:SetHeight(db.heightExpanded)
 	display.expand:SetNormalTexture("Interface\\AddOns\\BigWigs\\Textures\\icons\\arrows_up")
 	plugin:RestyleWindow()
+	if inTestMode then self:Test() end
 end
 
 function plugin:Contract()
