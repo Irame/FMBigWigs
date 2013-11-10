@@ -69,6 +69,14 @@ L["Local"] = "Lokal"
 L["%s: Timer [%s] finished."] = "%s: Timer [%s] beendet."
 L["Invalid time (|cffff0000%q|r) or missing bar text in a custom bar started by |cffd9d919%s|r. <time> can be either a number in seconds, a M:S pair, or Mm. For example 5, 1:20 or 2m."] = "Ungültige Zeit (|cffff0000%q|r) oder fehlender Leistentext in eigener Leiste, gestartet von |cffd9d919%s|r. <Zeit> kann entweder eine Zahl in Sekunden, eine M:S Kombination oder Mm sein. Beispiele: 5, 1:20 or 2m."
 
+L["pull"] = "Pull"
+L["pulling"] = "Pulling!"
+L["pullStarted"] = "Pull Timer wurde von %s-User %s gestartet."
+L["pullStopped"] = "Pull-Timer von %s abgebrochen."
+L["pullIn"] = "Pull in %d sec"
+L["sendPull"] = "Sende Pull-Timer an Big Wigs und DBM Nutzer."
+L["wrongPullFormat"] = "Muss zwischen 1 und 60 sein. Beispiel: /pull 5"
+
 -----------------------------------------------------------------------
 -- Colors.lua
 --
