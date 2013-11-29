@@ -40,6 +40,8 @@ if L then
 	L.next_phase = "Next phase"
 	L.green_phase_bar = "Green phase"
 
+	L.engage_trigger = "Nothing goes to waste...There can be no disruptions! Mustnt keep the master waiting, mustnt fail again!"
+	
 	L.red_phase_trigger = "Mix and stir, apply heat..."
 	L.red_phase_emote_trigger = "red"
 	L.red_phase = "|cFFFF0000Red|r phase"
@@ -97,7 +99,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "Jets", 78194)
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
-
+	self:Yell("Engage", L["engage_trigger"])
+	
 	-- We keep the emotes in case the group uses Curse of Tongues, in which
 	-- case the yells become Demonic.
 	self:Emote("Red", L["red_phase_emote_trigger"])
