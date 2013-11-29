@@ -6,6 +6,8 @@ if not L then return end
 -- AltPower.lua
 --
 
+L["disabledAltp"] = "Deaktivieren"
+L["disabledDescAltp"] = "Deaktiviert die Anzeige der Alternativen Energie für alle Module, die sie benutzen."
 L["altpower"] = "Alternative Energie"
 L["altpower_desc"] = "In manchen Bosskämpfen muss man auf eine Alternative Energie achten. Diese Anzeige zeigt einem hier den Status dieser Enegie des ganzen Raids."
 L["altpower_name"] = "AltPower"
@@ -193,8 +195,8 @@ L["closeProximityDesc"] = [=[Schließt die Anzeige naher Spieler.
 Falls du die Anzeige für alle Bosse deaktivieren willst, musst du die Option 'Nähe' seperat in den jeweiligen Bossmodulen ausschalten.]=]
 L["toggleSound"] = "Sound an/aus"
 L["toggleSoundDesc"] = "Schaltet den Sound ein oder aus, der gespielt wird, wenn du zu nahe an einem anderen Spieler stehst."
-L["disabled"] = "Deaktivieren"
-L["disabledDesc"] = "Deaktiviert die Anzeige naher Spieler für alle Module, die sie benutzen."
+L["disabledProx"] = "Deaktivieren"
+L["disabledDescProx"] = "Deaktiviert die Anzeige naher Spieler für alle Module, die sie benutzen."
 L["lock"] = "Sperren"
 L["lockDesc"] = "Sperrt die Anzeige und verhindert weiteres Verschieben und Anpassen der Größe."
 L["font"] = "Schriftart"

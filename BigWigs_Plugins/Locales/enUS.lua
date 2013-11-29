@@ -4,6 +4,8 @@ local L = LibStub("AceLocale-3.0"):NewLocale("Big Wigs: Plugins", "enUS", true)
 -- AltPower.lua
 --
 
+L["disabledAltp"] = "Disabled"
+L["disabledDescAltp"] = "Disable the alternative energy display for all modules that use it."
 L["altpower"] = "Alternative energy"
 L["altpower_desc"] = "In some bossfights you have to keep track of an alternative energy. This display shows you the status of this energy for the whole raid."
 L["altpower_name"] = "AltPower"
@@ -187,8 +189,8 @@ L.customRange = "Custom range indicator"
 L.proximityTitle = "%d yd / %d |4player:players;" -- yd = yards (short)
 L.proximity_name = "Proximity"
 L.sound = "Sound"
-L.disabled = "Disabled"
-L.disabledDesc = "Disable the proximity display for all modules that use it."
+L.disabledProx = "Disabled"
+L.disabledDescProx = "Disable the proximity display for all modules that use it."
 L.toggleProximityPrint = "The proximity display will show next time. To disable it completely for this encounter, you need to toggle it off in the encounter options."
 L.soundDelay = "Sound delay"
 L.soundDelayDesc = "Specify how long Big Wigs should wait between repeating the specified sound when someone is too close to you."

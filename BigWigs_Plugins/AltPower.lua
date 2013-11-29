@@ -427,8 +427,8 @@ do
 				args = {
 					disabled = {
 						type = "toggle",
-						name = L.disabled,
-						desc = L.disabledDesc,
+						name = L.disabledAltp,
+						desc = L.disabledDescAltp,
 						order = 1,
 					},
 					lock = {

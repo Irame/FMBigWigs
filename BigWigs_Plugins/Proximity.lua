@@ -978,8 +978,8 @@ do
 				args = {
 					disabled = {
 						type = "toggle",
-						name = L.disabled,
-						desc = L.disabledDesc,
+						name = L.disabledProx,
+						desc = L.disabledDescProx,
 						order = 1,
 					},
 					lock = {
