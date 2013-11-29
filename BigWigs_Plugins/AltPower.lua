@@ -324,7 +324,7 @@ do
 
 		maxPlayers = self:GetNumGroupMembers()
 		opener = module
-		unitList = IsInRaid() and self:GetRaidList() or self:GetPartyList()
+		unitList = self:IsInRaid() and self:GetRaidList() or self:GetPartyList()
 		powerList, sortedUnitList, roleColoredList = {}, {}, {}
 		local UnitClass, UnitGroupRolesAssigned = UnitClass, UnitGroupRolesAssigned
 		local colorTbl = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS

@@ -55,3 +55,7 @@ end
 function plugin:IsInGroup()
 	return (GetNumRaidMembers() > 0 or GetNumPartyMembers() > 0)
 end
+
+function plugin:IsInRaid()
+	return GetNumRaidMembers() > 0
+end

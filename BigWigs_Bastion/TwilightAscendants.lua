@@ -139,7 +139,7 @@ do
 	local scheduled, playerIsTarget = nil, nil
 	local function lrWarn(spellName)
 		if not playerIsTarget then
-			self:OpenProximity(10, 83099, lrTargets)
+			mod:OpenProximity(10, 83099, lrTargets)
 		end
 		mod:TargetMessage(83099, spellName, lrTargets, "Important", 83099, "Alert")
 		scheduled, playerIsTarget = nil, nil
