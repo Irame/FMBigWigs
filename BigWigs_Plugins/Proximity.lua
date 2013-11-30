@@ -46,6 +46,8 @@ local inConfigMode = nil
 local activeRange = nil
 local activeSpellID = nil
 local activeMap = nil
+local activeKey = nil
+local activeModule = nil
 local proximityPlayer = nil
 local proximityPlayerTable = {}
 local maxPlayers = 0
@@ -1108,6 +1110,58 @@ end
 -- API
 --
 
+function plugin:RemovePlayer(player, isReverse)
+
+end
+
+function plugin:AddPlayer(player, isReverse)
+	if type(player) == "table" then
+		if proximityPlayer then
+			proximityPlayerTable[#proximityPlayerTable+1] = proximityPlayer
+			proximityPlayer=nil
+		end
+		for i = 1, #player do
+			for j = 1, plugin:GetNumGroupMembers() do
+				if UnitIsUnit(player[i], raidList[j]) then
+					proximityPlayerTable[#proximityPlayerTable+1] = raidList[j]
+					break
+				end
+			end
+		end
+		if isReverse then
+			updater:SetScript("OnLoop", reverseMultiTargetProximity)
+		else
+			updater:SetScript("OnLoop", multiTargetProximity)
+		end
+	else
+		if proximityPlayer then
+			for j = 1, plugin:GetNumGroupMembers() do
+				if UnitIsUnit(player, raidList[j]) then
+					proximityPlayerTable[#proximityPlayerTable+1] = raidList[j]
+					break
+				end
+			end
+			
+			proximityPlayerTable[#proximityPlayerTable+1] = proximityPlayer
+			proximityPlayer=nil
+				
+			if isReverse then
+				updater:SetScript("OnLoop", reverseMultiTargetProximity)
+			else
+				updater:SetScript("OnLoop", multiTargetProximity)
+			end
+			
+		else
+			for j = 1, plugin:GetNumGroupMembers() do
+				if UnitIsUnit(player, raidList[j]) then
+					proximityPlayerTable[#proximityPlayerTable+1] = raidList[j]
+					break
+				end
+			end
+		end
+	end
+end
+
 function plugin:GetMapData()
 	return mapData
 end
@@ -1131,6 +1185,8 @@ function plugin:Close()
 	activeMap = nil
 	proximityPlayer = nil
 	wipe(proximityPlayerTable)
+	activeKey = nil
+	activeModule = nil
 
 	anchor.title:SetFormattedText(L.proximityTitle, 5, 3)
 	anchor.ability:SetFormattedText("|TInterface\\Icons\\spell_nature_chainlightning:20:20:-5:0:64:64:4:60:4:60|t%s", L.abilityName)
@@ -1143,6 +1199,12 @@ local abilityNameFormat = "|T%s:20:20:-5|t%s"
 function plugin:Open(range, module, key, player, isReverse)
 	if type(range) ~= "number" then print("Range needs to be a number!") return end
 	if not plugin:IsInGroup() then return end -- Solo runs of old content
+	--[[
+	if range == activeRange and module == activeModule and key == activeKey and player then
+		plugin:AddPlayer(player, isReverse)
+		return
+	end
+	]]--
 	self:Close()
 
 	SetMapToCurrentZone()
@@ -1190,6 +1252,9 @@ function plugin:Open(range, module, key, player, isReverse)
 	end
 	activeRange = range
 
+	activeKey = key
+	activeModule = module
+	
 	anchor:RegisterEvent("RAID_ROSTER_UPDATE")
 	anchor:RegisterEvent("PARTY_MEMBERS_CHANGED")
 	anchor:RegisterEvent("RAID_TARGET_UPDATE")
