@@ -100,11 +100,11 @@ if L then
 
 	L.discharge_bar = "~Blitzentladung"
 
-	L.phase_two_trigger = "Verfluchte Sterbliche! Ein solcher Umgang mit dem Eigentum anderer verlangt nach Gewalt!" -- check
+	--L.phase_two_trigger = "Verfluchte Sterbliche! Ein solcher Umgang mit dem Eigentum anderer verlangt nach Gewalt!" -- check
 
 	--L.phase_three_trigger = "Ich habe versucht, ein guter Gastgeber zu sein" -- check
 
-	L.crackle_trigger = "Elektrizität lässt die Luft knistern!" -- check
+	--L.crackle_trigger = "Elektrizität lässt die Luft knistern!" -- check
 	L.crackle_message = "Stromschlag bald!"
 
 	--L.shadowblaze_trigger = "Fleisch wird zu Asche!" -- check

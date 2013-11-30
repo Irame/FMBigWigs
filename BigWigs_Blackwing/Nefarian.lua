@@ -32,7 +32,7 @@ if L then
 
 	L.phase_three_trigger = "I have tried to be an accommodating host"
 
-	L.crackle_trigger = "The air crackles with electricity!"
+	L.crackle_trigger = "electricity crackling leaves the air!" --The air crackles with electricity!
 	L.crackle_message = "Electrocute soon!"
 
 	L.shadowblaze_trigger = "Flesh turns to ash!"
