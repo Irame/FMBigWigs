@@ -51,7 +51,7 @@ L = mod:GetLocale()
 function mod:GetOptions()
 	return {
 		77939, 78999, 81272, {81007, "FLASHSHAKE"},
-		{79339, "FLASHSHAKE", "SAY", "PROXIMITY"}, "berserk",
+		{79339, "FLASHSHAKE", "SAY", "PROXIMITY"}, {80627, "FLASHSHAKE"}, "berserk",
 		"phase", "bosskill"
 	}, {
 		[77939] = "ej:3283", -- Onyxia
@@ -69,11 +69,14 @@ function mod:OnBossEnable()
 	--Not bad enough that there is no cast trigger, there's also over 9 thousand Id's
 	self:Log("SPELL_DAMAGE", "LightningDischarge", "*")
 	self:Log("SPELL_MISSED", "LightningDischarge", "*")
+	self:Log("SPELL_CAST_SUCCESS", "LightningDischarge", "*")
 
 	self:Log("SPELL_AURA_APPLIED", "ExplosiveCindersApplied", 79339)
 	self:Log("SPELL_AURA_REMOVED", "ExplosiveCindersRemoved", 79339)
 	self:Log("SPELL_DAMAGE", "PersonalShadowBlaze", 81007, 94085, 94086, 94087)
 
+	self:Log("SPELL_AURA_APPLIED", "StolenPower", 80627)
+	
 	self:Emote("Electrocute", L["crackle_trigger"])
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
@@ -102,7 +105,7 @@ do
 		local t = GetTime()
 		if (t - prev) > 10 then
 			prev = t
-			self:Bar(77939, L["discharge_bar"], 21, spellId)
+			self:Bar(77939, L["discharge_bar"], 30, spellId)
 		end
 	end
 end
@@ -194,14 +197,18 @@ function mod:PhaseThree()
 end
 
 do
-	local scheduled = nil
+	local scheduled, playerIsTarget = nil, nil
 	local function cinderWarn(spellName)
+		if not playerIsTarget then
+			mod:OpenProximity(10, 79339, cinderTargets)
+		end
 		mod:TargetMessage(79339, spellName, cinderTargets, "Urgent", 79339, "Info")
 		scheduled = nil
 	end
 	function mod:ExplosiveCindersApplied(player, spellId, _, _, spellName)
 		cinderTargets[#cinderTargets + 1] = player
 		if UnitIsUnit(player, "player") then
+			playerIsTarget = true
 			self:FlashShake(79339)
 			self:Say(79339, CL["say"]:format(spellName))
 			self:Bar(79339, spellName, 8, spellId)
@@ -214,10 +221,26 @@ do
 	end
 end
 
+do
+		local scheduled = nil
+		local function powerWarn(spellName)
+			mod:TargetMessage(80627, spellName, powerTargets, "Urgent", 80627, "Info")
+			scheduled = nil
+		end
+
+		function mod:StolenPower(player, spellId, _, _, spellName)
+		powerTargets[#powerTargets + 1] = player
+		if UnitIsUnit(player, "player") then
+			self:FlashShake(80627)
+		end
+		if not scheduled then
+			scheduled = true
+			self:ScheduleTimer(powerWarn, 0.3, spellName)
+		end
+end
+
 function mod:ExplosiveCindersRemoved(player)
-	if UnitIsUnit(player, "player") then
-		self:CloseProximity(79339)
-	end
+	self:CloseProximity(79339)
 end
 
 do
