@@ -332,7 +332,7 @@ do
 			local unit = unitList[i]
 			sortedUnitList[i] = unit
 
-			local name = self:UnitName(unit, true) or "???"
+			local name = UnitName(unit, true) or "???"
 			local _, class = UnitClass(unit)
 			local tbl = class and colorTbl[class] or GRAY_FONT_COLOR
 			roleColoredList[unit] = ("%s|cFF%02x%02x%02x%s|r"):format(roleIcons[UnitGroupRolesAssigned(unit)], tbl.r*255, tbl.g*255, tbl.b*255, name)
@@ -375,6 +375,7 @@ function plugin:BigWigs_StartConfigureMode()
 end
 
 function plugin:BigWigs_StopConfigureMode()
+	display.background:SetTexture(0, 0, 0, 0.3)
 	inConfigMode = nil
 	self:Close()
 end
