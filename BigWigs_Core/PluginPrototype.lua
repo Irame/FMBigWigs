@@ -59,3 +59,7 @@ end
 function plugin:IsInRaid()
 	return GetNumRaidMembers() > 0
 end
+
+function plugin:UnitIsGroupOfficer(unit)
+	return UnitIsRaidOfficer(unit) or UnitIsPartyLeader(unit)
+end
