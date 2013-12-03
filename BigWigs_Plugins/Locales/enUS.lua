@@ -68,9 +68,9 @@ L["Restarts emphasized bars so they start from the beginning and count from 10."
 L["Fill"] = true
 L["Fills the bars up instead of draining them."] = true
 
-L["Local"] = true
-L["%s: Timer [%s] finished."] = true
-L["Invalid time (|cffff0000%q|r) or missing bar text in a custom bar started by |cffd9d919%s|r. <time> can be either a number in seconds, a M:S pair, or Mm. For example 5, 1:20 or 2m."] = true
+L.localTimer = "Local"
+L.timerFinished = "%s: Timer [%s] finished."
+L.customBarStarted = "Custom bar '%s' started by %s user %s."
 
 L["pull"] = "Pull"
 L["pulling"] = "Pulling!"
