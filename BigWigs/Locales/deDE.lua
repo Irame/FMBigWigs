@@ -25,9 +25,10 @@ L["All running modules have been reset."] = "Alle laufenden Module wurden zurüc
 L["All running modules have been disabled."] = "Alle laufenden Module wurden beendet."
 
 L["There are people in your group with older versions or without Big Wigs. You can get more details with /bwv."] = "Es gibt Leute in deiner Gruppe mit veralteten Versionen oder ohne Big Wigs. Mehr Details mit /bwv."
-L["Up to date:"] = "Aktuell:"
-L["Out of date:"] = "Veraltet:"
-L["No Big Wigs 3.x:"] = "Kein Big Wigs 3.x:"
+L["upToDate"] = "Aktuell:"
+L["outOfDate"] = "Veraltet:"
+L["dbmUsers"] = "DBM Nutzer:"
+L["noBossMod"] = "Kein Boss-Mod:"
 
 L.coreAddonDisabled = "Big Wigs wird nicht richtig funktionieren, da das Addon %s deaktiviert ist. Du kannst es über die Addonkonfiguration im Charakterauswahlmenü aktivieren."
 
@@ -69,6 +70,16 @@ L["After you've seen a boss movie once, Big Wigs will prevent it from playing ag
 L["Prevented boss movie '%d' from playing."] = "Videosequenz '%d' wurde blockiert."
 L["Ignore my role"] = "Rolle ignorieren"
 L.ignoreroleDesc = "|cffff4411Nicht empfohlen.|r Bei Aktivierung werden alle Warnungen ausgegeben, egal welche Rolle ihr einnehmt, was bei manchen Bossen unübersichtlich sein kann."
+
+L["dbmFaker"] = "Täusche vor, dass ich DBM nutze"
+L["dbmFakerDesc"] = "Wenn ein DBM-Nutzer eine Versionskontrolle ausführt erscheinst du in der Liste. Nützlich für Gilden die auf DBM bestehen."
+L["slashDescConfig"] = "|cFFFED000/bw:|r Öffnet die Big Wigs Konfiguration."
+L["slashDescLocalBar"] = "|cFFFED000/localbar:|r Erstellt eine Custombar, welche nur Du sehen kannst."
+L["slashDescPull"] = "|cFFFED000/pull:|r Sendet einen Countdown zum Pull an den Raid."
+L["slashDescRaidBar"] = "|cFFFED000/raidbar:|r Sendet eine Custombar an den Raid."
+L["slashDescRange"] = "|cFFFED000/range:|r Öffnet die Reichweitenanzeige."
+L["slashDescTitle"] = "|cFFFED000Slash Befehle:|r"
+L["slashDescVersion"] = "|cFFFED000/bwv:|r Führt einen Big Wigs Versionscheck durch."
 
 L["BAR"] = "Leisten"
 L["MESSAGE"] = "Nachrichten"

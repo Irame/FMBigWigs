@@ -23,9 +23,11 @@ L["All running modules have been reset."] = true
 L["All running modules have been disabled."] = true
 
 L["There are people in your group with older versions or without Big Wigs. You can get more details with /bwv."] = true
-L["Up to date:"] = true
-L["Out of date:"] = true
-L["No Big Wigs 3.x:"] = true
+L.upToDate = "Up to date:"
+L.outOfDate = "Out of date:"
+L.dbmUsers = "DBM users:"
+L.noBossMod = "No boss mod:"
+
 
 L.coreAddonDisabled = "Big Wigs won't function properly since the addon %s is disabled. You can enable it from the addon control panel at the character selection screen."
 
@@ -67,6 +69,16 @@ L["After you've seen a boss movie once, Big Wigs will prevent it from playing ag
 L["Prevented boss movie '%d' from playing."] = true
 L["Ignore my role"] = true
 L.ignoreroleDesc = "|cffff4411Not recommended.|r Enabling this will show you all warnings no matter what role you play, which can be spammy on some bosses."
+
+L.dbmFaker = "Pretend I'm using DBM"
+L.dbmFakerDesc = "If a DBM user does a version check to see who's using DBM, they will see you on the list. Useful for guilds that force using DBM."
+L.slashDescTitle = "|cFFFED000Slash Commands:|r"
+L.slashDescPull = "|cFFFED000/pull:|r Sends a pull countdown to your raid."
+L.slashDescRaidBar = "|cFFFED000/raidbar:|r Sends a custom bar to your raid."
+L.slashDescLocalBar = "|cFFFED000/localbar:|r Creates a custom bar only you can see."
+L.slashDescRange = "|cFFFED000/range:|r Opens the range indicator."
+L.slashDescVersion = "|cFFFED000/bwv:|r Performs a Big Wigs version check."
+L.slashDescConfig = "|cFFFED000/bw:|r Opens the Big Wigs configuration."
 
 L["BAR"] = "Bars"
 L["MESSAGE"] = "Messages"

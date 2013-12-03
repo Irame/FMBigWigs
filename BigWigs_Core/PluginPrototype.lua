@@ -63,3 +63,14 @@ end
 function plugin:UnitIsGroupOfficer(unit)
 	return UnitIsRaidOfficer(unit) or UnitIsPartyLeader(unit)
 end
+
+function plugin:GetRightChannel(warning)
+	local zoneType = select(2, IsInInstance())
+	if zoneType == "pvp" or zoneType == "arena" then
+		return "BATTLEGROUND"
+	elseif GetRealNumRaidMembers() > 0 then
+		return "RAID"..(warning and "_WARNING" or "")
+	elseif GetRealNumPartyMembers() > 0 then
+		return "PARTY"
+	end
+end

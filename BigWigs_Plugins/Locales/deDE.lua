@@ -78,6 +78,10 @@ L["pullStopped"] = "Pull-Timer von %s abgebrochen."
 L["pullIn"] = "Pull in %d sec"
 L["sendPull"] = "Sende Pull-Timer an Big Wigs und DBM Nutzer."
 L["wrongPullFormat"] = "Muss zwischen 1 und 60 sein. Beispiel: /pull 5"
+L["sendCustomBar"] = "Sende Custombar '%s' an Big Wigs und DBM Nutzer."
+L["requiresLeadOrAssist"] = "Diese Funktion benötigt Schlachtzugsleiter oder -assistent."
+L["wrongCustomBarFormat"] = "Ungültiges Format. Beispiel: /raidbar 20 text"
+L["wrongTime"] = "Ungültige Zeitangabe. <time> kann eine Zahl in Sekunden, ein M:S paarung, oder Mm sein. Beispiel: 5, 1:20 or 2m."
 
 -----------------------------------------------------------------------
 -- Colors.lua
