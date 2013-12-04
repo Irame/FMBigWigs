@@ -1265,14 +1265,20 @@ end
 local startPull
 do
 	local timer, timeLeft = nil, 0
-	local function printPull()
+	local function printPull(broadcast)
 		timeLeft = timeLeft - 1
 		if timeLeft == 0 then
 			plugin:CancelTimer(timer)
 			timer = nil
 			plugin:SendMessage("BigWigs_Message", nil, nil, L.pulling, "Attention", "Alarm", "Interface\\Icons\\ability_warrior_charge")
+			if broadcast then
+				SendChatMessage(L.pulling, plugin:GetRightChannel(true))
+			end
 		elseif timeLeft < 11 then
 			plugin:SendMessage("BigWigs_Message", nil, nil, L.pullIn:format(timeLeft), "Attention")
+			if broadcast and (timeLeft%2 == 1 or timeLeft <= 3) then
+				SendChatMessage(L.pullIn:format(timeLeft), plugin:GetRightChannel(true))
+			end
 			if timeLeft < 6 and BigWigs.db.profile.sound then
 				PlaySoundFile(("Interface\\AddOns\\BigWigs\\Sounds\\%d.mp3"):format(timeLeft), "Master")
 			end
@@ -1295,7 +1301,7 @@ do
 			end
 		end
 		BigWigs:Print(L.pullStarted:format(isDBM and "DBM" or "Big Wigs", nick))
-		timer = plugin:ScheduleRepeatingTimer(printPull, 1)
+		timer = plugin:ScheduleRepeatingTimer(printPull, 1, UnitIsUnit(nick, "player"))
 		plugin:SendMessage("BigWigs_Message", nil, nil, L.pullIn:format(timeLeft), "Attention", "Long")
 		plugin:SendMessage("BigWigs_StartBar", plugin, nil, L.pull, time, "Interface\\Icons\\ability_warrior_charge")
 	end
