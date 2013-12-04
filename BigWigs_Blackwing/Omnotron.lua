@@ -180,7 +180,6 @@ function mod:LightningConductor(player, spellId, _, _, spellName)
 end
 
 function mod:LightningConductorRemoved(player)
-	if not UnitIsUnit(player, "player") then return end
 	self:CloseProximity(79888)
 end
 
