@@ -64,7 +64,7 @@ end
 function mod:OnBossEnable()
 	self:Yell("PhaseTwo", L["phase_two_trigger"])
 	self:Yell("PhaseThree", L["phase_three_trigger"])
-	self:Yell("ShadowblazeCorrection", L["shadowblaze_trigger"])
+	self:Yell("Shadowblaze", L["shadowblaze_trigger"])
 
 	--Not bad enough that there is no cast trigger, there's also over 9 thousand Id's
 	self:Log("SPELL_DAMAGE", "LightningDischarge", "*")
@@ -87,7 +87,7 @@ end
 function mod:OnEngage(diff)
 	self:Berserk(630) -- is it really?
 	self:Bar(77939, L["discharge_bar"], 30, 77939)
-	phase, deadAdds, shadowBlazeTimer = 1, 0, 35
+	phase, deadAdds, shadowBlazeTimer = 1, 0, 20
 	phase3warned = false
 	self:RegisterEvent("UNIT_POWER")
 	shadowblazeHandle, lastBlaze = nil, 0
@@ -162,6 +162,16 @@ function mod:PhaseTwo()
 	-- XXX Heroic 10man (diff 3) - no idea.
 end
 
+function mod:Shadowblaze()
+	mod:Message(81007, shadowblaze, "Important", 81007, "Alarm")
+	mod:Bar(81007, shadowblaze, shadowBlazeTimer, 81007)
+	if shadowBlazeTimer > 10 then
+		shadowBlazeTimer = shadowBlazeTimer - 5
+	end
+end
+
+--Why so complicated? (On Frostmourne Nefarian yells every time he casts Shadowblaze)
+--[[
 local function nextBlaze()
 	local diff = mod:Difficulty()
 	if shadowBlazeTimer > 10 and diff > 2 then
@@ -184,6 +194,7 @@ function mod:ShadowblazeCorrection()
 	end
 	lastBlaze = GetTime()
 end
+]]--
 
 function mod:PhaseThree()
 	self:SendMessage("BigWigs_StopBar", self, CL["phase"]:format(phase))
@@ -192,8 +203,8 @@ function mod:PhaseThree()
 		self:Message("phase", CL["phase"]:format(phase), "Attention", 78621)
 		phase3warned = true
 	end
-	self:Bar(81007, shadowblaze, 12, 81007)
-	shadowblazeHandle = self:ScheduleTimer(nextBlaze, 12)
+	self:Bar(81007, shadowblaze, 21, 81007)
+	--shadowblazeHandle = self:ScheduleTimer(nextBlaze, 12)
 end
 
 do
