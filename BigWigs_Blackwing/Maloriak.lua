@@ -259,6 +259,11 @@ function mod:ScorchingBlast(_, spellId, _, _, spellName)
 end
 
 function mod:ReleaseAll(_, spellId)
+	if not isChilled then
+		self:CloseProximity(77699)
+	end
+	self:SendMessage("BigWigs_StopBar", self, scorchingBlast)
+	self:SendMessage("BigWigs_StopBar", self, flashFreeze)
 	self:Message(77991, L["release_all"]:format(aberrations + 2), "Important", spellId, "Alert")
 	self:Bar(78194, "~"..GetSpellInfo(78194), 12.5, 78194)
 end
