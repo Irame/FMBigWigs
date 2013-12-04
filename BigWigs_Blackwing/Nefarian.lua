@@ -222,13 +222,13 @@ do
 end
 
 do
-		local scheduled = nil
-		local function powerWarn(spellName)
-			mod:TargetMessage(80627, spellName, powerTargets, "Urgent", 80627, "Info")
-			scheduled = nil
-		end
+	local scheduled = nil
+	local function powerWarn(spellName)
+		mod:TargetMessage(80627, spellName, powerTargets, "Urgent", 80627, "Info")
+		scheduled = nil
+	end
 
-		function mod:StolenPower(player, spellId, _, _, spellName)
+	function mod:StolenPower(player, spellId, _, _, spellName)
 		powerTargets[#powerTargets + 1] = player
 		if UnitIsUnit(player, "player") then
 			self:FlashShake(80627)
@@ -237,8 +237,9 @@ do
 			scheduled = true
 			self:ScheduleTimer(powerWarn, 0.3, spellName)
 		end
+	end
 end
-
+	
 function mod:ExplosiveCindersRemoved(player)
 	self:CloseProximity(79339)
 end
