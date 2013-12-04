@@ -68,8 +68,14 @@ end
 function boss:GetOption(spellId)
 	return self.db.profile[(spells[spellId])]
 end
-function boss:Reboot()
+function boss:Reboot(isWipe)
 	if debug then dbg(self, ":Reboot()") end
+	-- Reboot covers everything including hard module reboots (clicking the minimap icon)
+	self:SendMessage("BigWigs_OnBossReboot", self)
+	if isWipe then
+		-- Devs, in 99% of cases you'll want to use OnBossWipe
+		self:SendMessage("BigWigs_OnBossWipe", self)
+	end
 	self:Disable()
 	self:Enable()
 end
@@ -170,6 +176,7 @@ do
 			combatLogMap[self][event][(select(i, ...))] = func
 		end
 		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		self:SendMessage("BigWigs_OnBossLog", self, event, ...)
 	end
 	function boss:Death(func, ...)
 		if not func then error(missingArgument:format(self.moduleName)) end
@@ -189,7 +196,7 @@ function boss:CheckBossStatus()
 	local hasBoss = UnitHealth("boss1") > 100 or UnitHealth("boss2") > 100 or UnitHealth("boss3") > 100 or UnitHealth("boss4") > 100
 	if not hasBoss and self.isEngaged then
 		if debug then dbg(self, ":CheckBossStatus Reboot called.") end
-		self:Reboot()
+		self:Reboot(true)
 	elseif not self.isEngaged and hasBoss then
 		if debug then dbg(self, ":CheckBossStatus Engage called.") end
 		local guid = UnitGUID("boss1") or UnitGUID("boss2") or UnitGUID("boss3") or UnitGUID("boss4")
@@ -278,7 +285,7 @@ do
 		local go = scan(self)
 		if not go then
 			if debug then dbg(self, "Wipe scan found no active boss entities, rebooting module.") end
-			self:Reboot()
+			self:Reboot(true)
 			if self.OnWipe then self:OnWipe() end
 		else
 			if debug then dbg(self, "Wipe scan found active boss entities (" .. tostring(go) .. "). Re-scheduling another wipe check in 2 seconds.") end
@@ -308,11 +315,11 @@ do
 		if self.OnEngage then
 			self:OnEngage(self:Difficulty())
 		end
+		self:SendMessage("BigWigs_OnBossEngage", self, difficulty)
 	end
 
 	function boss:Win()
 		if debug then dbg(self, ":Win") end
-		if self.OnWin then self:OnWin() end
 		self:Sync("Death", self.moduleName)
 		wipe(icons) -- Wipe icon cache
 	end
