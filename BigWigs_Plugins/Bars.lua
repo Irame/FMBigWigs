@@ -1274,9 +1274,9 @@ do
 			if broadcast then
 				SendChatMessage(L.pulling, plugin:GetRightChannel(true))
 			end
-		elseif timeLeft < 11 then
+		elseif (timeLeft < 6 or (timeLeft < 11 and timeLeft%2 == 1)) then
 			plugin:SendMessage("BigWigs_Message", nil, nil, L.pullIn:format(timeLeft), "Attention")
-			if broadcast and (timeLeft%2 == 1 or timeLeft <= 3) then
+			if broadcast then
 				SendChatMessage(L.pullIn:format(timeLeft), plugin:GetRightChannel(true))
 			end
 			if timeLeft < 6 and BigWigs.db.profile.sound then
@@ -1284,13 +1284,14 @@ do
 			end
 		end
 	end
-	function startPull(time, nick, isDBM)
+	function startPull(time, nick, isDBM, announce)
 		if not plugin:UnitIsGroupOfficer(nick) then return end
 		time = tonumber(time)
 		if not time or time < 0 or time > 60 then return end
 		time = floor(time)
 		if timeLeft == time then return end -- Throttle
 		timeLeft = time
+		local broadcast = (UnitIsUnit(nick, "player") and announce)
 		if timer then
 			plugin:CancelTimer(timer)
 			if time == 0 then
@@ -1301,8 +1302,11 @@ do
 			end
 		end
 		BigWigs:Print(L.pullStarted:format(isDBM and "DBM" or "Big Wigs", nick))
-		timer = plugin:ScheduleRepeatingTimer(printPull, 1, UnitIsUnit(nick, "player"))
+		timer = plugin:ScheduleRepeatingTimer(printPull, 1, broadcast)
 		plugin:SendMessage("BigWigs_Message", nil, nil, L.pullIn:format(timeLeft), "Attention", "Long")
+		if broadcast then
+			SendChatMessage(L.pullIn:format(timeLeft), plugin:GetRightChannel(true))
+		end
 		plugin:SendMessage("BigWigs_StartBar", plugin, nil, L.pull, time, "Interface\\Icons\\ability_warrior_charge")
 	end
 end
@@ -1322,7 +1326,9 @@ function plugin:OnSync(sync, rest, nick)
 		if sync == "BWCustomBar" then
 			startCustomBar(rest, nick)
 		elseif sync == "BWPull" then
-			startPull(rest, nick)
+			startPull(rest, nick, false, true)
+		elseif sync == "BWPullNA" then
+			startPull(rest, nick, false)
 		end
 	end
 end
@@ -1388,3 +1394,21 @@ SlashCmdList.BIGWIGSPULL = function(input)
 end
 SLASH_BIGWIGSPULL1 = "/pull"
 
+SlashCmdList.BIGWIGSPULLNA = function(input)
+	if not plugin:IsEnabled() then BigWigs:Enable() end
+	if plugin:UnitIsGroupOfficer("player") then
+		local time = tonumber(input)
+		if not time or time < 0 or time > 60 then BigWigs:Print(L.wrongPullFormat) return end
+
+		if time ~= 0 then
+			BigWigs:Print(L.sendPull)
+		end
+		BigWigs:Transmit("BWPullNA", input)
+
+		local _, _, _, _, _, _, _, mapID = GetInstanceInfo()
+		SendAddonMessage("D4", ("U\t%d\t%s"):format(time, L.pull), plugin:GetRightChannel()) -- DBM message
+	else
+		BigWigs:Print(L.requiresLeadOrAssist)
+	end
+end
+SLASH_BIGWIGSPULLNA1 = "/pullna"

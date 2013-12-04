@@ -76,6 +76,7 @@ L["dbmFakerDesc"] = "Wenn ein DBM-Nutzer eine Versionskontrolle ausführt ersche
 L["slashDescConfig"] = "|cFFFED000/bw:|r Öffnet die Big Wigs Konfiguration."
 L["slashDescLocalBar"] = "|cFFFED000/localbar:|r Erstellt eine Custombar, welche nur Du sehen kannst."
 L["slashDescPull"] = "|cFFFED000/pull:|r Sendet einen Countdown zum Pull an den Raid."
+L["slashDescPullNA"] = "|cFFFED000/pullna:|r Das gleiche wie '/pull' ohne Chat Ankundigung."
 L["slashDescRaidBar"] = "|cFFFED000/raidbar:|r Sendet eine Custombar an den Raid."
 L["slashDescRange"] = "|cFFFED000/range:|r Öffnet die Reichweitenanzeige."
 L["slashDescTitle"] = "|cFFFED000Slash Befehle:|r"

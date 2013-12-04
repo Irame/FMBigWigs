@@ -209,6 +209,13 @@ local acOptions = {
 			order = 44,
 			width = "full",
 		},
+		slashDescPullNA = {
+			type = "description",
+			name = "  ".. L.slashDescPullNA,
+			fontSize = "medium",
+			order = 44.5,
+			width = "full",
+		},
 		slashDescBar = {
 			type = "description",
 			name = "  ".. L.slashDescRaidBar,
