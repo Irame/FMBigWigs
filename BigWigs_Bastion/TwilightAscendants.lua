@@ -17,6 +17,7 @@ local gravityCrush = GetSpellInfo(84948)
 local crushMarked = false
 local timeLeft = 8
 local first = nil
+local lastLastPhase = 0
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -119,16 +120,21 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage(diff)
-	if diff > 2 then
-		self:OpenProximity(10, 92067)
+	if GetTime() - lastLastPhase < 30 then
+		self:Bar(84948, gravityCrush, 26, 84948)
+		self:OpenProximity(10, 92480)
+	else
+		if diff > 2 then
+			self:OpenProximity(10, 92067)
+		end
+
+		self:Bar(82631, L["shield_bar"], 34, 82631)
+		self:Bar(82746, glaciate, 30, 82746)
+
+		first = nil
+		crushMarked = false
+		self:RegisterEvent("UNIT_HEALTH_FREQUENT")
 	end
-
-	self:Bar(82631, L["shield_bar"], 34, 82631)
-	self:Bar(82746, glaciate, 30, 82746)
-
-	first = nil
-	crushMarked = false
-	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
 end
 
 --------------------------------------------------------------------------------
@@ -353,6 +359,7 @@ do
 end
 
 function mod:LastPhase()
+	lastLastPhase = GetTime()
 	self:SendMessage("BigWigs_StopBar", self, quake)
 	self:SendMessage("BigWigs_StopBar", self, thundershock)
 	self:SendMessage("BigWigs_StopBar", self, hardenSkin)
