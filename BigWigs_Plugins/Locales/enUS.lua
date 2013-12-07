@@ -258,3 +258,22 @@ L["If a related timer is longer than 5 seconds, a vocal and visual countdown wil
 L["Flash"] = true
 L["Flashes the screen red during the last 3 seconds of any related timer."] = true
 
+-----------------------------------------------------------------------
+-- Statistics.lua
+--
+
+L.bossDefeatDurationPrint = "Defeated '%s' after %s."
+L.bossWipeDurationPrint = "Wiped on '%s' after %s."
+L.newBestTime = "New best time!"
+L.bossStatistics = "Boss Statistics"
+L.bossStatsDescription = "Recording of various boss-related statistics such as the amount of times a boss had been killed, the amount of wipes, total time that combat lasted, or the fastest boss kill. These statistics can be viewed on each boss's configuration screen, but will be hidden for bosses that have no recorded statistics."
+L.enableStats = "Enable Statistics"
+L.chatMessages = "Chat Messages"
+L.printBestTimeOption = "Best Time Notification"
+L.printDefeatOption = "Defeat Time"
+L.printWipeOption = "Wipe Time"
+L.countDefeats = "Count Defeats"
+L.countWipes = "Count Wipes"
+L.recordBestTime = "Remember Best Time"
+L.createTimeBar = "Show 'Best Time' bar"
+L.bestTimeBar = "Best Time"

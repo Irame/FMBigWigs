@@ -116,3 +116,13 @@ L["See license.txt in the main Big Wigs folder."] = "Siehe license.txt im Big Wi
 L["irc.freenode.net in the #wowace channel"] = "irc.freenode.net im #wowace Channel"
 L["Thanks to the following for all their help in various fields of development"] = "Danke an die folgenden Leute für ihre Hilfe in verschiedenen Entwicklungsbereichen:"
 
+-- Statistics
+L["statistics"] = "Statistiken"
+L["norm10"] = "10"
+L["norm25"] = "25"
+L["heroic10"] = "10 HC"
+L["heroic25"] = "25 HC"
+L["lfr"] = "LFR"
+L["wipes"] = "Niederlagen:"
+L["kills"] = "Siege:"
+L["best"] = "Beste:"

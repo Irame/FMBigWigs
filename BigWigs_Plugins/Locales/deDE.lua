@@ -258,3 +258,22 @@ L["If a related timer is longer than 5 seconds, a vocal and visual countdown wil
 L["Flash"] = "Aufblitzen"
 L["Flashes the screen red during the last 3 seconds of any related timer."] = "Lässt den Bildschirm während der letzten 3 Sekunden eines zugehörigen Timers rot aufblitzen."
 
+-----------------------------------------------------------------------
+-- Statistics.lua
+--
+
+L["bossDefeatDurationPrint"] = "'%s' wurde nach %s besiegt."
+L["bossWipeDurationPrint"] = "An '%s' nach %s gescheitert."
+L["newBestTime"] = "Neue Rekordzeit!"
+L["bossStatistics"] = "Boss-Statistiken"
+L["bossStatsDescription"] = "Zeichnet verschiedene Statistiken der Bossbegegnungen wie die Anzahl der Siege und Niederlagen, sowie die Kampfdauer oder die Rekordzeiten auf. Diese Statistiken können, falls vorhanden, in der Konfiguration der einzelnen Bosse eingesehen werden. Andernfalls werden diese ausgeblendet."
+L["enableStats"] = "Statistiken aktivieren"
+L["chatMessages"] = "Chatnachrichten"
+L["printBestTimeOption"] = "Benachrichtigung über Bestzeit"
+L["printDefeatOption"] = "Siegesdauer"
+L["printWipeOption"] = "Niederlagendauer"
+L["countDefeats"] = "Siege zählen"
+L["countWipes"] = "Niederlagen zählen"
+L["recordBestTime"] = "Bestzeiten speichern"
+L["createTimeBar"] = "'Rekordzeit'-Timer anzeigen"
+L["bestTimeBar"] = "Rekordzeit"
