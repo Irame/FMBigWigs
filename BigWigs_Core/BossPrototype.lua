@@ -312,8 +312,9 @@ do
 		if debug then dbg(self, ":Engage") end
 		CombatLogClearEntries()
 		self.isEngaged = true
+		local difficulty = self:Difficulty()
 		if self.OnEngage then
-			self:OnEngage(self:Difficulty())
+			self:OnEngage(difficulty)
 		end
 		self:SendMessage("BigWigs_OnBossEngage", self, difficulty)
 	end

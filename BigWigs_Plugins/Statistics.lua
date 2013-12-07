@@ -11,7 +11,7 @@ if not plugin then return end
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Big Wigs: Plugins")
 local activeDurations = {}
-local difficultyTable = {false, false, "10", "25", "10h", "25h", "lfr", false, false, false, false, false, false, "flex"}
+local difficultyTable = {"10", "25", "10h", "25h", "lfr"}
 
 --[[
 1."Normal"
