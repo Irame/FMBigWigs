@@ -125,7 +125,7 @@ function mod:OnEngage(diff)
 	else
 		self:Berserk(420)
 	end
-	self:OpenProximity(5, 77699)
+	self:OpenProximity(8, 77699)
 	aberrations = 18
 	phaseCounter = 0
 	isChilled, currentPhase = nil, nil
@@ -177,7 +177,7 @@ function mod:Blue()
 	self:SendMessage("BigWigs_StopBar", self, scorchingBlast)
 	self:Bar(77699, flashFreeze, 20, 77699)
 	self:Message("phase", L["blue_phase"], "Positive", "Interface\\Icons\\INV_POTION_20", "Long")
-	self:OpenProximity(5, 77699)
+	self:OpenProximity(8, 77699)
 	nextPhase(53)
 end
 

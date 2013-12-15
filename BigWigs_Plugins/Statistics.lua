@@ -14,21 +14,11 @@ local activeDurations = {}
 local difficultyTable = {"10", "25", "10h", "25h", "lfr"}
 
 --[[
-1."Normal"
-2."Heroic"
-3."10 Player"
-4."25 Player"
-5."10 Player (Heroic)"
-6."25 Player (Heroic)"
-7."Looking For Raid"
-8."Challenge Mode"
-9."40 Player"
-10.nil
-11."Heroic Scenario"
-12."Normal Scenario"
-13.nil
-14."Flexible"
-http://wowpedia.org/API_GetDifficultyInfo
+1."10 Player"
+2."25 Player"
+3."10 Player (Heroic)"
+4."25 Player (Heroic)"
+5."Looking For Raid"
 ]]--
 
 -------------------------------------------------------------------------------
