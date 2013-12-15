@@ -16,6 +16,7 @@ local chillTargets = mod:NewTargetList()
 local isChilled, currentPhase = nil, nil
 local scorchingBlast = "~"..GetSpellInfo(77679)
 local flashFreeze = "~"..GetSpellInfo(77699)
+local debilitatingSlime = (GetSpellInfo(77615))
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -186,6 +187,7 @@ function mod:Green()
 	currentPhase = "green"
 	self:SendMessage("BigWigs_StopBar", self, scorchingBlast)
 	self:SendMessage("BigWigs_StopBar", self, flashFreeze)
+	self:Bar(77615, debilitatingSlime, 15, 77615)
 	self:Message("phase", L["green_phase"], "Positive", "Interface\\Icons\\INV_POTION_162", "Long")
 	if not isChilled then
 		self:CloseProximity(77699)
