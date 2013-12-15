@@ -66,12 +66,14 @@ function mod:GetOptions()
 	return {
 		{77699, "ICON", "PROXIMITY"}, {77760, "FLASHSHAKE", "WHISPER", "SAY"},
 		{77786, "FLASHSHAKE", "WHISPER", "ICON"}, 77679,
+		77615,
 		77991, 78194,
 		{"sludge", "FLASHSHAKE"},
 		"phase", 77912, 77569, 77896, "berserk", "bosskill"
 	}, {
 		[77699] = L["blue_phase"],
 		[77786] = L["red_phase"],
+		[77615] = L["green_phase"],
 		[77991] = L["final_phase"],
 		sludge = "heroic",
 		phase = "general"
