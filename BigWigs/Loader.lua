@@ -403,7 +403,9 @@ function loader:OnEnable()
 		self:RegisterEvent("RAID_ROSTER_UPDATE", "CheckRoster")
 		self:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckRoster")
 	end
-
+	
+	self:RegisterEvent("LFG_PROPOSAL_SHOW")
+	
 	self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterMessage("BigWigs_AddonMessage")
 	RegisterAddonMessagePrefix("BigWigs")
@@ -455,6 +457,55 @@ function loader:CHAT_MSG_ADDON(_, prefix, msg, _, sender)
 			self:DBM_VersionCheck(dbmPrefix, sender, arg1, arg2, arg3)
 		elseif dbmPrefix == "U" or dbmPrefix == "PT" or dbmPrefix == "M" then
 			self:SendMessage("DBM_AddonMessage", sender, dbmPrefix, arg1, arg2, arg3)
+		end
+	end
+end
+
+-- Merged LFG_ProposalTime addon by Freebaser
+do
+	local timeLeft
+	function loader:LFG_PROPOSAL_SHOW()
+		if not timeLeft then
+			local BD = {
+				bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+				tile = true,
+				tileSize = 32,
+				insets = {left = -1, right = -1, top = -1, bottom = -1},
+			}
+
+			local timerBar = CreateFrame("StatusBar", nil, LFGDungeonReadyPopup)
+			timerBar:SetPoint("TOP", LFGDungeonReadyPopup, "BOTTOM", 0, -5)
+			timerBar:SetSize(190, 9)
+			timerBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar", "BORDER")
+			timerBar:SetStatusBarColor(1,.1,0)
+			timerBar:SetBackdrop(BD)
+			timerBar:SetMinMaxValues(0, 45)
+			timerBar:Show()
+
+			local spark = timerBar:CreateTexture(nil, "OVERLAY")
+			spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+			spark:SetSize(32, 32)
+			spark:SetBlendMode("ADD")
+			spark:SetPoint("LEFT", timerBar:GetStatusBarTexture(), "RIGHT", -15, 0)
+
+			local border = timerBar:CreateTexture(nil, "ARTWORK")
+			border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border")
+			border:SetSize(256, 64)
+			border:SetPoint("TOP", timerBar, 0, 28)
+
+			timerBar.text = timerBar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+			timerBar.text:SetPoint("CENTER", timerBar, "CENTER")
+
+			timeLeft = 45
+			timerBar:SetScript("OnUpdate", function(frame, elapsed)
+				timeLeft = timeLeft - elapsed
+				if timeLeft > 0 then
+					frame:SetValue(timeLeft)
+					frame.text:SetFormattedText("Big Wigs: %.1f", timeLeft)
+				end
+			end)
+
+			self.LFG_PROPOSAL_SHOW = function() timeLeft = 45 end
 		end
 	end
 end
