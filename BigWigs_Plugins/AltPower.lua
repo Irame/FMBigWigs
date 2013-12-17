@@ -234,7 +234,7 @@ do
 		updater:SetLooping("REPEAT")
 		updater:SetScript("OnLoop", UpdateDisplay)
 		local anim = updater:CreateAnimation()
-		anim:SetDuration(2)
+		anim:SetDuration(0.5)
 
 		local bg = display:CreateTexture(nil, "PARENT")
 		bg:SetAllPoints(display)
