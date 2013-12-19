@@ -71,8 +71,8 @@ function mod:OnBossEnable()
 	--normal
 	self:Log("SPELL_AURA_APPLIED", "Infection", 94679, 78097, 78941, 91913, 94678)
 	self:Log("SPELL_AURA_REMOVED", "InfectionRemoved", 94679, 78097, 78941, 91913, 94678)
-	self:Log("SPELL_AURA_APPLIED", "PillarOfFlame", 78006)
-	self:Log("SPELL_AURA_APPLIED", "Mangle", 89773, 91912, 94616, 94617)
+	self:Log("SPELL_CAST_SUCCESS", "PillarOfFlame", 78006, 77971, 77970, 77973)
+	self:Log("SPELL_CAST_SUCCESS", "Mangle", 89773, 91912, 94616, 94617)
 	self:Log("SPELL_AURA_REMOVED", "MangleRemoved", 89773, 91912, 94616, 94617)
 	self:Log("SPELL_CAST_SUCCESS", "LavaSpew", 77690, 91919, 91931, 91932)
 	self:Log("SPELL_AURA_APPLIED", "Armageddon", 92177)
@@ -93,11 +93,11 @@ function mod:OnEngage(diff)
 		self:Bar("blazing", L["blazing_bar"], 30, "SPELL_SHADOW_RAISEDEAD")
 	end
 	self:Berserk(600)
-	self:Bar("slump", L["slump_bar"], 100, 36702)
-	self:Bar(78006, GetSpellInfo(78006), 30, 78006) --Pillar of Flame
-	self:Bar(77690, lavaSpew, 24, 77690)
-	self:Bar(89773, "~"..GetSpellInfo(89773), 90, 89773)
-	self:DelayedMessage(77690, 24, L["spew_warning"], "Attention")
+	self:Bar("slump", L["slump_bar"], 30, 36702)
+	self:Bar(78006, GetSpellInfo(78006), 21, 78006) --Pillar of Flame
+	self:Bar(77690, lavaSpew, 15, 77690)
+	self:Bar(89773, "~"..GetSpellInfo(89773), 25, 89773)
+	self:DelayedMessage(77690, 12, L["spew_warning"], "Attention")
 	phase = 1
 	isHeadPhase = nil
 end
@@ -115,17 +115,17 @@ end
 do
 	local function rebootTimers()
 		isHeadPhase = nil
-		mod:Bar(78006, pillarOfFlame, 9.5, 78006)
-		mod:Bar(77690, lavaSpew, 4.5, 77690)
+		mod:Bar(78006, pillarOfFlame, 13, 78006)
+		mod:Bar(77690, lavaSpew, 13, 77690)
 	end
 	function mod:Vulnerability()
 		isHeadPhase = true
 		self:Message(79011, L["expose_message"], "Positive", 79011)
-		self:Bar(79011, L["expose_message"], 30, 79011)
+		self:Bar(79011, L["expose_message"], 35, 79011)
 		self:SendMessage("BigWigs_StopBar", self, pillarOfFlame)
 		self:SendMessage("BigWigs_StopBar", self, lavaSpew)
 		self:CancelDelayedMessage(L["spew_warning"])
-		self:ScheduleTimer(rebootTimers, 30)
+		self:ScheduleTimer(rebootTimers, 35)
 	end
 end
 
@@ -154,9 +154,16 @@ function mod:Phase2()
 	self:OpenProximity(8, "phase2")
 end
 
-function mod:PillarOfFlame(_, spellId, _, _, spellName)
-	self:Message(78006, spellName, "Urgent", spellId, "Alert")
-	self:Bar(78006, pillarOfFlame, 32, spellId)
+do
+	local prev = 0
+	function mod:PillarOfFlame(_, spellId, _, _, spellName)
+		local time = GetTime()
+		if time - prev > 10 then
+			prev = time
+			self:Message(78006, spellName, "Urgent", spellId, "Alert")
+			self:Bar(78006, pillarOfFlame, 32, spellId)
+		end
+	end
 end
 
 function mod:Infection(player, spellId, _, _, spellName)

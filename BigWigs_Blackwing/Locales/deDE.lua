@@ -50,7 +50,7 @@ if L then
 	L.slump_desc = "Warnt vor dem nach vorne Schlittern, das das Rodeo erlaubt zu starten."
 	L.slump_bar = "Rodeo"
 	L.slump_message = "Yeehaa, Rodeo!"
-	L.slump_trigger = "%s schlittert nach vorne und" -- check
+	L.slump_trigger = "schlittert nach vorne und" -- check
 
 	L.infection_message = "Infektion auf DIR!"
 
