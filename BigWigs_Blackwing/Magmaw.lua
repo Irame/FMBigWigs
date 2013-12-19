@@ -80,7 +80,11 @@ function mod:OnBossEnable()
 	self:Emote("Vulnerability", L["expose_trigger"])
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
-
+	
+	--INSTANCE_ENCOUNTER_ENGAGE_UNIT does not work on Frostmourne for  this boss
+	--I don't know how i should do it ...
+	self:CheckForEngage()
+	
 	self:Death("Win", 41570)
 end
 
