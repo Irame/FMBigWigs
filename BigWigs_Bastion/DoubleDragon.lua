@@ -47,7 +47,7 @@ L = mod:GetLocale()
 
 function mod:GetOptions()
 	return {
-		{86788, "ICON", "FLASHSHAKE", "WHISPER"}, {88518, "FLASHSHAKE"}, 86059, 86840,
+		{86788, "ICON", "FLASHSHAKE", "WHISPER", "PROXIMITY"}, {88518, "FLASHSHAKE", "PROXIMITY"}, 86059, 86840,
 		{86622, "FLASHSHAKE", "SAY", "WHISPER", "PROXIMITY"}, 86408, {86369, "PROXIMITY"}, 93051,
 		"phase_switch", "berserk", "bosskill"
 	}, {
@@ -84,8 +84,8 @@ end
 
 function mod:OnEngage(diff)
 	markWarned = false
-	self:Bar(86840, devouringFlames, 25, 86840)
-	self:Bar(86788, blackout, 11, 86788)
+	self:Bar(86840, devouringFlames, 30, 86840)
+	self:Bar(86788, blackout, 5, 86788)
 	self:Bar("phase_switch", L["phase_bar"]:format(theralion), 103, 60639)
 	self:OpenProximity(8, 86369)
 	self:Berserk(600)
@@ -113,8 +113,8 @@ end
 local function valionaHasLanded()
 	mod:SendMessage("BigWigs_StopBar", mod, "~"..GetSpellInfo(86622))
 	mod:Message("phase_switch", L["phase_bar"]:format(valiona), "Positive", 60639)
-	mod:Bar(86840, devouringFlames, 26, 86840)
-	mod:Bar(86788, blackout, 11, 86788)
+	mod:Bar(86840, devouringFlames, 34, 86840)
+	mod:Bar(86788, blackout, 4, 86788)
 	mod:OpenProximity(8, 86369)
 end
 
@@ -122,7 +122,6 @@ local function theralionHasLanded()
 	mod:SendMessage("BigWigs_StopBar", mod, blackout)
 	mod:SendMessage("BigWigs_StopBar", mod, devouringFlames)
 	mod:Bar("phase_switch", L["phase_bar"]:format(valiona), 130, 60639)
-	mod:CloseProximity(86369)
 end
 
 function mod:TwilightShift(player, spellId, _, _, spellName, stack)
@@ -137,6 +136,7 @@ function mod:DazzlingDestruction()
 	phaseCount = phaseCount + 1
 	if phaseCount == 1 then
 		self:Message(86408, L["dazzling_message"], "Important", 86408, "Alarm")
+		self:CloseProximity(86369)
 	elseif phaseCount == 3 then
 		self:ScheduleTimer(theralionHasLanded, 5)
 		self:Message("phase_switch", L["phase_bar"]:format(theralion), "Positive", 60639)
@@ -157,8 +157,8 @@ end
 -- Valiona does this when she fires the first deep breath and begins the landing phase
 -- It only triggers once from her yell, not 3 times.
 function mod:DeepBreath()
-	self:Bar("phase_switch", L["phase_bar"]:format(valiona), 40, 60639)
-	self:ScheduleTimer(valionaHasLanded, 40)
+	self:Bar("phase_switch", L["phase_bar"]:format(valiona), 57, 60639)
+	self:ScheduleTimer(valionaHasLanded, 57)
 end
 
 function mod:BlackoutApplied(player, spellId, _, _, spellName)
@@ -170,7 +170,7 @@ function mod:BlackoutApplied(player, spellId, _, _, spellName)
 		self:OpenProximity(8, 86788, player, true)
 	end
 	self:TargetMessage(86788, spellName, player, "Personal", spellId, "Alert")
-	self:Bar(86788, spellName, 45, spellId)
+	self:Bar(86788, spellName, 40, spellId)
 	self:Whisper(86788, player, spellName)
 	self:PrimaryIcon(86788, player)
 end
@@ -182,6 +182,7 @@ function mod:BlackoutRemoved(player, spellId, _, _, spellName)
 end
 
 local function markRemoved()
+	mod:CloseProximity(88518)
 	markWarned = false
 end
 
@@ -189,6 +190,7 @@ function mod:UNIT_AURA(event, unit)
 	if unit == "player" and not markWarned and UnitDebuff("player", marked) then
 		self:FlashShake(88518)
 		self:LocalMessage(88518, CL["you"]:format(marked), "Personal", 88518, "Long")
+		self:OpenProximity(6, 88518, nil, true)
 		markWarned = true
 		self:ScheduleTimer(markRemoved, 7)
 	end
@@ -200,17 +202,22 @@ function mod:DevouringFlames(_, spellId, _, _, spellName)
 end
 
 do
-	local scheduled = nil
+	local scheduled, playerAffected = nil, nil
 	local function emWarn(spellName)
+		if not playerAffected then
+			self:OpenProximity(10, 86622, emTargets)
+		end
 		mod:TargetMessage(86622, spellName, emTargets, "Personal", 86622, "Alarm")
 		mod:Bar(86622, "~"..spellName, 37, 86622)
 		scheduled = nil
+		playerAffected = nil
 	end
 	function mod:EngulfingMagicApplied(player, spellId, _, _, spellName)
 		if UnitIsUnit(player, "player") then
 			self:Say(86622, L["engulfingmagic_say"])
 			self:FlashShake(86622)
 			self:OpenProximity(10, 86622)
+			playerAffected = true
 		end
 		emTargets[#emTargets + 1] = player
 		if not scheduled then
