@@ -10,6 +10,7 @@ local phase = 1
 local isHeadPhase = nil
 local lavaSpew = "~"..GetSpellInfo(77690)
 local pillarOfFlame = "~"..GetSpellInfo(78006)
+local mangle = "~"..GetSpellInfo(89773)
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -96,7 +97,7 @@ function mod:OnEngage(diff)
 	self:Bar("slump", L["slump_bar"], 30, 36702)
 	self:Bar(78006, GetSpellInfo(78006), 21, 78006) --Pillar of Flame
 	self:Bar(77690, lavaSpew, 15, 77690)
-	self:Bar(89773, "~"..GetSpellInfo(89773), 25, 89773)
+	self:Bar(89773, mangle, 25, 89773)
 	self:DelayedMessage(77690, 12, L["spew_warning"], "Attention")
 	phase = 1
 	isHeadPhase = nil
@@ -122,6 +123,8 @@ do
 		isHeadPhase = true
 		self:Message(79011, L["expose_message"], "Positive", 79011)
 		self:Bar(79011, L["expose_message"], 35, 79011)
+		self:Bar(89773, mangle, 65, 89773)
+		self:Bar("slump", L["slump_bar"], 70, 36702)
 		self:SendMessage("BigWigs_StopBar", self, pillarOfFlame)
 		self:SendMessage("BigWigs_StopBar", self, lavaSpew)
 		self:CancelDelayedMessage(L["spew_warning"])
@@ -184,17 +187,15 @@ end
 
 function mod:Slump()
 	self:SendMessage("BigWigs_StopBar", self,  pillarOfFlame)
-	self:Bar("slump", L["slump_bar"], 95, 36702)
+	self:Bar("slump", L["slump_bar"], 105, 36702)
 	self:Message("slump", L["slump_message"], "Positive", 36702, "Info")
 end
 
 do
-	local mangleTarget = nil
 	function mod:Mangle(player, spellId, _, _, spellName)
-		mangleTarget = player
 		self:TargetMessage(89773, spellName, player, "Personal", spellId, "Info")
 		self:Bar(89773, CL["other"]:format(spellName, player), 30, spellId)
-		self:Bar(89773, "~"..spellName, 95, spellId)
+		self:Bar(89773, mangle, 105, 89773)
 	end
 
 	function mod:MangleRemoved(player, _, _, _, spellName)
