@@ -84,6 +84,27 @@ L["wrongCustomBarFormat"] = "Ungültiges Format. Beispiel: /raidbar 20 text"
 L["wrongTime"] = "Ungültige Zeitangabe. <time> kann eine Zahl in Sekunden, ein M:S paarung, oder Mm sein. Beispiel: 5, 1:20 or 2m."
 
 -----------------------------------------------------------------------
+-- BossBars.lua
+--
+
+L.bossbars = "BossBars"
+L.bossbars_desc = "Zeigt die Lebens-, Zauber- und Energieleisten für den Bosskampf"
+L.disabledBossBars = "Deaktivieren"
+L.disabledDescBossBars = "Deaktiviert die Bossleisten für alle Module, die sie benutzen."
+L.fontSizeHealthBar = "Schriftgröße (Lebensleiste)"
+L.fontSizeCastBar = "Schriftgröße (Zauberleiste)"
+L.fontSizePowerBar = "Schriftgröße (Energieleiste)"
+L.barSettings = "Leisteneinstellungen"
+L.enable = "Aktivieren"
+L.healthBarHeight = "Lebensbalkenhöhe"
+L.castBarSettings = "Zauberbalkeneinstellungen"
+L.castBarHeight = "Zauberbalkenhöhe"
+L.powerBarSettings = "Energiebalkeneinstellungen"
+L.powerBarHeight = "Energiebalkenhöhe"
+L.useIcons = "Benutze Icons"
+L.iconSize = "Icongröße"
+
+-----------------------------------------------------------------------
 -- Colors.lua
 --
 
@@ -277,3 +298,13 @@ L["countWipes"] = "Niederlagen zählen"
 L["recordBestTime"] = "Bestzeiten speichern"
 L["createTimeBar"] = "'Rekordzeit'-Timer anzeigen"
 L["bestTimeBar"] = "Rekordzeit"
+L.confirmDeleteAll = "Willst du wirklich alle gespeicherten Statistikdaten löschen?"
+L.confirmDeleteSelected = "Willst du wirklich die gespeicherten Statistikdaten für '%1$s' in '%2$s' löschen?"
+L.allEncounters = "alle begegnungen"
+L.deleteData = "Löschen"
+L.zoneToDelete = "Zone wählen"
+L.encounterToDelete = "Begegnung wählen"
+L.deleteSelected = "Ausgewähltes löschen"
+L.deleteSelectedHint = "Wenn du Daten von Begegnungen oder Zonen löschen willst die nicht in den 'Dropdown'-Menüs zu finden sind für welche du aber gespeicherte Daten hast dann musst du zuerst auf den Zonennamen links in der Optionstabelle unter Big Wigs Module klicken."
+L.deleteAll = "Alle Daten löschen"
+L.All = "Alle"

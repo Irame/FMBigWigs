@@ -85,6 +85,27 @@ L["wrongCustomBarFormat"] = "Incorrect format. A correct example is: /raidbar 20
 L["wrongTime"] = "Invalid time specified. <time> can be either a number in seconds, a M:S pair, or Mm. For example 5, 1:20 or 2m."
 
 -----------------------------------------------------------------------
+-- BossBars.lua
+--
+
+L.bossbars = "BossBars"
+L.bossbars_desc = "Shows the health, cast, and power bar for this encounter"
+L.disabledBossBars = "Disabled"
+L.disabledDescBossBars = "Disable the boss bars for all modules that use it."
+L.fontSizeHealthBar = "Fontsize (health bar)"
+L.fontSizeCastBar = "Fontsize (cast bar)"
+L.fontSizePowerBar = "Fontsize (power bar)"
+L.barSettings = "Bar Settings"
+L.enable = "Enable"
+L.healthBarHeight = "Healthbar height"
+L.castBarSettings = "Castbar Settings"
+L.castBarHeight = "Castbar height"
+L.powerBarSettings = "Powerbar Settings"
+L.powerBarHeight = "Powerbar height"
+L.useIcons = "Use icons"
+L.iconSize = "Icon size"
+
+-----------------------------------------------------------------------
 -- Colors.lua
 --
 
@@ -277,3 +298,13 @@ L.countWipes = "Count Wipes"
 L.recordBestTime = "Remember Best Time"
 L.createTimeBar = "Show 'Best Time' bar"
 L.bestTimeBar = "Best Time"
+L.confirmDeleteAll = "Do you realy want to delete all saved statistic data?"
+L.confirmDeleteSelected = "Do you realy want to delete saved statistic data for '%1$s' in '%2$s'?"
+L.allEncounters = "all encounters"
+L.deleteData = "Delete"
+L.zoneToDelete = "Choose zone"
+L.encounterToDelete = "Choose encounter"
+L.deleteSelected = "Delete selected"
+L.deleteSelectedHint = "If you want to delete data for an encounter or zone thats not in the dropdown menu but you are sure you have saved data you may click on the zone name in the option table on the left."
+L.deleteAll = "Delete all data"
+L.All = "All"
