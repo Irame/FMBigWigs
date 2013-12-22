@@ -342,8 +342,8 @@ function plugin:BigWigs_OnBossEngage(event, module, diff)
 	end
 end
 
-local function saveEncounter(encounterId)
-	local curFight = activeEncounters[encounterId]
+local function saveEncounter(module)
+	local curFight = activeEncounters[module.encounterId]
 	if curFight then
 		local sDB = BigWigsStatisticsDB[module.zoneId][module.encounterId][difficultyTable[module:Difficulty()]]
 		local elapsed = curFight.stop - curFight.start
@@ -374,7 +374,7 @@ local function saveEncounter(encounterId)
 				end
 			end
 		end
-		activeEncounters[encounterId] = nil
+		activeEncounters[module.encounterId] = nil
 	end
 end
 
@@ -384,7 +384,7 @@ function plugin:BigWigs_OnBossWin(event, module)
 		if not curFight.stop then curFight.stop = GetTime() end
 		curFight.isWin = true
 		if curFight.timer then self:CancelTimer(curFight.timer, true) end
-		saveEncounter(module.encounterId)
+		saveEncounter(module)
 	end
 end
 
@@ -392,7 +392,7 @@ function plugin:BigWigs_OnBossWipe(event, module)
 	if module.encounterId and activeEncounters[module.encounterId] then
 		local curFight = activeEncounters[module.encounterId]
 		if not curFight.stop then curFight.stop = GetTime() end
-		curFight.timer = self:ScheduleTimer(saveEncounter, 5, module.encounterId)
+		curFight.timer = self:ScheduleTimer(saveEncounter, 5, module)
 	end
 end
 
