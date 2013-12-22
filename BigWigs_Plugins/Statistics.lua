@@ -327,19 +327,21 @@ end
 
 function plugin:BigWigs_OnBossEngage(event, module, diff)
 	if module.encounterId and module.zoneId and diff and difficultyTable[diff] and not module.worldBoss then -- Raid restricted for now
-		if activeEncounters[module.encounterId].timer then self:CancelTimer(activeEncounters[module.encounterId].timer, true) end
-		
-		activeEncounters[module.encounterId] = {start = GetTime()}
-		
-		local sDB = BigWigsStatisticsDB
-		if not sDB[module.zoneId] then sDB[module.zoneId] = {} end
-		if not sDB[module.zoneId][module.encounterId] then sDB[module.zoneId][module.encounterId] = {} end
-		sDB = sDB[module.zoneId][module.encounterId]
-		if not sDB[difficultyTable[diff]] then sDB[difficultyTable[diff]] = {} end
+		if activeEncounters[module.encounterId] then 
+			if activeEncounters[module.encounterId].timer then self:CancelTimer(activeEncounters[module.encounterId].timer, true) end
+		else
+			activeEncounters[module.encounterId] = {start = GetTime()}
+			
+			local sDB = BigWigsStatisticsDB
+			if not sDB[module.zoneId] then sDB[module.zoneId] = {} end
+			if not sDB[module.zoneId][module.encounterId] then sDB[module.zoneId][module.encounterId] = {} end
+			sDB = sDB[module.zoneId][module.encounterId]
+			if not sDB[difficultyTable[diff]] then sDB[difficultyTable[diff]] = {} end
 
-		local best = sDB[difficultyTable[diff]].best
-		if self.db.profile.showBar and best then
-			self:SendMessage("BigWigs_StartBar", self, nil, L.bestTimeBar, best, "Interface\\Icons\\spell_holy_borrowedtime")
+			local best = sDB[difficultyTable[diff]].best
+			if self.db.profile.showBar and best then
+				self:SendMessage("BigWigs_StartBar", self, nil, L.bestTimeBar, best, "Interface\\Icons\\spell_holy_borrowedtime")
+			end
 		end
 	end
 end
