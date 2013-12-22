@@ -327,6 +327,8 @@ end
 
 function plugin:BigWigs_OnBossEngage(event, module, diff)
 	if module.encounterId and module.zoneId and diff and difficultyTable[diff] and not module.worldBoss then -- Raid restricted for now
+		if activeEncounters[module.encounterId].timer then self:CancelTimer(activeEncounters[module.encounterId].timer, true) end
+		
 		activeEncounters[module.encounterId] = {start = GetTime()}
 		
 		local sDB = BigWigsStatisticsDB
@@ -348,27 +350,27 @@ local function saveEncounter(module)
 		local sDB = BigWigsStatisticsDB[module.zoneId][module.encounterId][difficultyTable[module:Difficulty()]]
 		local elapsed = curFight.stop - curFight.start
 		if curFight.isWin then
-			if self.db.profile.printKills then
+			if plugin.db.profile.printKills then
 				BigWigs:Print(L.bossDefeatDurationPrint:format(module.displayName, SecondsToTime(elapsed)))
 			end
 
-			if self.db.profile.saveKills then
+			if plugin.db.profile.saveKills then
 				sDB.kills = sDB.kills and sDB.kills + 1 or 1
 			end
 
-			if self.db.profile.saveBestKill and (not sDB.best or elapsed < sDB.best) then
+			if plugin.db.profile.saveBestKill and (not sDB.best or elapsed < sDB.best) then
 				sDB.best = elapsed
-				if self.db.profile.printNewBestKill then
+				if plugin.db.profile.printNewBestKill then
 					BigWigs:Print(L.newBestTime)
 				end
 			end
 		else
 			if elapsed > 30 then -- Fight must last longer than 30 seconds to be an actual wipe worth noting
-				if self.db.profile.printWipes then
+				if plugin.db.profile.printWipes then
 					BigWigs:Print(L.bossWipeDurationPrint:format(module.displayName, SecondsToTime(elapsed)))
 				end
 
-				if self.db.profile.saveWipes then
+				if plugin.db.profile.saveWipes then
 					local sDB = BigWigsStatisticsDB[module.zoneId][module.encounterId][difficultyTable[module:Difficulty()]]
 					sDB.wipes = sDB.wipes and sDB.wipes + 1 or 1
 				end
@@ -392,7 +394,7 @@ function plugin:BigWigs_OnBossWipe(event, module)
 	if module.encounterId and activeEncounters[module.encounterId] then
 		local curFight = activeEncounters[module.encounterId]
 		if not curFight.stop then curFight.stop = GetTime() end
-		curFight.timer = self:ScheduleTimer(saveEncounter, 5, module)
+		if not curFight.timer then curFight.timer = self:ScheduleTimer(saveEncounter, 5, module) end
 	end
 end
 
