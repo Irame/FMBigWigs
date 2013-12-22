@@ -205,7 +205,7 @@ do
 	local scheduled, playerAffected = nil, nil
 	local function emWarn(spellName)
 		if not playerAffected and not markWarned then
-			self:OpenProximity(10, 86622, emTargets)
+			mod:OpenProximity(10, 86622, emTargets)
 		end
 		mod:TargetMessage(86622, spellName, emTargets, "Personal", 86622, "Alarm")
 		mod:Bar(86622, "~"..spellName, 37, 86622)
