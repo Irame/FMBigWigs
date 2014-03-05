@@ -42,7 +42,7 @@ L = mod:GetLocale()
 
 function mod:GetOptions()
 	return {
-		{79501, "ICON", "FLASHSHAKE"},
+		{79501, "ICON", "FLASHSHAKE"}, 79023, 
 		{79888, "ICON", "FLASHSHAKE", "PROXIMITY"},
 		{80161, "FLASHSHAKE"}, {80157, "FLASHSHAKE", "SAY"}, 80053, {80094, "FLASHSHAKE", "WHISPER"},
 		"nef", 91849, 91879, {92048, "ICON"}, 92023, {"switch", "ICON"},
@@ -58,14 +58,16 @@ end
 
 function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "AcquiringTarget", 79501, 92035, 92036, 92037)
-
+	self:Log("SPELL_CAST_START","Incinerate",79023, 91519, 91520, 91521)
+	
 	self:Log("SPELL_CAST_START", "Grip", 91849)
 	self:Log("SPELL_CAST_SUCCESS", "PoolExplosion", 91857)
 
 	self:Log("SPELL_CAST_SUCCESS", "PoisonProtocol", 91513, 80053, 91514, 91515)
 	self:Log("SPELL_AURA_APPLIED", "Fixate", 80094)
 
-	self:Log("SPELL_AURA_APPLIED", "ChemicalCloud", 80161, 91480, 91479, 91473, 91471) --91471 for 25norm, not sure about the rest, obviously 1 is wrong
+	self:Log("SPELL_AURA_APPLIED", "ChemicalCloud", 80161, 91480, 91479, 91473, 91471) --91471 for 25norm, not sure about the rest, obviously 1 is wron
+	
 	self:Log("SPELL_CAST_SUCCESS", "ChemicalCloudCast", 80157)
 	self:Log("SPELL_AURA_APPLIED", "ShadowInfusion", 92048)
 	self:Log("SPELL_AURA_APPLIED", "EncasingShadows", 92023)
@@ -78,11 +80,15 @@ function mod:OnBossEnable()
 	self:Death("Deaths", 42166, 42179, 42178, 42180)
 end
 
+local countUsedSpells = {}
+
 function mod:OnEngage(diff)
 	if diff > 2 then
+		countUsedSpells = {}
 		self:Berserk(600)
 	end
 end
+
 
 --------------------------------------------------------------------------------
 -- Event Handlers
@@ -102,6 +108,12 @@ do
 	function mod:ChemicalCloudCast(...)
 		local sGUID = select(11, ...)
 		self:ScheduleTimer(checkTarget, 0.1, sGUID)
+		
+		countUsedSpells.ChemicalCloud = countUsedSpells.ChemicalCloud or 0
+		countUsedSpells.ChemicalCloud = countUsedSpells.ChemicalCloud + 1
+		if countUsedSpells.ChemicalCloud < 2 then
+			self:Bar(80161, "Chemical Cloud", 30, 80161) --appears to be the same on NH/HC
+		end
 	end
 end
 
@@ -109,6 +121,29 @@ function mod:PoolExplosion()
 	self:Message(91879, L["pool"], "Urgent", 91879)
 	self:Bar("nef", L["nef_next"], 35, 69005)
 	self:Bar(91879, L["pool"], 8, 91879)
+end
+
+function mod:GolemActivated(unit)
+	if unit == "Magmatron" then
+		countUsedSpells.AcquiringTarget = 0
+		self:Bar(79501, L.acquiring_target, 24, 79501)
+		countUsedSpells.Incinerate = 0
+		self:Bar(79023, "Incinerate", 10.5, 79023)
+	elseif unit == "Elektron" then
+		countUsedSpells.LightningConductor = 0
+		self:Bar(79888, "Lightning Conductor", 13, 79888) --same Timer NH/HC
+	elseif unit == "Toxitron" then
+		countUsedSpells.PoisonProtocol = 0
+		countUsedSpells.ChemicalCloud = 0
+		if self:Difficulty() > 2 then --HC
+			self:Bar(91513, "Poison Protocol", 15, 91513) 
+			self:Bar(80161, "Chemical Cloud", 25, 80161) 
+		else --NH
+			self:Bar(91513, "Poison Protocol", 21, 91513)
+			self:Bar(80161, "Chemical Cloud", 11, 80161)
+		end
+	elseif unit == "Arkanotron" then
+	end
 end
 
 do
@@ -124,6 +159,7 @@ do
 			for i = 1, 4 do
 				local bossId = ("boss%d"):format(i)
 				if UnitGUID(bossId) == dGUID then
+					mod:GolemActivated(unit)
 					self:PrimaryIcon("switch", bossId)
 					break
 				end
@@ -151,12 +187,27 @@ function mod:EncasingShadows(player, spellId, _, _, spellName)
 	self:Bar("nef", L["nef_next"], 35, 69005)
 end
 
+function mod:Incinerate(player, spellId)
+	countUsedSpells.Incinerate = countUsedSpells.Incinerate or 0
+	countUsedSpells.Incinerate = countUsedSpells.Incinerate + 1
+	self:Difficulty() > 2
+	if countUsedSpells.Incinerate < 2 or countUsedSpells.Incinerate < 3 and self:Difficulty() < 3 then
+		self:Bar(79501, "Incinerate", 48, 79501)
+	end
+end
+
 function mod:AcquiringTarget(player, spellId)
 	if UnitIsUnit(player, "player") then
 		self:FlashShake(79501)
 	end
 	self:TargetMessage(79501, L["acquiring_target"], player, "Urgent", spellId, "Alarm")
 	self:SecondaryIcon(79501, player)
+	
+	countUsedSpells.AcquiringTarget = countUsedSpells.AcquiringTarget or 0
+	countUsedSpells.AcquiringTarget = countUsedSpells.AcquiringTarget + 1
+	if countUsedSpells.AcquiringTarget < 2 then
+		self:Bar(79501, L.acquiring_target, 27, 79501)
+	end
 end
 
 function mod:Fixate(player, spellId, _, _, spellName)
@@ -177,6 +228,21 @@ function mod:LightningConductor(player, spellId, _, _, spellName)
 	end
 	self:TargetMessage(79888, spellName, player, "Attention", spellId, "Alarm")
 	self:SecondaryIcon(79888, player)
+	
+	countUsedSpells.LightningConductor = countUsedSpells.LightningConductor or 0
+	countUsedSpells.LightningConductor = countUsedSpells.LightningConductor + 1
+	
+	if self:Difficulty() > 2 then
+	--HC
+		if countUsedSpells.LightningConductor < 3 then
+			self:Bar(79888, "Lightning Conductor", 20, 79888)
+		end
+	else
+	--NH
+		if countUsedSpells.LightningConductor < 4 then
+			self:Bar(79888, "Lightning Conductor", 25, 79888)
+		end
+	end
 end
 
 function mod:LightningConductorRemoved(player)
@@ -186,6 +252,16 @@ end
 function mod:PoisonProtocol(_, spellId, _, _, spellName)
 	self:Bar(80053, spellName, 45, spellId)
 	self:Message(80053, L["protocol_message"], "Important", spellId, "Alert")
+		
+	countUsedSpells.PoisonProtocol = countUsedSpells.PoisonProtocol or 0
+	countUsedSpells.PoisonProtocol = countUsedSpells.PoisonProtocol + 1
+	if countUsedSpells.PoisonProtocol < 2 then --both modes 2 casts.
+		if self:Difficulty() > 2 then --HC
+			self:Bar(91513, "Poison Protocol", 25, 91513)
+		else --NH
+			self:Bar(91513, "Poison Protocol", 45, 91513)
+		end
+	end
 end
 
 do
