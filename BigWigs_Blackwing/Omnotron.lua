@@ -124,7 +124,7 @@ function mod:PoolExplosion()
 end
 
 function mod:GolemActivated(unit,unitGUID)
-	local bossID = self:GetMobIdByGUID[unitGUID]
+	local bossID = self.GetMobIdByGUID[unitGUID]
 	if bossID == 42178 then --Magmatron 42178
 		countUsedSpells.AcquiringTarget = 0
 		self:Bar(79501, L.acquiring_target, 24, 79501)
