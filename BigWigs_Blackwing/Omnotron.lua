@@ -123,16 +123,17 @@ function mod:PoolExplosion()
 	self:Bar(91879, L["pool"], 8, 91879)
 end
 
-function mod:GolemActivated(unit)
-	if unit == "Magmatron" then
+function mod:GolemActivated(unit,unitGUID)
+	local bossID = self:GetMobIdByGUID[unitGUID]
+	if bossID == 42178 then --Magmatron 42178
 		countUsedSpells.AcquiringTarget = 0
 		self:Bar(79501, L.acquiring_target, 24, 79501)
 		countUsedSpells.Incinerate = 0
 		self:Bar(79023, "Incinerate", 10.5, 79023)
-	elseif unit == "Elektron" then
+	elseif bossID == 42179 then --Elektron 42179
 		countUsedSpells.LightningConductor = 0
 		self:Bar(79888, "Lightning Conductor", 13, 79888) --same Timer NH/HC
-	elseif unit == "Toxitron" then
+	elseif bossID == 42180 then --Toxitron 42180
 		countUsedSpells.PoisonProtocol = 0
 		countUsedSpells.ChemicalCloud = 0
 		if self:Difficulty() > 2 then --HC
@@ -142,7 +143,7 @@ function mod:GolemActivated(unit)
 			self:Bar(91513, "Poison Protocol", 21, 91513)
 			self:Bar(80161, "Chemical Cloud", 11, 80161)
 		end
-	elseif unit == "Arkanotron" then
+	elseif bossID == 42166 then --Arkanotron 42166
 	end
 end
 
@@ -159,7 +160,7 @@ do
 			for i = 1, 4 do
 				local bossId = ("boss%d"):format(i)
 				if UnitGUID(bossId) == dGUID then
-					mod:GolemActivated(unit)
+					self:GolemActivated(unit,dGUID)
 					self:PrimaryIcon("switch", bossId)
 					break
 				end
