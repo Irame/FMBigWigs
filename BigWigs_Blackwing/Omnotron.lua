@@ -142,8 +142,7 @@ function mod:GolemActivated(unit)
 			self:Bar(91513, "Poison Protocol", 21, 91513)
 			self:Bar(80161, "Chemical Cloud", 11, 80161)
 		end
-	else
-		print("somehow wasnt a Golem:",unit)
+	elseif unit == "Arkanotron" then
 	end
 end
 
