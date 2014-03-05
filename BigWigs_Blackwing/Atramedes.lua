@@ -67,8 +67,8 @@ end
 
 function mod:OnEngage(diff)
 	self:Bar(78075, sonicBreath, 23, 78075)
-	self:Bar(77840, searingFlame, 45, 77840)
-	self:DelayedMessage(77840, 35, L["searing_soon"], "Attention", 77840)
+	self:Bar(77840, searingFlame, 63, 77840)
+	self:DelayedMessage(77840, 55, L["searing_soon"], "Attention", 77840)
 	self:Bar("air_phase", L["air_phase"], 92, 5740) -- Rain of Fire Icon
 	self:OpenAltPower(L["alt_energy_title"])
 	if diff > 2 then
@@ -127,6 +127,8 @@ end
 
 function mod:SearingFlame(_, spellId, _, _, spellName)
 	self:Message(77840, spellName, "Important", spellId, "Alert")
+	mod:Bar(77840, searingFlame, 155, 77840)
+	mod:DelayedMessage(77840, 145, L["searing_soon"], "Attention", 77840)
 end
 
 do
@@ -135,8 +137,6 @@ do
 		mod:Bar("air_phase", L["air_phase"], 90, 5740) -- Rain of Fire Icon
 		mod:Bar(78075, sonicBreath, 25, 78075)
 		-- XXX need a good trigger for ground phase start to make this even more accurate
-		mod:Bar(77840, searingFlame, 48.5, 77840)
-		mod:DelayedMessage(77840, 38.5, L["searing_soon"], "Attention", 77840)
 	end
 	function mod:AirPhase()
 		self:SendMessage("BigWigs_StopBar", self, sonicBreath)
