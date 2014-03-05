@@ -192,6 +192,12 @@ end
 -- Engage / wipe checking + unit scanning
 --
 
+boss.GetMobIdByGUID = setmetatable({}, {__index = function(t, k)
+	local id = (k and tonumber(k:sub(9, 12), 16)) or 0
+	rawset(t, k, id)
+	return id	
+end})
+
 function boss:CheckBossStatus()
 	local hasBoss = UnitHealth("boss1") > 100 or UnitHealth("boss2") > 100 or UnitHealth("boss3") > 100 or UnitHealth("boss4") > 100
 	if not hasBoss and self.isEngaged then
