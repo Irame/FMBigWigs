@@ -193,7 +193,7 @@ end
 --
 
 boss.GetMobIdByGUID = setmetatable({}, {__index = function(t, k)
-	local id = (k and tonumber(k:sub(9, 12), 16)) or 0
+	local id = (k and tonumber(k:sub(7, 10), 16)) or 0
 	rawset(t, k, id)
 	return id	
 end})
