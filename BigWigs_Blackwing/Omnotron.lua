@@ -191,7 +191,6 @@ end
 function mod:Incinerate(player, spellId)
 	countUsedSpells.Incinerate = countUsedSpells.Incinerate or 0
 	countUsedSpells.Incinerate = countUsedSpells.Incinerate + 1
-	self:Difficulty() > 2
 	if countUsedSpells.Incinerate < 2 or countUsedSpells.Incinerate < 3 and self:Difficulty() < 3 then
 		self:Bar(79501, "Incinerate", 48, 79501)
 	end
