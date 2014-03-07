@@ -6,6 +6,11 @@ local mod, CL = BigWigs:NewBoss("Omnotron Defense System", 754, 169)
 if not mod then return end
 mod:RegisterEnableMob(42166, 42179, 42178, 42180, 49226) -- Arcanotron, Electron, Magmatron, Toxitron, Lord Victor Nefarius
 
+local Incinerate = GetSpellInfo(79023)
+local Lightning_Conductor = GetSpellInfo(79888)
+local Poison_Protocol = GetSpellInfo(91513)
+local Chemical_Cloud = GetSpellInfo(80161)
+
 --------------------------------------------------------------------------------
 -- Localization
 --
@@ -112,7 +117,7 @@ do
 		countUsedSpells.ChemicalCloud = countUsedSpells.ChemicalCloud or 0
 		countUsedSpells.ChemicalCloud = countUsedSpells.ChemicalCloud + 1
 		if countUsedSpells.ChemicalCloud < 2 then
-			self:Bar(80161, "Chemical Cloud", 30, 80161) --appears to be the same on NH/HC
+			self:Bar(80161, Chemical_Cloud, 30, 80161) --appears to be the same on NH/HC
 		end
 	end
 end
@@ -129,19 +134,19 @@ function mod:GolemActivated(unit,unitGUID)
 		countUsedSpells.AcquiringTarget = 0
 		self:Bar(79501, L.acquiring_target, 20, 79501) -- -4sec(10HC)
 		countUsedSpells.Incinerate = 0
-		self:Bar(79023, "Incinerate", 10.5, 79023)
+		self:Bar(79023, Incinerate, 10.5, 79023)
 	elseif bossID == 42179 then --Elektron 42179
 		countUsedSpells.LightningConductor = 0
-		self:Bar(79888, "Lightning Conductor", 13, 79888) --same Timer NH/HC
+		self:Bar(79888, Lightning_Conductor, 13, 79888) --same Timer NH/HC
 	elseif bossID == 42180 then --Toxitron 42180
 		countUsedSpells.PoisonProtocol = 0
 		countUsedSpells.ChemicalCloud = 0
 		if self:Difficulty() > 2 then --HC
-			self:Bar(91513, "Poison Protocol", 15, 91513) 
-			self:Bar(80161, "Chemical Cloud", 25, 80161) 
+			self:Bar(91513, Poison_Protocol, 15, 91513) 
+			self:Bar(80161, Chemical_Cloud, 25, 80161) 
 		else --NH
-			self:Bar(91513, "Poison Protocol", 21, 91513)
-			self:Bar(80161, "Chemical Cloud", 11, 80161)
+			self:Bar(91513, Poison_Protocol, 21, 91513)
+			self:Bar(80161, Chemical_Cloud, 11, 80161)
 		end
 	elseif bossID == 42166 then --Arkanotron 42166
 	end
@@ -197,7 +202,7 @@ function mod:Incinerate(player, spellId)
 	end)(countUsedSpells.Incinerate)
 	
 	if countUsedSpells.Incinerate < 2 or countUsedSpells.Incinerate < 3 and self:Difficulty() < 3 then
-		self:Bar(79501, "Incinerate", 48, 79501)
+		self:Bar(79501, Incinerate, 48, 79501)
 	end
 end
 
@@ -240,12 +245,12 @@ function mod:LightningConductor(player, spellId, _, _, spellName)
 	if self:Difficulty() > 2 then
 	--HC
 		if countUsedSpells.LightningConductor < 3 then
-			self:Bar(79888, "Lightning Conductor", 20, 79888)
+			self:Bar(79888, Lightning_Conductor, 20, 79888)
 		end
 	else
 	--NH
 		if countUsedSpells.LightningConductor < 4 then
-			self:Bar(79888, "Lightning Conductor", 25, 79888)
+			self:Bar(79888, Lightning_Conductor, 25, 79888)
 		end
 	end
 end
@@ -262,9 +267,9 @@ function mod:PoisonProtocol(_, spellId, _, _, spellName)
 	countUsedSpells.PoisonProtocol = countUsedSpells.PoisonProtocol + 1
 	if countUsedSpells.PoisonProtocol < 2 then --both modes 2 casts.
 		if self:Difficulty() > 2 then --HC
-			self:Bar(91513, "Poison Protocol", 25, 91513)
+			self:Bar(91513, Poison_Protocol, 25, 91513)
 		else --NH
-			self:Bar(91513, "Poison Protocol", 45, 91513)
+			self:Bar(91513, Poison_Protocol, 45, 91513)
 		end
 	end
 end
