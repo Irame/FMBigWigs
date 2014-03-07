@@ -189,8 +189,13 @@ function mod:EncasingShadows(player, spellId, _, _, spellName)
 end
 
 function mod:Incinerate(player, spellId)
-	countUsedSpells.Incinerate = countUsedSpells.Incinerate or 0
-	countUsedSpells.Incinerate = countUsedSpells.Incinerate + 1
+
+	countUsedSpells.Incinerate = (function(x)
+		--very variable			
+		return (x or 0) + 1 --MUCH Leserlich
+--such WOW!			--so x
+	end)(countUsedSpells.Incinerate)
+	
 	if countUsedSpells.Incinerate < 2 or countUsedSpells.Incinerate < 3 and self:Difficulty() < 3 then
 		self:Bar(79501, "Incinerate", 48, 79501)
 	end
