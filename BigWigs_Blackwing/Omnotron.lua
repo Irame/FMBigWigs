@@ -127,7 +127,7 @@ function mod:GolemActivated(unit,unitGUID)
 	local bossID = self.GetMobIdByGUID[unitGUID]
 	if bossID == 42178 then --Magmatron 42178
 		countUsedSpells.AcquiringTarget = 0
-		self:Bar(79501, L.acquiring_target, 24, 79501)
+		self:Bar(79501, L.acquiring_target, 20, 79501) -- -4sec(10HC)
 		countUsedSpells.Incinerate = 0
 		self:Bar(79023, "Incinerate", 10.5, 79023)
 	elseif bossID == 42179 then --Elektron 42179
