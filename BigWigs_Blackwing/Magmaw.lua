@@ -97,7 +97,7 @@ function mod:OnEngage(diff)
 	self:Bar("slump", L["slump_bar"], 30, 36702)
 	self:Bar(78006, GetSpellInfo(78006), 21, 78006) --Pillar of Flame
 	self:Bar(77690, lavaSpew, 15, 77690)
-	self:Bar(89773, mangle, 22, 89773)
+	self:Bar(89773, mangle, 25, 89773)
 	self:DelayedMessage(77690, 12, L["spew_warning"], "Attention")
 	phase = 1
 	isHeadPhase = nil
@@ -123,7 +123,7 @@ do
 		isHeadPhase = true
 		self:Message(79011, L["expose_message"], "Positive", 79011)
 		self:Bar(79011, L["expose_message"], 35, 79011)
-		self:Bar(89773, mangle, 62, 89773)
+		self:Bar(89773, mangle, 65, 89773)
 		self:Bar("slump", L["slump_bar"], 70, 36702)
 		self:SendMessage("BigWigs_StopBar", self, pillarOfFlame)
 		self:SendMessage("BigWigs_StopBar", self, lavaSpew)
