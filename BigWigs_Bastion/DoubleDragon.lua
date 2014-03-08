@@ -170,7 +170,7 @@ function mod:BlackoutApplied(player, spellId, _, _, spellName)
 		self:OpenProximity(8, 86788, player, true)
 	end
 	self:TargetMessage(86788, spellName, player, "Personal", spellId, "Alert")
-	self:Bar(86788, spellName, 36, spellId)
+	self:Bar(86788, spellName, 40, spellId)
 	self:Whisper(86788, player, spellName)
 	self:PrimaryIcon(86788, player)
 end
@@ -178,7 +178,7 @@ end
 function mod:BlackoutRemoved(player, spellId, _, _, spellName)
 	self:OpenProximity(8, 86369)
 	self:PrimaryIcon(86788)
-	self:Bar(86788, spellName, 40, spellId) -- make sure to remove bar when it's removed
+	--self:Bar(86788, spellName, 40, spellId) -- make sure to remove bar when it's removed
 end
 
 local function markRemoved()
