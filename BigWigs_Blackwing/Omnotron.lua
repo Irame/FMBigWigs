@@ -201,8 +201,16 @@ function mod:Incinerate(player, spellId)
 --such WOW!			--so x
 	end)(countUsedSpells.Incinerate)
 	
-	if countUsedSpells.Incinerate < 2 or countUsedSpells.Incinerate < 3 and self:Difficulty() < 3 then
-		self:Bar(79501, Incinerate, 48, 79501)
+	local diff = self:Difficulty()
+	local casted = countUsedSpells.Incinerate
+	if casted < 3 and diff < 3 then --normal
+		if casted < 2 then
+			self:Bar(79501, Incinerate, 41, 79501) --scnd in ~41-42sec
+		else
+			self:Bar(79501, Incinerate, 35, 79501) --thrd in ~35 sec
+		end
+	elseif casted < 2 then --heroic (only tested in 10man)
+		self:Bar(79501, Incinerate, 48, 79501) --only 2
 	end
 end
 
