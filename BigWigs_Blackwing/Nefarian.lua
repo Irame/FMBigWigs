@@ -92,6 +92,9 @@ function mod:OnEngage(diff)
 	phase3warned = false
 	self:RegisterEvent("UNIT_POWER")
 	shadowblazeHandle, lastBlaze = nil, 0
+	if self:Difficulty() > 2 then
+		self:Bar(79318, dominion, 35, 79318) --needs to be tested
+	end
 end
 
 --------------------------------------------------------------------------------
