@@ -16,6 +16,7 @@ local powerTargets = mod:NewTargetList()
 local shadowblaze = GetSpellInfo(81007)
 local phase3warned = false
 local shadowblazeHandle, lastBlaze = nil, 0
+local dominion = GetSpellInfo(79318)
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -51,7 +52,7 @@ L = mod:GetLocale()
 function mod:GetOptions()
 	return {
 		77939, 78999, 81272, {81007, "FLASHSHAKE"},
-		{79339, "FLASHSHAKE", "SAY", "PROXIMITY"}, {80627, "FLASHSHAKE"}, "berserk",
+		{79339, "FLASHSHAKE", "SAY", "PROXIMITY"}, {79318, "FLASHSHAKE"}, "berserk",
 		"phase", "bosskill"
 	}, {
 		[77939] = "ej:3283", -- Onyxia
@@ -75,7 +76,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_REMOVED", "ExplosiveCindersRemoved", 79339)
 	self:Log("SPELL_DAMAGE", "PersonalShadowBlaze", 81007, 94085, 94086, 94087)
 
-	self:Log("SPELL_AURA_APPLIED", "StolenPower", 80627)
+	self:Log("SPELL_AURA_APPLIED", "Dominion", 79318)--only know 10HM spell - maybe another for 25HM
 	
 	self:Emote("Electrocute", L["crackle_trigger"])
 
@@ -137,6 +138,9 @@ function mod:Deaths(mobId)
 			phase3warned = true
 		end]]--
 		if deadAdds == 3 and not phase3warned then
+			if self:Difficulty() > 2 then
+				mod:Bar(79318, dominion, 24.5, 79318)
+			end
 			self:SendMessage("BigWigs_StopBar", self, CL["phase"]:format(phase))
 			phase = 3
 			self:Message("phase", CL["phase"]:format(phase), "Attention", 81007)
@@ -149,6 +153,7 @@ end
 
 function mod:PhaseTwo()
 	phase = 2
+	self:SendMessage("BigWigs_StopBar", self, dominion)
 	self:Message("phase", CL["phase"]:format(phase), "Attention", 78621)
 	local d = self:Difficulty()
 	if d == 4 then
@@ -235,14 +240,15 @@ end
 do
 	local scheduled = nil
 	local function powerWarn(spellName)
-		mod:TargetMessage(80627, spellName, powerTargets, "Urgent", 80627, "Info")
+		mod:TargetMessage(79318, spellName, powerTargets, "Urgent", 79318, "Info")
+		mod:Bar(79318, spellName, 15.2--[[+0.3 sheduleTimer]], 79318) -- ~15-16sec
 		scheduled = nil
 	end
 
-	function mod:StolenPower(player, spellId, _, _, spellName)
+	function mod:Dominion(player, spellId, _, _, spellName)
 		powerTargets[#powerTargets + 1] = player
 		if UnitIsUnit(player, "player") then
-			self:FlashShake(80627)
+			self:FlashShake(79318)
 		end
 		if not scheduled then
 			scheduled = true
