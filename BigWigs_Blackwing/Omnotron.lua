@@ -29,7 +29,9 @@ if L then
 	L.next_switch = "Next activation"
 
 	L.nef_next = "~Ability buff"
-
+	
+	L.incinerate = "Incinerate"
+	
 	L.acquiring_target = "Acquiring target"
 
 	L.bomb_message = "Blob chasing YOU!"
@@ -134,7 +136,7 @@ function mod:GolemActivated(unit,unitGUID)
 		countUsedSpells.AcquiringTarget = 0
 		self:Bar(79501, L.acquiring_target, 20, 79501) -- -4sec(10HC)
 		countUsedSpells.Incinerate = 0
-		self:Bar(79023, Incinerate, 10.5, 79023)
+		self:Bar(79023, L.incinerate, 10.5, 79023)
 	elseif bossID == 42179 then --Elektron 42179
 		countUsedSpells.LightningConductor = 0
 		self:Bar(79888, Lightning_Conductor, 13, 79888) --same Timer NH/HC
@@ -205,12 +207,12 @@ function mod:Incinerate(player, spellId)
 	local casted = countUsedSpells.Incinerate
 	if casted < 3 and diff < 3 then --normal
 		if casted < 2 then
-			self:Bar(79501, Incinerate, 41, 79501) --scnd in ~41-42sec
+			self:Bar(79501, L.incinerate, 41, 79501) --scnd in ~41-42sec
 		else
-			self:Bar(79501, Incinerate, 35, 79501) --thrd in ~35 sec
+			self:Bar(79501, L.incinerate, 35, 79501) --thrd in ~35 sec
 		end
 	elseif casted < 2 then --heroic (only tested in 10man)
-		self:Bar(79501, Incinerate, 48, 79501) --only 2
+		self:Bar(79501, L.incinerate, 48, 79501) --only 2
 	end
 end
 

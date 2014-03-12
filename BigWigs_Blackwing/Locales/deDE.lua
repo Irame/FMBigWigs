@@ -130,6 +130,8 @@ if L then
 
 	L.nef_next = "~Fähigkeiten Buff"
 
+	L.incinerate = "Einäscherung"
+	
 	L.acquiring_target = "Zielerfassung"
 
 	L.bomb_message = "Blob verfolgt DICH!"
