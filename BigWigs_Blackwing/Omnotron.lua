@@ -126,7 +126,7 @@ end
 
 function mod:PoolExplosion()
 	self:Message(91879, L["pool"], "Urgent", 91879)
-	self:Bar("nef", L["nef_next"], 35, 69005)
+	--self:Bar("nef", L["nef_next"], 35, 69005)
 	self:Bar(91879, L["pool"], 8, 91879)
 end
 
@@ -178,7 +178,7 @@ end
 
 function mod:Grip(_, spellId, _, _, spellName)
 	self:Message(91849, spellName, "Urgent", 91849)
-	self:Bar("nef", L["nef_next"], 35, 69005)
+	--self:Bar("nef", L["nef_next"], 35, 69005)
 end
 
 function mod:ShadowInfusion(player, spellId, _, _, spellName)
@@ -186,13 +186,13 @@ function mod:ShadowInfusion(player, spellId, _, _, spellName)
 		self:FlashShake(92048)
 	end
 	self:TargetMessage(92048, spellName, player, "Urgent", spellId)
-	self:Bar("nef", L["nef_next"], 35, 69005)
+	--self:Bar("nef", L["nef_next"], 35, 69005)
 	self:SecondaryIcon(92048, player)
 end
 
 function mod:EncasingShadows(player, spellId, _, _, spellName)
 	self:TargetMessage(92023, spellName, player, "Urgent", spellId)
-	self:Bar("nef", L["nef_next"], 35, 69005)
+	--self:Bar("nef", L["nef_next"], 35, 69005)
 end
 
 function mod:Incinerate(player, spellId)
@@ -309,3 +309,7 @@ do
 	end
 end
 
+do --Nef in HC
+
+
+end
