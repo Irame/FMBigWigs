@@ -441,7 +441,7 @@ do --Nef in HC
 		local predictionSolutions = {[A] = {},[M] = {},[T] = {},[E] = {}}
 		local function addAsSolution(t,b)
 			for i,ti in pairs(predictionSolutions[b]) do
-				if math.abs(t-ti) < matchDiff then
+				if math.abs(t-ti) < matchDiff/2 then
 					predictionSolutions[b][i] = (t+ti)/2
 					return
 				end
