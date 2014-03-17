@@ -405,15 +405,15 @@ do --Nef in HC
 		end
 
 		do --A1
-			local start = A	
-			local preRot = {{30,A},{25,M}, {40,T},{30,T},{35,E},{45,M},{40,T},{35,E}}
+			local start = A
+			local preRot = {{31,A},{23,M}, {40,T},{30,T},{35,E},{45,M},{40,T},{35,E}}
 			local rot = {{45,M}, {40,T}, {35,E}}
 			local prediction = CreatePredictionTable(start, preRot, rot)
 		end
 		
 		do --A2
-			local start = A	
-			local preRot = {{30,A},{25,M}, {37,E},{34,T},{47,E},{40,E},{30,T}}
+			local start = A
+			local preRot = {{31,A},{20,M}, {36,E},{33,T},{47,E},{40,E},{31,T}}
 			local rot = {{50,E}, {40,E}, {30,T}}
 			local prediction = CreatePredictionTable(start, preRot, rot)
 		end	
