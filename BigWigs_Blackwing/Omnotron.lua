@@ -139,7 +139,6 @@ end
 function mod:PoolExplosion(_, _, _, _, _, _, _, _, _, _, sGUID)
 	if self:GetMobIDByGUID(sGUID) ~= 42733 then return end 
 	self:Message(91879, L["pool"], "Urgent", 91879)
-	--self:Bar("nef", L["nef_next"], 35, 69005)
 	self:Bar(91879, L["pool"], 8, 91879)
 	hcNef.spellUsed(A)
 end
@@ -192,7 +191,6 @@ end
 
 function mod:Grip(_, spellId, _, _, spellName)
 	self:Message(91849, spellName, "Urgent", 91849)
-	--self:Bar("nef", L["nef_next"], 35, 69005)
 	hcNef.spellUsed(T)
 end
 
@@ -201,14 +199,12 @@ function mod:ShadowInfusion(player, spellId, _, _, spellName)
 		self:FlashShake(92048)
 	end
 	self:TargetMessage(92048, spellName, player, "Urgent", spellId)
-	--self:Bar("nef", L["nef_next"], 35, 69005)
 	self:SecondaryIcon(92048, player)
 	hcNef.spellUsed(E)
 end
 
 function mod:EncasingShadows(player, spellId, _, _, spellName)
 	self:TargetMessage(92023, spellName, player, "Urgent", spellId)
-	--self:Bar("nef", L["nef_next"], 35, 69005)
 	hcNef.spellUsed(M)
 end
 
