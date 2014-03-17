@@ -51,6 +51,8 @@ local M, T, E, A = GetSpellInfo(92023),GetSpellInfo(91849),GetSpellInfo(92051),L
 local nefIconByName = {}
 nefIconByName[M], nefIconByName[T], nefIconByName[E], nefIconByName[A] = "Spell_Fire_MoltenBlood",91849,"Spell_Shadow_MindTwisting","Spell_Nature_WispSplode"
 --mostly changed icons, because that ones, that are used are pretty unuseful.
+local nefOptionRelative = {}
+nefOptionRelative[M], nefOptionRelative[T], nefOptionRelative[E], nefOptionRelative[A] = 92023,91849,92048,91879
 
 --------------------------------------------------------------------------------
 -- Initialization
@@ -61,13 +63,13 @@ function mod:GetOptions()
 		{79501, "ICON", "FLASHSHAKE"}, 79023, 
 		{79888, "ICON", "FLASHSHAKE", "PROXIMITY"},
 		{80161, "FLASHSHAKE"}, {80157, "FLASHSHAKE", "SAY"}, 80053, {80094, "FLASHSHAKE", "WHISPER"},
-		"nef", 91849, 91879, {92048, "ICON"}, 92023, {"switch", "ICON"},
-		"berserk", "bosskill"
+		91849, 91879, {92048, "ICON"}, 92023, 
+		{"switch", "ICON"}, "berserk", "bosskill"
 	}, {
 		[79501] = "ej:3207", -- Electron
 		[79888] = "ej:3201", -- Magmatron
 		[80161] = "ej:3208", -- Toxitron
-		nef = "heroic",
+		[91849] = "heroic",
 		switch = "general"
 	}
 end
@@ -525,7 +527,7 @@ do --Nef in HC
 					else
 						txt = "!"..displayTxt.."!"
 					end
-					mod:Bar("nef", txt, timer, nefIconByName[displayTxt])
+					mod:Bar(nefOptionRelative[displayTxt], txt, timer, nefIconByName[displayTxt])
 					showedTimers[txt] = true
 				end
 			end
