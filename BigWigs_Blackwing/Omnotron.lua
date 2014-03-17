@@ -138,7 +138,6 @@ end
 function mod:PoolExplosion(_, _, _, _, _, _, _, _, _, _, sGUID)
 	if self.GetMobIdByGUID[sGUID] ~= 42733 then return end 
 	self:Message(91879, L["pool"], "Urgent", 91879)
-	self:Bar(91879, L["pool"], 8, 91879)
 	hcNef.spellUsed(A)
 end
 
