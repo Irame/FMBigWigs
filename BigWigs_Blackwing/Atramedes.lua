@@ -60,6 +60,7 @@ function mod:OnBossEnable()
 
 	--INSTANCE_ENCOUNTER_ENGAGE_UNIT does not work on Frostmourne for  this boss
 	--I don't know how i should do it ...
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
 	self:CheckForEngage()
 	
 	self:Death("Win", 41442)
