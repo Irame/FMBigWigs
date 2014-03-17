@@ -363,18 +363,24 @@ do --Nef in HC
 		--PREDICTIONS
 		
 		do --M1
-			local start = M	
-			local preRot = {{45,E},{55,A}, {25,M},{44,E}}
-			local rot = {{53,A}, {25,M}, {42,E}}
+			local start = M
+			local preRot = {{45,E},{51,A}, {24,M},{43,E}}
+			local rot = {{52,A}, {23,M}, {44,E}}
 			local prediction = CreatePredictionTable(start, preRot, rot)
 		end
 		
 		do --M2
-			local start = M	
-			local preRot = {{55,E},{40,E}, {32,T},{45,E}}
+			local start = M	--first is pretty variable.
+			local preRot = {{53,E},{40,E}, {32,T},{45,E}}
 			local rot = {{40,E}, {32,T}, {45,E}}
 			local prediction = CreatePredictionTable(start, preRot, rot)
 		end	
+		
+		do --M3 
+			--happened once, im Adding :)
+			local start = M
+			local preRot = {{67,A}}
+		end
 		
 		do --E1
 			local start = E
