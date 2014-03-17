@@ -377,8 +377,8 @@ do --Nef in HC
 		end	
 		
 		do --E1
-			local start = E	
-			local preRot = {{45,A},{30,A}, {20,M},{40,T},{60,A}}
+			local start = E
+			local preRot = {{44,A},{29,A}, {21,M},{40,T},{59,A}}
 			local rot = {{20,M}, {40,T}, {60,A}}
 			local prediction = CreatePredictionTable(start, preRot, rot)
 		end
@@ -398,8 +398,8 @@ do --Nef in HC
 		end
 		
 		do --E4
-			local start = E	
-			local preRot = {{35,M},{65,A}, {35,T},{58,A},{30,A},{30,T}}
+			local start = E
+			local preRot = {{36,M},{65,A}, {34,T},{58,A},{30,A},{30,T}}
 			local rot = {{58,A}, {30,A}, {30,T}}
 			local prediction = CreatePredictionTable(start, preRot, rot)
 		end
