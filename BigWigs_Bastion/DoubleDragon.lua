@@ -12,6 +12,7 @@ mod:RegisterEnableMob(45992, 45993)
 
 local phaseCount = 0
 local marked, blackout, deepBreath = GetSpellInfo(88518), GetSpellInfo(86788), GetSpellInfo(86059)
+local engulfing = GetSpellInfo(86622)
 local devouringFlames = "~"..GetSpellInfo(86840)
 local theralion = EJ_GetSectionInfo(2994)
 local valiona = EJ_GetSectionInfo(2985)
@@ -122,6 +123,7 @@ local function theralionHasLanded()
 	mod:SendMessage("BigWigs_StopBar", mod, blackout)
 	mod:SendMessage("BigWigs_StopBar", mod, devouringFlames)
 	mod:Bar("phase_switch", L["phase_bar"]:format(valiona), 130, 60639)
+	mod:Bar(86622, engulfing, 17, 86622) --Probably not accurate! + not confirmed for HM
 end
 
 function mod:TwilightShift(player, spellId, _, _, spellName, stack)
@@ -208,7 +210,7 @@ do
 			mod:OpenProximity(10, 86622, emTargets)
 		end
 		mod:TargetMessage(86622, spellName, emTargets, "Personal", 86622, "Alarm")
-		mod:Bar(86622, "~"..spellName, 37, 86622)
+		mod:Bar(86622, spellName, 35, 86622)
 		scheduled = nil
 		playerAffected = nil
 	end

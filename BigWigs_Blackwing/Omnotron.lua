@@ -43,6 +43,15 @@ if L then
 end
 L = mod:GetLocale()
 
+--Nef-Timers
+local hcNef = {}
+local lastNefAction = nil
+local M, T, E, A = GetSpellInfo(92023),GetSpellInfo(91849),GetSpellInfo(92051),L.pool --"Magmatron","Toxitron","Electron","Arkanotron"
+--actual SpellNames are not always "the good alternative"
+local nefIconByName = {}
+nefIconByName[M], nefIconByName[T], nefIconByName[E], nefIconByName[A] = "Spell_Fire_MoltenBlood",91849,"Spell_Shadow_MindTwisting","Spell_Nature_WispSplode"
+--mostly changed icons, because that ones, that are used are pretty unuseful.
+
 --------------------------------------------------------------------------------
 -- Initialization
 --
@@ -68,7 +77,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START","Incinerate",79023, 91519, 91520, 91521)
 	
 	self:Log("SPELL_CAST_START", "Grip", 91849)
-	self:Log("SPELL_CAST_SUCCESS", "PoolExplosion", 91857)
+	self:Log("SPELL_AURA_APPLIED", "PoolExplosion", 91857)
 
 	self:Log("SPELL_CAST_SUCCESS", "PoisonProtocol", 91513, 80053, 91514, 91515)
 	self:Log("SPELL_AURA_APPLIED", "Fixate", 80094)
@@ -90,6 +99,7 @@ end
 local countUsedSpells = {}
 
 function mod:OnEngage(diff)
+	lastNefAction = nil
 	if diff > 2 then
 		countUsedSpells = {}
 		self:Berserk(600)
@@ -124,10 +134,12 @@ do
 	end
 end
 
-function mod:PoolExplosion()
+function mod:PoolExplosion(_, _, _, _, _, _, _, _, _, _, sGUID)
+	if self:GetMobIDByGUID(sGUID) ~= 42733 then return end 
 	self:Message(91879, L["pool"], "Urgent", 91879)
-	self:Bar("nef", L["nef_next"], 35, 69005)
+	--self:Bar("nef", L["nef_next"], 35, 69005)
 	self:Bar(91879, L["pool"], 8, 91879)
+	hcNef.spellUsed(A)
 end
 
 function mod:GolemActivated(unit,unitGUID)
@@ -178,7 +190,8 @@ end
 
 function mod:Grip(_, spellId, _, _, spellName)
 	self:Message(91849, spellName, "Urgent", 91849)
-	self:Bar("nef", L["nef_next"], 35, 69005)
+	--self:Bar("nef", L["nef_next"], 35, 69005)
+	hcNef.spellUsed(T)
 end
 
 function mod:ShadowInfusion(player, spellId, _, _, spellName)
@@ -186,13 +199,15 @@ function mod:ShadowInfusion(player, spellId, _, _, spellName)
 		self:FlashShake(92048)
 	end
 	self:TargetMessage(92048, spellName, player, "Urgent", spellId)
-	self:Bar("nef", L["nef_next"], 35, 69005)
+	--self:Bar("nef", L["nef_next"], 35, 69005)
 	self:SecondaryIcon(92048, player)
+	hcNef.spellUsed(E)
 end
 
 function mod:EncasingShadows(player, spellId, _, _, spellName)
 	self:TargetMessage(92023, spellName, player, "Urgent", spellId)
-	self:Bar("nef", L["nef_next"], 35, 69005)
+	--self:Bar("nef", L["nef_next"], 35, 69005)
+	hcNef.spellUsed(M)
 end
 
 function mod:Incinerate(player, spellId)
@@ -309,3 +324,213 @@ do
 	end
 end
 
+do --Nef in HC
+	local predictions = {}
+	do --rotations
+		predictions[M] = {}
+		predictions[T] = {}
+		predictions[E] = {}
+		predictions[A] = {}
+		
+		local function CreatePredictionTable(start, preRot, rot)
+			local p = setmetatable({}, {__index = function(tbl, num)
+					local pred
+					if num > #preRot then
+						local i = (num - #preRot)%(#rot)
+						if i == 0 then i = #rot end
+						pred = rot[i]
+					elseif num == 0 then
+						pred = {nil, start}
+					else
+						pred = preRot[num]
+					end
+					rawset(tbl, num, pred)
+					return pred
+				end})
+				
+			predictions[start][#predictions[start] + 1] = p
+			return p
+		end
+		
+		--PREDICTIONS
+		
+		do --M1
+			local start = M	
+			local preRot = {{45,E},{55,A}, {25,M},{44,E}}
+			local rot = {{53,A}, {25,M}, {42,E}}
+			local prediction = CreatePredictionTable(start, preRot, rot)
+		end
+		
+		do --M2
+			local start = M	
+			local preRot = {{55,E},{40,E}, {32,T},{45,E}}
+			local rot = {{40,E}, {32,T}, {45,E}}
+			local prediction = CreatePredictionTable(start, preRot, rot)
+		end	
+		
+		do --E1
+			local start = E	
+			local preRot = {{45,A},{30,A}, {20,M},{40,T},{60,A}}
+			local rot = {{20,M}, {40,T}, {60,A}}
+			local prediction = CreatePredictionTable(start, preRot, rot)
+		end
+
+		do --E2
+			local start = E	
+			local preRot = {{45,A},{25,M}, {40,T},{35,E},{50,A},{25,M},{40,T},{60,A}}
+			local rot = {{25,M}, {40,T}, {60,A}}
+			local prediction = CreatePredictionTable(start, preRot, rot)
+		end
+		
+		do --E3
+			local start = E	
+			local preRot = {{41,A},{25,M}, {37,T},{32,T},{60,A},{20,M},{40,T}}
+			local rot = {{60,A}, {20,M}, {40,T}}
+			local prediction = CreatePredictionTable(start, preRot, rot)
+		end
+		
+		do --E4
+			local start = E	
+			local preRot = {{35,M},{65,A}, {35,T},{58,A},{30,A},{30,T}}
+			local rot = {{58,A}, {30,A}, {30,T}}
+			local prediction = CreatePredictionTable(start, preRot, rot)
+		end
+
+		do --A1
+			local start = A	
+			local preRot = {{30,A},{25,M}, {40,T},{30,T},{35,E},{45,M},{40,T},{35,E}}
+			local rot = {{45,M}, {40,T}, {35,E}}
+			local prediction = CreatePredictionTable(start, preRot, rot)
+		end
+		
+		do --A2
+			local start = A	
+			local preRot = {{30,A},{25,M}, {37,E},{34,T},{47,E},{40,E},{30,T}}
+			local rot = {{50,E}, {40,E}, {30,T}}
+			local prediction = CreatePredictionTable(start, preRot, rot)
+		end	
+		
+		do --A3
+			local start = A
+			local preRot = {{20,E},{37,M}, {39,T},{45,E}}
+			local rot = {{37,M}, {37,T}, {45,E}}
+			local prediction = CreatePredictionTable(start, preRot, rot)
+		end
+	end
+	
+	do --Fight Handling
+		local startGolem = nil
+		local nefActionCounter = 0
+		local lastTimestamp = nil
+		local fittingRotations = {}
+		local showedTimers = {}
+		--do not care what values are in there. - will be changed either way before first usage.
+		
+		local matchDiff = 5
+			
+		local function matchPrediction(tbl1, tbl2)
+			local time1,boss1 = unpack(tbl1)
+			local time2,boss2 = unpack(tbl2)
+			if boss1 == boss2 then
+				if time1 == time2 then
+					return true, 0
+				elseif time1 and time2 then --and math.abs(time1-time2) < matchDiff
+					local t = (time2 - time1)
+					if math.abs(t) < 1 then
+						return true, t
+					elseif math.abs(t) < matchDiff then 
+						return "outtimed",  t
+					else
+						return false,  t
+					end
+				else
+					return false, "nil"
+				end
+			end
+			return false, "bossdiff"
+		end
+		
+		local predictionSolutions = {[A] = {},[M] = {},[T] = {},[E] = {}}
+		local function addAsSolution(t,b)
+			for i,ti in pairs(predictionSolutions[b]) do
+				if math.abs(t-ti) < matchDiff then
+					predictionSolutions[b][i] = (t+ti)/2
+					return
+				end
+			end
+			--if he did go through all of the already Contained solution and there was none Matching this one, add it!
+			predictionSolutions[b][#predictionSolutions[b] + 1] = t
+		end
+		
+		local function copyTable(tbl)
+			local t = {}
+			for i,v in pairs(tbl) do
+				t[i] = v
+			end
+			return t
+		end
+		
+		local function newPull(start)
+			startGolem = start
+			currentString = start
+			nefActionCounter = 1
+			lastTimestamp = nil
+			fittingRotations = copyTable(predictions[start])
+		end
+		
+		local function hideNefBars()
+			for txt, b in pairs(showedTimers) do
+				if b then 
+					mod:SendMessage("BigWigs_StopBar", mod, txt)
+				end
+			end
+			showedTimers = {}
+		end
+		
+		function hcNef.spellUsed(boss) --acctually boss is now the barText according to the boss-Ability - does not change bahavior
+			if not boss then return end
+			nefActionCounter = nefActionCounter + 1 
+			
+			if not lastNefAction then
+				newPull(boss)
+			end
+			lastNefAction = boss
+			
+			timestamp = GetTime()
+			local t
+			if lastTimestamp then
+				t = timestamp-lastTimestamp
+			end
+			lastTimestamp = timestamp
+			
+			hideNefBars()
+			
+			predictionSolutions = {[A] = {},[M] = {},[T] = {},[E] = {}}
+			for i,pred in pairs(fittingRotations) do
+				local check, upcoming = pred[nefActionCounter-1], pred[nefActionCounter]
+				local b, txt = matchPrediction(check, {t,boss})
+				if b then
+					addAsSolution(unpack(upcoming))
+					--predictionSolutions
+				else
+					fittingRotations[i] = nil
+				end
+			end
+			
+			for displayTxt,bossTbl in pairs(predictionSolutions) do --displayTxt == E|M|A|T
+				for i,timer in pairs(bossTbl) do
+					local txt
+					if i > 1 then
+						txt = "!"..displayTxt.."!".."("..i..")"
+					else
+						txt = "!"..displayTxt.."!"
+					end
+					mod:Bar("nef", txt, timer, nefIconByName[displayTxt])
+					showedTimers[txt] = true
+				end
+			end
+		end
+		
+	end
+	
+end

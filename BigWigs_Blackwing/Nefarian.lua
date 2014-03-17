@@ -134,16 +134,14 @@ end
 function mod:Deaths(mobId)
 	if mobId == 41948 then
 		deadAdds = deadAdds + 1
-		--[[if self:Difficulty() > 2 and not phase3warned then
+		if self:Difficulty() > 2 and not phase3warned then
 			self:SendMessage("BigWigs_StopBar", self, CL["phase"]:format(phase))
 			phase = 3
 			self:Message("phase", CL["phase"]:format(phase), "Attention", 81007)
+			mod:Bar(79318, dominion, 24.5, 79318)
 			phase3warned = true
-		end]]--
+		end
 		if deadAdds == 3 and not phase3warned then
-			if self:Difficulty() > 2 then
-				mod:Bar(79318, dominion, 24.5, 79318)
-			end
 			self:SendMessage("BigWigs_StopBar", self, CL["phase"]:format(phase))
 			phase = 3
 			self:Message("phase", CL["phase"]:format(phase), "Attention", 81007)
