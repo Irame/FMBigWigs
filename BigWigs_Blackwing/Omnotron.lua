@@ -128,8 +128,7 @@ do
 		local sGUID = select(11, ...)
 		self:ScheduleTimer(checkTarget, 0.1, sGUID)
 		
-		countUsedSpells.ChemicalCloud = countUsedSpells.ChemicalCloud or 0
-		countUsedSpells.ChemicalCloud = countUsedSpells.ChemicalCloud + 1
+		countUsedSpells.ChemicalCloud = (countUsedSpells.ChemicalCloud or 0) + 1
 		if countUsedSpells.ChemicalCloud < 2 then
 			self:Bar(80161, Chemical_Cloud, 30, 80161) --appears to be the same on NH/HC
 		end
@@ -210,12 +209,7 @@ end
 
 function mod:Incinerate(player, spellId)
 
-	countUsedSpells.Incinerate = (function(x)
-		--very variable			
-		return (x or 0) + 1 --MUCH Leserlich
---such WOW!			--so x
-	end)(countUsedSpells.Incinerate)
-	
+	countUsedSpells.Incinerate = (countUsedSpells.Incinerate or 0) + 1
 	local diff = self:Difficulty()
 	local casted = countUsedSpells.Incinerate
 	if casted < 3 and diff < 3 then --normal
@@ -236,8 +230,7 @@ function mod:AcquiringTarget(player, spellId)
 	self:TargetMessage(79501, L["acquiring_target"], player, "Urgent", spellId, "Alarm")
 	self:SecondaryIcon(79501, player)
 	
-	countUsedSpells.AcquiringTarget = countUsedSpells.AcquiringTarget or 0
-	countUsedSpells.AcquiringTarget = countUsedSpells.AcquiringTarget + 1
+	countUsedSpells.AcquiringTarget = (countUsedSpells.AcquiringTarget or 0) + 1
 	if countUsedSpells.AcquiringTarget < 2 then
 		self:Bar(79501, L.acquiring_target, 27, 79501)
 	end
@@ -262,8 +255,7 @@ function mod:LightningConductor(player, spellId, _, _, spellName)
 	self:TargetMessage(79888, spellName, player, "Attention", spellId, "Alarm")
 	self:SecondaryIcon(79888, player)
 	
-	countUsedSpells.LightningConductor = countUsedSpells.LightningConductor or 0
-	countUsedSpells.LightningConductor = countUsedSpells.LightningConductor + 1
+	countUsedSpells.LightningConductor = (countUsedSpells.LightningConductor or 0) + 1
 	
 	if self:Difficulty() > 2 then
 	--HC
@@ -286,8 +278,7 @@ function mod:PoisonProtocol(_, spellId, _, _, spellName)
 	self:Bar(80053, spellName, 45, spellId)
 	self:Message(80053, L["protocol_message"], "Important", spellId, "Alert")
 		
-	countUsedSpells.PoisonProtocol = countUsedSpells.PoisonProtocol or 0
-	countUsedSpells.PoisonProtocol = countUsedSpells.PoisonProtocol + 1
+	countUsedSpells.PoisonProtocol = (countUsedSpells.PoisonProtocol or 0) + 1
 	if countUsedSpells.PoisonProtocol < 2 then --both modes 2 casts.
 		if self:Difficulty() > 2 then --HC
 			self:Bar(91513, Poison_Protocol, 25, 91513)
