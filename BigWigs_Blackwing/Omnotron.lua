@@ -148,9 +148,19 @@ function mod:GolemActivated(unit,unitGUID)
 		self:Bar(79501, L.acquiring_target, 20, 79501) -- -4sec(10HC)
 		countUsedSpells.Incinerate = 0
 		self:Bar(79023, L.incinerate, 10.5, 79023)
+		
+		if not lastNefAction and self:Difficulty() > 2 then --first Aquiring is Rooted.
+			self:Bar(nefOptionRelative[M], M, 20, nefIconByName[M])
+		end
+		
 	elseif bossID == 42179 then --Elektron 42179
 		countUsedSpells.LightningConductor = 0
 		self:Bar(79888, Lightning_Conductor, 13, 79888) --same Timer NH/HC
+		
+		if not lastNefAction and self:Difficulty() > 2 then --first Conductor is a ShadowConductor.
+			self:Bar(nefOptionRelative[E], E, 13, nefIconByName[E])
+		end
+		
 	elseif bossID == 42180 then --Toxitron 42180
 		countUsedSpells.PoisonProtocol = 0
 		countUsedSpells.ChemicalCloud = 0
@@ -161,7 +171,17 @@ function mod:GolemActivated(unit,unitGUID)
 			self:Bar(91513, Poison_Protocol, 21, 91513)
 			self:Bar(80161, Chemical_Cloud, 11, 80161)
 		end
+		
+		if not lastNefAction and self:Difficulty() > 2 then --Currently Omnotron cannot start with Toxitron, but we will assume it would be the first Chemical Cloud.
+			self:Bar(nefOptionRelative[T], T, 25, nefIconByName[T])
+		end
+		
 	elseif bossID == 42166 then --Arkanotron 42166
+	
+		if not lastNefAction and self:Difficulty() > 2 then --this one is a little bit tricky because its related to how fast arcanotron is kicked
+			self:Bar(nefOptionRelative[A], A, 27, nefIconByName[A])
+		end
+	
 	end
 end
 
@@ -509,9 +529,9 @@ do --Nef in HC
 				for i,timer in pairs(bossTbl) do
 					local txt
 					if i > 1 then
-						txt = "!"..displayTxt.."!".."("..i..")"
+						txt = displayTxt.." ("..i..")"
 					else
-						txt = "!"..displayTxt.."!"
+						txt = displayTxt
 					end
 					mod:Bar(nefOptionRelative[displayTxt], txt, timer, nefIconByName[displayTxt])
 					showedTimers[txt] = true
