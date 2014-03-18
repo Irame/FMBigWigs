@@ -132,6 +132,7 @@ do
 		countUsedSpells.ChemicalCloud = (countUsedSpells.ChemicalCloud or 0) + 1
 		if countUsedSpells.ChemicalCloud < 2 then
 			self:Bar(80161, Chemical_Cloud, 30, 80161) --appears to be the same on NH/HC
+			hcNef.realtimeAdjust(T,30)
 		end
 	end
 end
@@ -147,21 +148,24 @@ function mod:GolemActivated(unit,unitGUID)
 	if bossID == 42178 then --Magmatron 42178
 		countUsedSpells.AcquiringTarget = 0
 		self:Bar(79501, L.acquiring_target, 20, 79501) -- -4sec(10HC)
+		hcNef.realtimeAdjust(M,20)
+		
 		countUsedSpells.Incinerate = 0
 		self:Bar(79023, L.incinerate, 10.5, 79023)
 		
 		if not lastNefAction and self:Difficulty() > 2 then --first Aquiring is Rooted.
 			self:Bar(nefOptionRelative[M], M, 20, nefIconByName[M])
-			showedTimers[M] = true
+			showedTimers[M] = GetTime() + 20
 		end
 		
 	elseif bossID == 42179 then --Elektron 42179
 		countUsedSpells.LightningConductor = 0
 		self:Bar(79888, Lightning_Conductor, 13, 79888) --same Timer NH/HC
+		hcNef.realtimeAdjust(E,13)
 		
 		if not lastNefAction and self:Difficulty() > 2 then --first Conductor is a ShadowConductor.
 			self:Bar(nefOptionRelative[E], E, 13, nefIconByName[E])
-			showedTimers[E] = true
+			showedTimers[E] = GetTime() + 13
 		end
 		
 	elseif bossID == 42180 then --Toxitron 42180
@@ -169,7 +173,8 @@ function mod:GolemActivated(unit,unitGUID)
 		countUsedSpells.ChemicalCloud = 0
 		if self:Difficulty() > 2 then --HC
 			self:Bar(91513, Poison_Protocol, 15, 91513) 
-			self:Bar(80161, Chemical_Cloud, 25, 80161) 
+			self:Bar(80161, Chemical_Cloud, 25, 80161)
+			hcNef.realtimeAdjust(T,25)
 		else --NH
 			self:Bar(91513, Poison_Protocol, 21, 91513)
 			self:Bar(80161, Chemical_Cloud, 11, 80161)
@@ -177,14 +182,14 @@ function mod:GolemActivated(unit,unitGUID)
 		
 		if not lastNefAction and self:Difficulty() > 2 then --Currently Omnotron cannot start with Toxitron, but we will assume it would be the first Chemical Cloud.
 			self:Bar(nefOptionRelative[T], T, 25, nefIconByName[T])
-			showedTimers[T] = true
+			showedTimers[T] = GetTime() + 25
 		end
 		
 	elseif bossID == 42166 then --Arkanotron 42166
-	
+		--cannot give realtimeAdjust, because its not relative to any cast.
 		if not lastNefAction and self:Difficulty() > 2 then --this one is a little bit tricky because its related to how fast arcanotron is kicked
 			self:Bar(nefOptionRelative[A], A, 27, nefIconByName[A])
-			showedTimers[A] = true
+			showedTimers[A] = GetTime() + 27
 		end
 	
 	end
@@ -257,6 +262,7 @@ function mod:AcquiringTarget(player, spellId)
 	countUsedSpells.AcquiringTarget = (countUsedSpells.AcquiringTarget or 0) + 1
 	if countUsedSpells.AcquiringTarget < 2 then
 		self:Bar(79501, L.acquiring_target, 27, 79501)
+		hcNef.realtimeAdjust(M,27)
 	end
 end
 
@@ -285,6 +291,7 @@ function mod:LightningConductor(player, spellId, _, _, spellName)
 	--HC
 		if countUsedSpells.LightningConductor < 3 then
 			self:Bar(79888, Lightning_Conductor, 20, 79888)
+			hcNef.realtimeAdjust(E,20)
 		end
 	else
 	--NH
@@ -535,8 +542,29 @@ do --Nef in HC
 						txt = displayTxt
 					end
 					mod:Bar(nefOptionRelative[displayTxt], txt, timer, nefIconByName[displayTxt])
-					showedTimers[txt] = true
+					showedTimers[txt] = GetTime() + timer
 				end
+			end
+		end
+		
+		function hcNef.realtimeAdjust(boss,t)
+		--[[Searches for Timers matching this Timers expiration time and then edits those to the given timing]]
+			local expir = GetTime() + t
+			local foundTimer--will get representativeText
+			
+			for txt,timerExpir in pairs(showedTimer) do
+				if txt:find(boss) and math.abs(timerExpir - expir) < 4 then
+					mod:StopBar(txt)
+					showedTimer[txt] = nil
+					if not foundTimer then
+						foundTimer = txt
+					end
+				end
+			end
+			
+			if foundTimer then
+				mod:Bar(nefOptionRelative[boss], foundTimer, t, nefIconByName[boss])
+				showedTimer[txt] = expir
 			end
 		end
 		
