@@ -570,9 +570,9 @@ do --Nef in HC
 				mod:Bar(nefOptionRelative[boss], foundTimer, t, nefIconByName[boss])
 				showedTimer[txt] = expir
 				if t > 5 then
-					mod:DelayedMessage(nefOptionRelative[boss], t-5, boss.." soon", "Urgent", nefOptionRelative[boss])
+					mod:DelayedMessage(nefOptionRelative[boss], t-5, boss.." soon", "Urgent", nefIconByName[boss])
 				else
-					mod:Message(nefOptionRelative[boss], boss.." soon", "Urgent", nefOptionRelative[boss])
+					mod:Message(nefOptionRelative[boss], boss.." soon", "Urgent", nefIconByName[boss])
 				end
 			end
 		end
