@@ -44,6 +44,7 @@ end
 L = mod:GetLocale()
 
 --Nef-Timers
+local showedTimers = {}--obviously the nef-timers
 local hcNef = {}
 local lastNefAction = nil
 local M, T, E, A = GetSpellInfo(92023),GetSpellInfo(91849),GetSpellInfo(92051),L.pool --"Magmatron","Toxitron","Electron","Arkanotron"
@@ -151,6 +152,7 @@ function mod:GolemActivated(unit,unitGUID)
 		
 		if not lastNefAction and self:Difficulty() > 2 then --first Aquiring is Rooted.
 			self:Bar(nefOptionRelative[M], M, 20, nefIconByName[M])
+			showedTimers[M] = true
 		end
 		
 	elseif bossID == 42179 then --Elektron 42179
@@ -159,6 +161,7 @@ function mod:GolemActivated(unit,unitGUID)
 		
 		if not lastNefAction and self:Difficulty() > 2 then --first Conductor is a ShadowConductor.
 			self:Bar(nefOptionRelative[E], E, 13, nefIconByName[E])
+			showedTimers[E] = true
 		end
 		
 	elseif bossID == 42180 then --Toxitron 42180
@@ -174,12 +177,14 @@ function mod:GolemActivated(unit,unitGUID)
 		
 		if not lastNefAction and self:Difficulty() > 2 then --Currently Omnotron cannot start with Toxitron, but we will assume it would be the first Chemical Cloud.
 			self:Bar(nefOptionRelative[T], T, 25, nefIconByName[T])
+			showedTimers[T] = true
 		end
 		
 	elseif bossID == 42166 then --Arkanotron 42166
 	
 		if not lastNefAction and self:Difficulty() > 2 then --this one is a little bit tricky because its related to how fast arcanotron is kicked
 			self:Bar(nefOptionRelative[A], A, 27, nefIconByName[A])
+			showedTimers[A] = true
 		end
 	
 	end
@@ -437,7 +442,6 @@ do --Nef in HC
 		local nefActionCounter = 0
 		local lastTimestamp = nil
 		local fittingRotations = {}
-		local showedTimers = {}
 		--do not care what values are in there. - will be changed either way before first usage.
 		
 		local matchDiff = 5
