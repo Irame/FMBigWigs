@@ -450,22 +450,13 @@ do --Nef in HC
 			local time1,boss1 = unpack(tbl1)
 			local time2,boss2 = unpack(tbl2)
 			if boss1 == boss2 then
-				if time1 == time2 then
-					return true, 0
-				elseif time1 and time2 then --and math.abs(time1-time2) < matchDiff
-					local t = (time2 - time1)
-					if math.abs(t) < 1 then
-						return true, t
-					elseif math.abs(t) < matchDiff then 
-						return "outtimed",  t
-					else
-						return false,  t
-					end
-				else
-					return false, "nil"
+				if time1 == time2 then --solves problem of both timers being nil.
+					return true
+				elseif time1 and time2 and math.abs(time2 - time1) < matchDiff then 
+					return true
 				end
 			end
-			return false, "bossdiff"
+			return false
 		end
 		
 		local predictionSolutions = {[A] = {},[M] = {},[T] = {},[E] = {}}
@@ -526,8 +517,8 @@ do --Nef in HC
 			predictionSolutions = {[A] = {},[M] = {},[T] = {},[E] = {}}
 			for i,pred in pairs(fittingRotations) do
 				local check, upcoming = pred[nefActionCounter-1], pred[nefActionCounter]
-				local b, txt = matchPrediction(check, {t,boss})
-				if b then
+				
+				if matchPrediction(check, {t,boss}) then
 					addAsSolution(unpack(upcoming))
 					--predictionSolutions
 				else
