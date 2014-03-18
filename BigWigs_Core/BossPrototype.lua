@@ -607,6 +607,12 @@ function boss:Bar(key, text, length, icon, barColor, barEmphasized, barText, bar
 	end
 end
 
+function boss:StopBar(text)
+	if tostring(text) then
+		self:SendMessage("BigWigs_StopBar", self, text)
+	end
+end
+
 -- Examples of API use in a module:
 -- self:Sync("abilityPrefix", playerName)
 -- self:Sync("ability")
