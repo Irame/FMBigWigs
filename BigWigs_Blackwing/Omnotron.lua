@@ -537,15 +537,15 @@ do --Nef in HC
 				end
 			end
 			
-			for displayTxt,bossTbl in pairs(predictionSolutions) do --displayTxt == E|M|A|T
+			for solutionBoss,bossTbl in pairs(predictionSolutions) do --solutionBoss == E|M|A|T
 				for i,timer in pairs(bossTbl) do
 					local txt
 					if i > 1 then
-						txt = displayTxt.." ("..i..")"
+						txt = solutionBoss.." ("..i..")"
 					else
-						txt = displayTxt
+						txt = solutionBoss
 					end
-					mod:Bar(nefOptionRelative[displayTxt], txt, timer, nefIconByName[displayTxt])
+					mod:Bar(nefOptionRelative[solutionBoss], txt, timer, nefIconByName[solutionBoss])
 					showedTimers[txt] = GetTime() + timer
 				end
 			end
