@@ -13,7 +13,7 @@ mod:RegisterEnableMob(45992, 45993)
 local phaseCount = 0
 local marked, blackout, deepBreath = GetSpellInfo(88518), GetSpellInfo(86788), GetSpellInfo(86059)
 local engulfing = GetSpellInfo(86622)
-local devouringFlames = "~"..GetSpellInfo(86840)
+local devouringFlames = GetSpellInfo(86840)
 local theralion = EJ_GetSectionInfo(2994)
 local valiona = EJ_GetSectionInfo(2985)
 local emTargets = mod:NewTargetList()
@@ -70,6 +70,9 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "BlackoutApplied", 86788, 92877, 92876, 92878)
 	self:Log("SPELL_AURA_REMOVED", "BlackoutRemoved", 86788, 92877, 92876, 92878)
 	self:Log("SPELL_CAST_START", "DevouringFlames", 86840)
+	
+	self:Log("SPELL_CAST_START", "ValionaMeteorStart",86013,92860,92859,92861)--10N, 10H, 25N, 25H(guessed)
+	self:Log("SPELL_CAST_SUCCESS", "ValionaMeteorEnd",86014,92864,92863,92864)
 
 	self:Log("SPELL_AURA_APPLIED", "EngulfingMagicApplied", 86622, 95640, 95639, 95641)
 	self:Log("SPELL_AURA_REMOVED", "EngulfingMagicRemoved", 86622, 95640, 95639, 95641)
@@ -85,7 +88,7 @@ end
 
 function mod:OnEngage(diff)
 	markWarned = false
-	self:Bar(86840, devouringFlames, 30, 86840)
+	self:Bar(86840, devouringFlames, 25, 86840)
 	self:Bar(86788, blackout, 5, 86788)
 	self:Bar("phase_switch", L["phase_bar"]:format(theralion), 103, 60639)
 	self:OpenProximity(8, 86369)
@@ -114,8 +117,8 @@ end
 local function valionaHasLanded()
 	mod:SendMessage("BigWigs_StopBar", mod, "~"..GetSpellInfo(86622))
 	mod:Message("phase_switch", L["phase_bar"]:format(valiona), "Positive", 60639)
-	mod:Bar(86840, devouringFlames, 34, 86840)
-	mod:Bar(86788, blackout, 4, 86788)
+	mod:Bar(86840, devouringFlames, 24, 86840)
+	mod:Bar(86788, blackout, 9, 86788)
 	mod:OpenProximity(8, 86369)
 end
 
@@ -142,23 +145,70 @@ function mod:DazzlingDestruction()
 	elseif phaseCount == 3 then
 		self:ScheduleTimer(theralionHasLanded, 5)
 		self:Message("phase_switch", L["phase_bar"]:format(theralion), "Positive", 60639)
+		
+		--88 sec till valiona stats to fly - not confirmed
+		self:Bar(86059,L.breath_message,88,86059)
+		self:ScheduleTimer(function() mod:ValionaMeteorStart() end,88) --force Check at that point!
 		phaseCount = 0
 	end
 end
 
--- She emotes 3 times, every time she does a breath
-function mod:DeepBreathCast()
+--[[ She emotes 3 times, every time she does a breath
+function mod:DeepBreathCast() 
 	phaseCount = phaseCount + 1
 	self:Message(86059, L["breath_message"], "Important", 92194, "Alarm")
 	if phaseCount == 3 then
 		self:Bar("phase_switch", L["phase_bar"]:format(theralion), 105, 60639)
 		phaseCount = 0
 	end
+end]]--She does not emote on FM
+
+do
+	local informed = false
+	local function resetInformed() 
+		informed = false 
+	end
+	
+	local function warnBreath()
+		self:Message(86059, L["breath_message"], "Important", 92194, "Alarm")
+	end
+	
+	function mod:ValionaMeteorStart()
+		if informed then return end
+		
+		local cast1 = UnitCastingInfo("boss1")
+		local cast2 = UnitCastingInfo("boss2")
+		if not cast1 and not cast2 then
+			informed = true
+			self:ScheduleTimer(resetInformed, 10)
+			
+			warnBreath()
+			self:ScheduleTimer(warnBreath, 16)
+			self:ScheduleTimer(warnBreath, 32)
+		end
+	end
+
+	function mod:ValionaMeteorEnd()
+		--this event hits ~1.5 sec. after the above
+		if informed then return end
+		
+		local cast1 = UnitCastingInfo("boss1")
+		local cast2 = UnitCastingInfo("boss2")
+		if not cast1 and not cast2 then
+			informed = true
+			self:ScheduleTimer(resetInformed, 10)
+			
+			warnBreath()
+			self:ScheduleTimer(warnBreath, 14)
+			self:ScheduleTimer(warnBreath, 30)
+		end
+	end
 end
 
 -- Valiona does this when she fires the first deep breath and begins the landing phase
 -- It only triggers once from her yell, not 3 times.
 function mod:DeepBreath()
+	--not confirmed for FM
 	self:Bar("phase_switch", L["phase_bar"]:format(valiona), 57, 60639)
 	self:ScheduleTimer(valionaHasLanded, 57)
 end
@@ -180,7 +230,6 @@ end
 function mod:BlackoutRemoved(player, spellId, _, _, spellName)
 	self:OpenProximity(8, 86369)
 	self:PrimaryIcon(86788)
-	--self:Bar(86788, spellName, 40, spellId) -- make sure to remove bar when it's removed
 end
 
 local function markRemoved()
@@ -199,7 +248,7 @@ function mod:UNIT_AURA(event, unit)
 end
 
 function mod:DevouringFlames(_, spellId, _, _, spellName)
-	self:Bar(86840, devouringFlames, 42, spellId) -- make sure to remove bar when it takes off
+	self:Bar(86840, devouringFlames, 40, spellId) -- make sure to remove bar when it takes off
 	self:Message(86840, spellName, "Important", spellId, "Alert")
 end
 
