@@ -81,6 +81,7 @@ function mod:OnBossEnable()
 	
 	self:Log("SPELL_CAST_START", "Grip", 91849)
 	self:Log("SPELL_AURA_APPLIED", "PoolExplosion", 91857)
+	self:Log("SPELL_AURA_APPLIED", "PoolSpawned", 79628)
 
 	self:Log("SPELL_CAST_SUCCESS", "PoisonProtocol", 91513, 80053, 91514, 91515)
 	self:Log("SPELL_AURA_APPLIED", "Fixate", 80094)
@@ -137,10 +138,13 @@ do
 	end
 end
 
-function mod:PoolExplosion(_, _, _, _, _, _, _, _, _, _, sGUID)
-	if self.GetMobIdByGUID[sGUID] ~= 42733 then return end 
+function mod:PoolExplosion()
 	self:Message(91879, L["pool"], "Urgent", 91879)
 	hcNef.spellUsed(A)
+end
+
+function mod:PoolSpawned()
+	hcNef.realtimeAdjust(A,11) --so random
 end
 
 function mod:GolemActivated(unit,unitGUID)
