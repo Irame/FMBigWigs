@@ -453,6 +453,7 @@ do --Nef in HC
 		local nefActionCounter = 0
 		local lastTimestamp = nil
 		local fittingRotations = {}
+		local adjustTimes = {}
 		--do not care what values are in there. - will be changed either way before first usage.
 		
 		local matchDiff = 5
@@ -553,9 +554,18 @@ do --Nef in HC
 		
 		function hcNef.realtimeAdjust(boss,t)
 		--[[Searches for Timers matching this Timers expiration time and then edits those to the given timing]]
-			local expir = GetTime() + t
-			local foundTimer--will get representativeText
+			local expir
+			if t then
+				expir = GetTime() + t
+				adjustTimes[boss] = expir
+			elseif adjustTimes[boss] then
+				expir = adjustTimes[boss]
+				t = expir - GetTime()
+			end
 			
+			if not expir or not t or t < 0 then return end
+			
+			local foundTimer--will get representativeText
 			for txt,timerExpir in pairs(showedTimer) do
 				if txt:find(boss) and math.abs(timerExpir - expir) < 4 then
 					mod:StopBar(txt)
