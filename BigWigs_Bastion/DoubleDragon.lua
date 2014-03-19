@@ -147,7 +147,7 @@ function mod:DazzlingDestruction()
 		self:Message("phase_switch", L["phase_bar"]:format(theralion), "Positive", 60639)
 		
 		--88 sec till valiona stats to fly - not confirmed
-		self:Bar(86059,L.breath_message,88,86059)
+		self:Bar(86059,L.breath_message,88,92194)
 		self:ScheduleTimer(function() mod:ValionaMeteorStart() end,88) --force Check at that point!
 		phaseCount = 0
 	end
