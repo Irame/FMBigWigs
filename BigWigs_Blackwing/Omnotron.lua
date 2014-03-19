@@ -550,6 +550,11 @@ do --Nef in HC
 					showedTimers[txt] = GetTime() + timer
 				end
 			end
+			
+			--started timers - try to adjust them instantly - obviously by saves from previous adjusts
+			for b,_ in pairs(predictions) do
+				hcNef.realtimeAdjust(b)
+			end
 		end
 		
 		function hcNef.realtimeAdjust(boss,t)
