@@ -546,7 +546,9 @@ do --Nef in HC
 					else
 						txt = solutionBoss
 					end
-					mod:Bar(nefOptionRelative[solutionBoss], txt, timer, nefIconByName[solutionBoss])
+					if solutionBoss == A then -- filter everything than Arcanotron
+						mod:Bar(nefOptionRelative[solutionBoss], txt, timer, nefIconByName[solutionBoss])
+					end
 					showedTimers[txt] = GetTime() + timer
 				end
 			end
