@@ -153,7 +153,7 @@ function mod:DazzlingDestruction()
 	end
 end
 
---[[ She emotes 3 times, every time she does a breath
+--[[ She emotes 3 times, every time she does a breath]]
 function mod:DeepBreathCast() 
 	phaseCount = phaseCount + 1
 	self:Message(86059, L["breath_message"], "Important", 92194, "Alarm")
@@ -161,7 +161,7 @@ function mod:DeepBreathCast()
 		self:Bar("phase_switch", L["phase_bar"]:format(theralion), 105, 60639)
 		phaseCount = 0
 	end
-end]]--She does not emote on FM
+end--She does not emote on FM
 
 do
 	local informed = false
