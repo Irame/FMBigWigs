@@ -583,7 +583,7 @@ do --Nef in HC
 			
 			if foundTimer then
 				mod:Bar(nefOptionRelative[boss], foundTimer, t, nefIconByName[boss])
-				showedTimers[txt] = expir
+				showedTimers[foundTimer] = expir
 				if t > 5 then
 					mod:DelayedMessage(nefOptionRelative[boss], t-5, boss.." soon", "Urgent", nefIconByName[boss])
 				else
