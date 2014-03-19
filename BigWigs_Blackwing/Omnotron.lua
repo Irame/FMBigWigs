@@ -571,10 +571,10 @@ do --Nef in HC
 			if not expir or not t or t < 0 then return end
 			
 			local foundTimer--will get representativeText
-			for txt,timerExpir in pairs(showedTimer) do
+			for txt,timerExpir in pairs(showedTimers) do
 				if txt:find(boss) and math.abs(timerExpir - expir) < 4 then
 					mod:StopBar(txt)
-					showedTimer[txt] = nil
+					showedTimers[txt] = nil
 					if not foundTimer then
 						foundTimer = txt
 					end
@@ -583,7 +583,7 @@ do --Nef in HC
 			
 			if foundTimer then
 				mod:Bar(nefOptionRelative[boss], foundTimer, t, nefIconByName[boss])
-				showedTimer[txt] = expir
+				showedTimers[txt] = expir
 				if t > 5 then
 					mod:DelayedMessage(nefOptionRelative[boss], t-5, boss.." soon", "Urgent", nefIconByName[boss])
 				else
