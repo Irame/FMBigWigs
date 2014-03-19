@@ -170,7 +170,7 @@ do
 	end
 	
 	local function warnBreath()
-		self:Message(86059, L["breath_message"], "Important", 92194, "Alarm")
+		mod:Message(86059, L["breath_message"], "Important", 92194, "Alarm")
 	end
 	
 	function mod:ValionaMeteorStart()
