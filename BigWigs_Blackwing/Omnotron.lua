@@ -382,14 +382,14 @@ do --Nef in HC
 			local start = M
 			local preRot = {{45,E},{51,A}, {24,M},{43,E}}
 			local rot = {{52,A}, {23,M}, {44,E}}
-			local prediction = CreatePredictionTable(start, preRot, rot)
+			CreatePredictionTable(start, preRot, rot)
 		end
 		
 		do --M2
 			local start = M	--first is pretty variable.
 			local preRot = {{53,E},{40,E}, {32,T},{45,E}}
 			local rot = {{40,E}, {32,T}, {45,E}}
-			local prediction = CreatePredictionTable(start, preRot, rot)
+			CreatePredictionTable(start, preRot, rot)
 		end	
 		
 		do --M3 
@@ -397,54 +397,54 @@ do --Nef in HC
 			local start = M
 			local preRot = {{67,A}}
 		end
-		
+			
 		do --E1
 			local start = E
 			local preRot = {{44,A},{29,A}, {21,M},{40,T},{59,A}}
 			local rot = {{20,M}, {40,T}, {60,A}}
-			local prediction = CreatePredictionTable(start, preRot, rot)
+			CreatePredictionTable(start, preRot, rot)
 		end
 
 		do --E2
 			local start = E	
 			local preRot = {{45,A},{25,M}, {40,T},{35,E},{50,A},{25,M},{40,T},{60,A}}
 			local rot = {{25,M}, {40,T}, {60,A}}
-			local prediction = CreatePredictionTable(start, preRot, rot)
+			CreatePredictionTable(start, preRot, rot)
 		end
 		
 		do --E3
 			local start = E	
 			local preRot = {{41,A},{25,M}, {37,T},{32,T},{60,A},{20,M},{40,T}}
 			local rot = {{60,A}, {20,M}, {40,T}}
-			local prediction = CreatePredictionTable(start, preRot, rot)
+			CreatePredictionTable(start, preRot, rot)
 		end
 		
 		do --E4
 			local start = E
 			local preRot = {{36,M},{65,A}, {34,T},{58,A},{30,A},{30,T}}
 			local rot = {{58,A}, {30,A}, {30,T}}
-			local prediction = CreatePredictionTable(start, preRot, rot)
+			CreatePredictionTable(start, preRot, rot)
 		end
 
 		do --A1
 			local start = A
 			local preRot = {{31,A},{23,M}, {40,T},{30,T},{35,E},{45,M},{40,T},{35,E}}
 			local rot = {{45,M}, {40,T}, {35,E}}
-			local prediction = CreatePredictionTable(start, preRot, rot)
+			CreatePredictionTable(start, preRot, rot)
 		end
 		
 		do --A2
 			local start = A
 			local preRot = {{31,A},{20,M}, {36,E},{33,T},{47,E},{40,E},{31,T}}
 			local rot = {{50,E}, {40,E}, {30,T}}
-			local prediction = CreatePredictionTable(start, preRot, rot)
+			CreatePredictionTable(start, preRot, rot)
 		end	
 		
 		do --A3
 			local start = A
 			local preRot = {{20,E},{37,M}, {39,T},{45,E}}
 			local rot = {{37,M}, {37,T}, {45,E}}
-			local prediction = CreatePredictionTable(start, preRot, rot)
+			CreatePredictionTable(start, preRot, rot)
 		end
 	end
 	
