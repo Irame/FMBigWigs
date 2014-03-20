@@ -555,26 +555,37 @@ do --Nef in HC
 			
 			--started timers - try to adjust them instantly - obviously by saves from previous adjusts
 			for b,_ in pairs(predictions) do
-				hcNef.realtimeAdjust(b)
+				hcNef.realtimeAdjust(b,"saves")
 			end
 		end
 		
-		function hcNef.realtimeAdjust(boss,t)
+		function hcNef.realtimeAdjust(boss,t,...)
 		--[[Searches for Timers matching this Timers expiration time and then edits those to the given timing]]
-			local expir
-			if t then
-				expir = GetTime() + t
-				adjustTimes[boss] = expir
-			elseif adjustTimes[boss] then
-				expir = adjustTimes[boss]
-				t = expir - GetTime()
+			if not t then return end
+			
+			if t == "saves" then
+				if adjustTimes[boss] then
+					local tbl = {}
+					for i, expir in pairs(adjustTimes[boss]) do
+						tbl[i] = expir - GetTime()
+					end
+					adjustTimes[boss] = {} -- will be filled up again within the call below. (only with numbers that make sense upon this time.)
+					hcNef.realtimeAdjust(boss,unpack(tbl))
+				end
+				return --there is nothing else to do here.
 			end
 			
-			if not expir or not t or t < 0 then return end
+			if type(t) ~= "number" or t < 0 then
+				--just nonsense to go on with this one.
+				if ... then hcNef.realtimeAdjust(boss,...) end -- maybe the other ones have better values.
+				return
+			end
+				
+			local expir = GetTime() + t
+			local foundTimer
 			
-			local foundTimer--will get representativeText
 			for txt,timerExpir in pairs(showedTimers) do
-				if txt:find(boss) and math.abs(timerExpir - expir) < 4 then
+				if txt:find(boss) and math.abs(timerExpir - expir) <= 4 then
 					mod:StopBar(txt)
 					showedTimers[txt] = nil
 					if not foundTimer then
@@ -582,6 +593,12 @@ do --Nef in HC
 					end
 				end
 			end
+			
+			--do not show the timers before we go on checking - because we always want to priorize the first arguements.
+			if ... then 
+				hcNef.realtimeAdjust(boss,...) 
+			end
+			adjustTimes[boss] = {expir, unpack(adjustTimes[boss])}
 			
 			if foundTimer then
 				mod:Bar(nefOptionRelative[boss], foundTimer, t, nefIconByName[boss])
@@ -593,7 +610,6 @@ do --Nef in HC
 				end
 			end
 		end
-		
 	end
 	
 end
