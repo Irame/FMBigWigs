@@ -119,6 +119,9 @@ function mod:OnBossEnable()
 	self:Yell("Blue", L["blue_phase_trigger"])
 	self:Yell("Green", L["green_phase_trigger"])
 	self:Yell("Dark", L["dark_phase_trigger"])
+		
+	-- Because the Dark Phase is not announced on FM we track the Buff he gains.
+	self:Log("SPELL_AURA_APPLIED", "Dark", 92716)
 
 	self:Death("Win", 41378)
 end
