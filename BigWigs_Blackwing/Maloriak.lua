@@ -138,7 +138,7 @@ function mod:OnEngage(diff)
 	self:OpenProximity(8, 77699)
 	aberrations = 18
 	phaseCounter = 0
-	arcaneStormCount = 0
+	arcaneStormCount = -1
 	addCastCount = -1 --first is "out-of-phase"
 	self:Bar(77569,releaseAberration,16,77569) --not confirmed for NM
 	isChilled, currentPhase, startPhase = nil, nil, nil
@@ -354,25 +354,45 @@ function mod:BitingChillRemoved(player)
 end
 
 do
-	local times = {15,15,20};times[0] = 15
+	local preRot = {15,15,20,15,15,15,20}
+	local rot = {15,15,20}
+	
+	local times = setmetatable({}, {__index = function(tbl, num)
+		local ret
+		if num > #preRot then
+			local i = (num - #preRot)%(#rot)
+			if i == 0 then i = #rot end
+			ret = rot[i]
+		elseif num == 0 then
+			ret = 20
+		else
+			ret = preRot[num]
+		end
+		rawset(tbl, num, ret)
+		return ret
+	end})	
+	
 	local last
 	local filler
 	
 	local function fill(t)
 		mod:Bar(77896,arcaneStorm,t,77896)
+		--if did not cancel this timer in 5 sec we assume he skipped one.
+		filler = mod:ScheduleTimer(function() arcaneStormCount = arcaneStormCount + 1 end, 5)
 	end
 	
 	function mod:ArcaneStorm(_, spellId, _, _, spellName)
 		self:Message(77896, spellName, "Urgent", spellId)
 		
+		--this happens if he goes into black phase - need to reset "rotation"
 		if not last or GetTime()-last > 60 then arcaneStormCount = 0 end
 		last = GetTime()
 		arcaneStormCount = arcaneStormCount + 1
-		local t, t2 = times[arcaneStormCount%4], times[(arcaneStormCount+1)%4]
+		local t, t2 = times[arcaneStormCount], times[(arcaneStormCount+1)]
 		
 		self:CancelArcaneStormTimers()
 		self:Bar(77896,arcaneStorm,t,77896)
-		filler = self:ScheduleTimer(fill, t, t2) --sometimes he skips one, we need to fill this one up
+		filler = self:ScheduleTimer(fill, t, t2) --sometimes he skips one, we need to fill this "hole" up
 	end
 	
 	function mod:CancelArcaneStormTimers()
