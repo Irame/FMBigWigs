@@ -144,7 +144,7 @@ function mod:PoolExplosion()
 end
 
 function mod:PoolSpawned()
-	hcNef.realtimeAdjust(A,11) --so random
+	hcNef.realtimeAdjust(A,11,19) --so random - just try it with two spots
 end
 
 function mod:GolemActivated(unit,unitGUID)
@@ -152,7 +152,7 @@ function mod:GolemActivated(unit,unitGUID)
 	if bossID == 42178 then --Magmatron 42178
 		countUsedSpells.AcquiringTarget = 0
 		self:Bar(79501, L.acquiring_target, 20, 79501) -- -4sec(10HC)
-		hcNef.realtimeAdjust(M,20)
+		hcNef.realtimeAdjust(M,20,47)
 		
 		countUsedSpells.Incinerate = 0
 		self:Bar(79023, L.incinerate, 10.5, 79023)
@@ -165,7 +165,7 @@ function mod:GolemActivated(unit,unitGUID)
 	elseif bossID == 42179 then --Elektron 42179
 		countUsedSpells.LightningConductor = 0
 		self:Bar(79888, Lightning_Conductor, 13, 79888) --same Timer NH/HC
-		hcNef.realtimeAdjust(E,13)
+		hcNef.realtimeAdjust(E,13,33,53)
 		
 		if not lastNefAction and self:Difficulty() > 2 then --first Conductor is a ShadowConductor.
 			self:Bar(nefOptionRelative[E], E, 13, nefIconByName[E])
@@ -178,7 +178,7 @@ function mod:GolemActivated(unit,unitGUID)
 		if self:Difficulty() > 2 then --HC
 			self:Bar(91513, Poison_Protocol, 15, 91513) 
 			self:Bar(80161, Chemical_Cloud, 25, 80161)
-			hcNef.realtimeAdjust(T,25)
+			hcNef.realtimeAdjust(T,25,55)
 		else --NH
 			self:Bar(91513, Poison_Protocol, 21, 91513)
 			self:Bar(80161, Chemical_Cloud, 11, 80161)
@@ -190,7 +190,11 @@ function mod:GolemActivated(unit,unitGUID)
 		end
 		
 	elseif bossID == 42166 then --Arkanotron 42166
-		--cannot give realtimeAdjust, because its not relative to any cast.
+			--16sec Pool#1 +11/+19 for explo = 27/35
+			--46sec Pool#2 +11/+19 for explo = 57/65
+		--try realTimeAdjust - pretty sure those wont work as good as the others do.
+		hcNef.realtimeAdjust(A, 27, 35, 57, 65)
+		
 		if not lastNefAction and self:Difficulty() > 2 then --this one is a little bit tricky because its related to how fast arcanotron is kicked
 			self:Bar(nefOptionRelative[A], A, 27, nefIconByName[A])
 			showedTimers[A] = GetTime() + 27
