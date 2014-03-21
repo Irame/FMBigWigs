@@ -13,12 +13,14 @@ mod:RegisterEnableMob(41378)
 local aberrations = 18
 local phaseCounter = 0
 local addCastCount = 0
+local arcaneStormCount = 0
 local chillTargets = mod:NewTargetList()
 local isChilled, currentPhase, startPhase = nil, nil, nil
 local scorchingBlast = "~"..GetSpellInfo(77679)
 local flashFreeze = "~"..GetSpellInfo(77699)
 local debilitatingSlime = (GetSpellInfo(77615))
 local releaseAberration = GetSpellInfo(77569)
+local arcaneStorm = GetSpellInfo(77896)
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -136,6 +138,7 @@ function mod:OnEngage(diff)
 	self:OpenProximity(8, 77699)
 	aberrations = 18
 	phaseCounter = 0
+	arcaneStormCount = 0
 	addCastCount = -1 --first is "out-of-phase"
 	self:Bar(77569,releaseAberration,16,77569) --not confirmed for NM
 	isChilled, currentPhase, startPhase = nil, nil, nil
@@ -221,8 +224,9 @@ end
 
 function mod:Dark()
 	if currentPhase == "dark" then return end
-	addCastCount = 0
 	currentPhase = "dark"
+	addCastCount = 0
+	self:CancelArcaneStormTimers()
 	self:Message("phase", L["dark_phase"], "Positive", "Interface\\Icons\\INV_ELEMENTAL_PRIMAL_SHADOW", "Long")
 	if not isChilled then
 		self:CloseProximity(77699)
@@ -349,8 +353,33 @@ function mod:BitingChillRemoved(player)
 	end
 end
 
-function mod:ArcaneStorm(_, spellId, _, _, spellName)
-	self:Message(77896, spellName, "Urgent", spellId)
+do
+	local times = {15,15,20};times[0] = 15
+	local last
+	local filler
+	
+	local function fill(t)
+		mod:Bar(77896,arcaneStorm,t,77896)
+	end
+	
+	function mod:ArcaneStorm(_, spellId, _, _, spellName)
+		self:Message(77896, spellName, "Urgent", spellId)
+		
+		if not last or GetTime()-last > 60 then arcaneStormCount = 0 end
+		last = GetTime()
+		arcaneStormCount = arcaneStormCount + 1
+		local t, t2 = times[arcaneStormCount%4], times[(arcaneStormCount+1)%4]
+		
+		self:CancelArcaneStormTimers()
+		self:Bar(77896,arcaneStorm,t,77896)
+		filler = self:ScheduleTimer(fill, t, t2) --sometimes he skips one, we need to fill this one up
+	end
+	
+	function mod:CancelArcaneStormTimers()
+		self:StopBar(arcaneStorm)
+		self:CancelTimer(filler, true)
+		filler = nil
+	end
 end
 
 function mod:Jets(_, spellId, _, _, spellName)
