@@ -58,7 +58,7 @@ function mod:OnBossEnable()
 	--Cannot track AirPhase by Yell @FM - check a spell he casts!
 	self:Log("SPELL_CAST_SUCCESS", "AirPhase", 78221)
 	
-	self:Log("SPELL_AURA_APPLIED", "ObnoxiousPhaseShift", 92681)
+	self:Log("SPELL_AURA_REMOVED", "ObnoxiousPhaseShift", 92681)
 	--this one only gets removed on FM
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
@@ -100,7 +100,8 @@ do
 		end
 	end
 	function mod:ObnoxiousPhaseShift(...)
-		self:Message(92677, L["obnoxious_soon"], "Attention", 92677) -- do we really need this?
+		--now we tracke the removal of the buff - its too late to say "soon"
+		--self:Message(92677, L["obnoxious_soon"], "Attention", 92677) -- do we really need this?
 		local dGUID = select(10, ...)
 		FiendCheck(dGUID)
 		self:RegisterEvent("UNIT_AURA")
