@@ -266,7 +266,7 @@ do
 		handle = self:ScheduleTimer(release, 2.1)
 		
 		addCastCount = addCastCount + 1
-		if self:Difficulty > 2 then
+		if self:Difficulty() > 2 then
 		-- 15 15 20 15 15 (Red->Blue); 15 15 20 30 (Blue -> Red)
 			if addCastCount < 3 then 
 				self:Bar(77569,releaseAberration,15,77569) 
