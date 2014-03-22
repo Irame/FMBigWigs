@@ -8,6 +8,7 @@ mod:RegisterEnableMob(41442)
 
 local searingFlame = GetSpellInfo(77840)
 local sonicBreath = "~"..GetSpellInfo(78075)
+local obnoxiousFiend = EJ_GetSectionInfo(3082)
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -58,6 +59,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_SUCCESS", "AirPhase", 78221)
 	
 	self:Log("SPELL_AURA_APPLIED", "ObnoxiousPhaseShift", 92681)
+	--this one only gets removed on FM
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
@@ -72,6 +74,9 @@ end
 function mod:OnEngage(diff)
 	self:Bar(78075, sonicBreath, 23-2, 78075)
 	self:Bar(77840, searingFlame, 63, 77840)
+	self:Bar(92677, obnoxiousFiend.." #1", 15, 92677) --scnd 85sec after this.
+	self:ScheduleTimer(function(i) mod:Bar(92677, obnoxiousFiend.." #"..i, 85, 92677)  end, 15, 2)
+	
 	self:DelayedMessage(77840, 55, L["searing_soon"], "Attention", 77840)
 	self:Bar("air_phase", L["air_phase"], 115, 5740) -- Rain of Fire Icon --@ 8:05 left to berserk
 	self:OpenAltPower(L["alt_energy_title"])
@@ -141,6 +146,10 @@ do
 		mod:Bar("air_phase", L["air_phase"], 90, 5740) -- Rain of Fire Icon -- probably not correct - need longer fight for this!
 		mod:Bar(78075, sonicBreath, 25-5, 78075)
 		-- XXX need a good trigger for ground phase start to make this even more accurate
+		
+		self:Bar(92677, obnoxiousFiend.." #1", 10, 92677)
+		self:ScheduleTimer(function(i) mod:Bar(92677, obnoxiousFiend.." #"..i, 85, 92677)  end, 10, 2)
+		-- assume #2 as that one from pull!
 	end
 	function mod:AirPhase()
 		self:SendMessage("BigWigs_StopBar", self, sonicBreath)
