@@ -54,6 +54,9 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "SearingFlame", 77840)
 	self:Yell("AirPhase", L["air_phase_trigger"])
 
+	--Cannot track AirPhase by Yell @FM - check a spell he casts!
+	self:Log("SPELL_CAST_SUCCESS", "AirPhase", 78221)
+	
 	self:Log("SPELL_AURA_APPLIED", "ObnoxiousPhaseShift", 92681)
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
@@ -67,10 +70,10 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage(diff)
-	self:Bar(78075, sonicBreath, 23, 78075)
+	self:Bar(78075, sonicBreath, 23-2, 78075)
 	self:Bar(77840, searingFlame, 63, 77840)
 	self:DelayedMessage(77840, 55, L["searing_soon"], "Attention", 77840)
-	self:Bar("air_phase", L["air_phase"], 92, 5740) -- Rain of Fire Icon
+	self:Bar("air_phase", L["air_phase"], 115, 5740) -- Rain of Fire Icon --@ 8:05 left to berserk
 	self:OpenAltPower(L["alt_energy_title"])
 	if diff > 2 then
 		self:RegisterEvent("UNIT_AURA")
@@ -123,7 +126,7 @@ function mod:Tracking(player, spellId, _, _, spellName)
 end
 
 function mod:SonicBreath(_, spellId)
-	self:Bar(78075, sonicBreath, 42, spellId)
+	self:Bar(78075, sonicBreath, 42-16, spellId)
 end
 
 function mod:SearingFlame(_, spellId, _, _, spellName)
@@ -135,15 +138,15 @@ end
 do
 	local function groundPhase()
 		mod:Message("ground_phase", L["ground_phase"], "Attention", 61882) -- Earthquake Icon
-		mod:Bar("air_phase", L["air_phase"], 90, 5740) -- Rain of Fire Icon
-		mod:Bar(78075, sonicBreath, 25, 78075)
+		mod:Bar("air_phase", L["air_phase"], 90, 5740) -- Rain of Fire Icon -- probably not correct - need longer fight for this!
+		mod:Bar(78075, sonicBreath, 25-5, 78075)
 		-- XXX need a good trigger for ground phase start to make this even more accurate
 	end
 	function mod:AirPhase()
 		self:SendMessage("BigWigs_StopBar", self, sonicBreath)
 		self:Message("air_phase", L["air_phase"], "Attention", 5740) -- Rain of Fire Icon
-		self:Bar("ground_phase", L["ground_phase"], 30, 61882) -- Earthquake Icon
-		self:ScheduleTimer(groundPhase, 30)
+		self:Bar("ground_phase", L["ground_phase"], 30+5, 61882) -- Earthquake Icon
+		self:ScheduleTimer(groundPhase, 30+5)
 	end
 end
 
