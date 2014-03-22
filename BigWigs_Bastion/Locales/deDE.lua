@@ -42,7 +42,8 @@ if L then
 
 	L.blast_message = "Druckwelle"
 	L.engulfingmagic_say = "Einhüllende Magie auf MIR!"
-
+	
+	L.valiona_fly = "Valiona fliegt los!"
 	--L.valiona_trigger = "Theralion, ich werde den Gang einhüllen. Deck ihre Flucht!"
 
 	L.twilight_shift = "%2$dx Verschiebung auf %1$s"

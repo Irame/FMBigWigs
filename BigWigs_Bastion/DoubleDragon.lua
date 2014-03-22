@@ -34,6 +34,8 @@ if L then
 
 	L.blast_message = "Falling Blast" --Sounds better and makes more sense than Twilight Blast (the user instantly knows something is coming from the sky at them)
 	L.engulfingmagic_say = "Engulf on ME!"
+	
+	L.valiona_fly = "Valiona starts flying!"
 
 	L.valiona_trigger = "Theralion, I will engulf the hallway. Cover their escape!"
 	L.win_trigger = "At least... Theralion dies with me..."
@@ -147,7 +149,7 @@ function mod:DazzlingDestruction()
 		self:Message("phase_switch", L["phase_bar"]:format(theralion), "Positive", 60639)
 		
 		--88 sec till valiona stats to fly - not confirmed
-		self:Bar(86059,L.breath_message,88,92194)
+		self:Bar(86059,L.valiona_fly,88,92194)
 		self:ScheduleTimer(function() mod:ValionaMeteorStart() end,88) --force Check at that point!
 		phaseCount = 0
 	end
@@ -169,10 +171,6 @@ do
 		informed = false 
 	end
 	
-	local function warnBreath()
-		mod:Message(86059, L["breath_message"], "Important", 92194, "Alarm")
-	end
-	
 	function mod:ValionaMeteorStart()
 		if informed then return end
 		
@@ -182,9 +180,9 @@ do
 			informed = true
 			self:ScheduleTimer(resetInformed, 10)
 			
-			warnBreath()
-			self:ScheduleTimer(warnBreath, 16)
-			self:ScheduleTimer(warnBreath, 32)
+			self:Message(86059, L["breath_message"].." #1", "Important", 92194, "Alarm")
+			self:DelayedMessage(86059, 16, L["breath_message"].." #2", "Important", 92194, "Alarm")
+			self:DelayedMessage(86059, 32, L["breath_message"].." #3", "Important", 92194, "Alarm")
 		end
 	end
 
@@ -196,11 +194,11 @@ do
 		local cast2 = UnitCastingInfo("boss2")
 		if not cast1 and not cast2 then
 			informed = true
-			self:ScheduleTimer(resetInformed, 10)
+			self:ScheduleTimer(resetInformed, 60)
 			
-			warnBreath()
-			self:ScheduleTimer(warnBreath, 14)
-			self:ScheduleTimer(warnBreath, 30)
+			self:Message(86059, L["breath_message"].." #1", "Important", 92194, "Alarm")
+			self:DelayedMessage(86059, 14, L["breath_message"].." #2", "Important", 92194, "Alarm")
+			self:DelayedMessage(86059, 30, L["breath_message"].." #3", "Important", 92194, "Alarm")
 		end
 	end
 end
