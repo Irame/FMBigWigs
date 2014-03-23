@@ -102,7 +102,7 @@ do
 		end
 	end
 	function mod:ObnoxiousPhaseShift(...)
-		--now we tracke the removal of the buff - its too late to say "soon"
+		--now we track the removal of the buff - its too late to say "soon"
 		--self:Message(92677, L["obnoxious_soon"], "Attention", 92677) -- do we really need this?
 		local dGUID = select(10, ...)
 		FiendCheck(dGUID)
@@ -158,7 +158,8 @@ do
 	end
 	function mod:AirPhase()
 		self:SendMessage("BigWigs_StopBar", self, sonicBreath)
-		self:Message("air_phase", L["air_phase"], "Attention", 5740) -- Rain of Fire Icon
+		--too late for this message - we are already 5sec in phase.
+		--self:Message("air_phase", L["air_phase"], "Attention", 5740) -- Rain of Fire Icon
 		self:Bar("ground_phase", L["ground_phase"], 30+5, 61882) -- Earthquake Icon
 		self:ScheduleTimer(groundPhase, 30+5,self)
 	end
