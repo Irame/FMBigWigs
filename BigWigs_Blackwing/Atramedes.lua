@@ -80,7 +80,11 @@ function mod:OnEngage(diff)
 	self:OpenAltPower(L["alt_energy_title"])
 	if diff > 2 then
 		self:Bar(92677, obnoxiousFiend.." #1", 15, 92677) --scnd 85sec after this.
-		self:ScheduleTimer(function(i) mod:Bar(92677, obnoxiousFiend.." #"..i, 85, 92677)  end, 15, 2)
+		self:DelayedMessage(92677, 10, L["obnoxious_soon"], "Attention", 92677)
+		self:ScheduleTimer(function(i) 
+			self:Bar(92677, obnoxiousFiend.." #"..i, 85, 92677);
+			self:DelayedMessage(92677, 80, L["obnoxious_soon"], "Attention", 92677)
+		end, 15, 2)
 		
 		--why so early?
 		--self:RegisterEvent("UNIT_AURA")
@@ -152,7 +156,11 @@ do
 		
 		if self:Difficulty() > 2 then
 			self:Bar(92677, obnoxiousFiend.." #1", 10, 92677)
-			self:ScheduleTimer(function(i) self:Bar(92677, obnoxiousFiend.." #"..i, 85, 92677)  end, 10, 2)
+			self:DelayedMessage(92677, 5, L["obnoxious_soon"], "Attention", 92677)
+			self:ScheduleTimer(function(i) 
+				self:Bar(92677, obnoxiousFiend.." #"..i, 85, 92677); 
+				self:DelayedMessage(92677, 80, L["obnoxious_soon"], "Attention", 92677) 
+			end, 10, 2)
 		end
 		-- assume #2 as that one from pull!
 	end
