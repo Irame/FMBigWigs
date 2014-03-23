@@ -602,7 +602,7 @@ do --Nef in HC
 			if ... then 
 				hcNef.realtimeAdjust(boss,...) 
 			end
-			adjustTimes[boss] = {expir, unpack(adjustTimes[boss])}
+			adjustTimes[boss] = adjustTimes[boss] and {expir, unpack(adjustTimes[boss])} or {expir}
 			
 			if foundTimer then
 				mod:Bar(nefOptionRelative[boss], foundTimer, t, nefIconByName[boss])
