@@ -74,14 +74,16 @@ end
 function mod:OnEngage(diff)
 	self:Bar(78075, sonicBreath, 23-2, 78075)
 	self:Bar(77840, searingFlame, 63, 77840)
-	self:Bar(92677, obnoxiousFiend.." #1", 15, 92677) --scnd 85sec after this.
-	self:ScheduleTimer(function(i) mod:Bar(92677, obnoxiousFiend.." #"..i, 85, 92677)  end, 15, 2)
 	
 	self:DelayedMessage(77840, 55, L["searing_soon"], "Attention", 77840)
 	self:Bar("air_phase", L["air_phase"], 115, 5740) -- Rain of Fire Icon --@ 8:05 left to berserk
 	self:OpenAltPower(L["alt_energy_title"])
 	if diff > 2 then
-		self:RegisterEvent("UNIT_AURA")
+		self:Bar(92677, obnoxiousFiend.." #1", 15, 92677) --scnd 85sec after this.
+		self:ScheduleTimer(function(i) mod:Bar(92677, obnoxiousFiend.." #"..i, 85, 92677)  end, 15, 2)
+		
+		--why so early?
+		--self:RegisterEvent("UNIT_AURA")
 		self:Berserk(600)
 	end
 end
@@ -142,21 +144,23 @@ function mod:SearingFlame(_, spellId, _, _, spellName)
 end
 
 do
-	local function groundPhase()
+	local function groundPhase(self)
 		mod:Message("ground_phase", L["ground_phase"], "Attention", 61882) -- Earthquake Icon
 		mod:Bar("air_phase", L["air_phase"], 90, 5740) -- Rain of Fire Icon -- probably not correct - need longer fight for this!
 		mod:Bar(78075, sonicBreath, 25-5, 78075)
 		-- XXX need a good trigger for ground phase start to make this even more accurate
 		
-		self:Bar(92677, obnoxiousFiend.." #1", 10, 92677)
-		self:ScheduleTimer(function(i) mod:Bar(92677, obnoxiousFiend.." #"..i, 85, 92677)  end, 10, 2)
+		if self:Difficulty() > 2 then
+			self:Bar(92677, obnoxiousFiend.." #1", 10, 92677)
+			self:ScheduleTimer(function(i) self:Bar(92677, obnoxiousFiend.." #"..i, 85, 92677)  end, 10, 2)
+		end
 		-- assume #2 as that one from pull!
 	end
 	function mod:AirPhase()
 		self:SendMessage("BigWigs_StopBar", self, sonicBreath)
 		self:Message("air_phase", L["air_phase"], "Attention", 5740) -- Rain of Fire Icon
 		self:Bar("ground_phase", L["ground_phase"], 30+5, 61882) -- Earthquake Icon
-		self:ScheduleTimer(groundPhase, 30+5)
+		self:ScheduleTimer(groundPhase, 30+5,self)
 	end
 end
 
