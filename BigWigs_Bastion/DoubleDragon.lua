@@ -91,7 +91,7 @@ end
 function mod:OnEngage(diff)
 	markWarned = false
 	self:Bar(86840, devouringFlames, 25, 86840)
-	self:Bar(86788, blackout, 5, 86788)
+	self:Bar(86788, blackout, 10, 86788)-- HM Timer
 	self:Bar("phase_switch", L["phase_bar"]:format(theralion), 103, 60639)
 	self:OpenProximity(8, 86369)
 	self:Berserk(600)
