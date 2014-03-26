@@ -144,7 +144,7 @@ function mod:PoolExplosion()
 end
 
 function mod:PoolSpawned()
-	hcNef.realtimeAdjust(A,11,19) --so random - just try it with two spots
+	hcNef.realtimeAdjust(A,12,19) --so random - just try it with two spots
 end
 
 function mod:GolemActivated(unit,unitGUID)
@@ -190,10 +190,10 @@ function mod:GolemActivated(unit,unitGUID)
 		end
 		
 	elseif bossID == 42166 then --Arkanotron 42166
-			--16sec Pool#1 +11/+19 for explo = 27/35
-			--46sec Pool#2 +11/+19 for explo = 57/65
+			--16sec Pool#1 +12/+19 for explo = 28/35
+			--46sec Pool#2 +12/+19 for explo = 58/65
 		--try realTimeAdjust - pretty sure those wont work as good as the others do.
-		hcNef.realtimeAdjust(A, 27, 35, 57, 65)
+		hcNef.realtimeAdjust(A, 28, 35, 58, 65)
 		
 		if not lastNefAction and self:Difficulty() > 2 then --this one is a little bit tricky because its related to how fast arcanotron is kicked
 			self:Bar(nefOptionRelative[A], A, 27, nefIconByName[A])
@@ -472,6 +472,7 @@ do --Nef in HC
 		local lastTimestamp = nil
 		local fittingRotations = {}
 		local adjustTimes = {}
+		local predictionSolutions = {}
 		--do not care what values are in there. - will be changed either way before first usage.
 		
 		local matchDiff = 5
@@ -488,19 +489,7 @@ do --Nef in HC
 			end
 			return false
 		end
-		
-		local predictionSolutions = {[A] = {},[M] = {},[T] = {},[E] = {}}
-		local function addAsSolution(t,b)
-			for i,ti in pairs(predictionSolutions[b]) do
-				if math.abs(t-ti) < matchDiff/2 then
-					predictionSolutions[b][i] = (t+ti)/2
-					return
-				end
-			end
-			--if he did go through all of the already Contained solution and there was none Matching this one, add it!
-			predictionSolutions[b][#predictionSolutions[b] + 1] = t
-		end
-		
+				
 		local function copyTable(tbl)
 			local t = {}
 			for i,v in pairs(tbl) do
@@ -547,25 +536,21 @@ do --Nef in HC
 			predictionSolutions = {[A] = {},[M] = {},[T] = {},[E] = {}}
 			for i,pred in pairs(fittingRotations) do
 				local check, upcoming = pred[nefActionCounter-1], pred[nefActionCounter]
+				local upT, upB = unpack(upcoming)
 				
 				if matchPrediction(check, {t,boss}) then
-					addAsSolution(unpack(upcoming))
-					--predictionSolutions
+					predictionSolutions[upB][#predictionSolutions[upB] + 1] = upT
 				else
 					fittingRotations[i] = nil
 				end
 			end
 			
 			for solutionBoss,bossTbl in pairs(predictionSolutions) do --solutionBoss == E|M|A|T
+				local txt = solutionBoss
 				for i,timer in pairs(bossTbl) do
-					local txt
 					if i > 1 then
-						txt = solutionBoss.." ("..i..")"
-					else
-						txt = solutionBoss
-					end
-					if solutionBoss == A then -- filter everything than Arcanotron
-						mod:Bar(nefOptionRelative[solutionBoss], txt, timer, nefIconByName[solutionBoss])
+						--to make the strings still diff from each other
+						txt = txt.." " 
 					end
 					showedTimers[txt] = GetTime() + timer
 				end
