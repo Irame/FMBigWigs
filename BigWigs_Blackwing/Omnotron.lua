@@ -450,6 +450,20 @@ do --Nef in HC
 			local rot = {{37,M}, {37,T}, {45,E}}
 			CreatePredictionTable(start, preRot, rot)
 		end
+		
+		do --A4
+			local start = A
+			local preRot = {{21,E},{35,M},{38,T}, {46,E}, {36,M}, {35,T}, {32,T}}
+			local rot =  {{37,E}, {42,M}, {39,T}} --not confirmed!
+			CreatePredictionTable(start, preRot, rot)
+		end
+		
+		do --A5
+			local start = A
+			local preRot = {{32,A},{19,E},{40,E}}
+		end
+		
+		
 	end
 	
 	do --Fight Handling
