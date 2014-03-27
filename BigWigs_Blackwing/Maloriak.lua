@@ -377,15 +377,15 @@ do
 	
 	local function fill(t)
 		mod:Bar(77896,arcaneStorm,t,77896)
-		--if did not cancel this timer in 5 sec we assume he skipped one.
-		filler = mod:ScheduleTimer(function() arcaneStormCount = arcaneStormCount + 1 end, 5)
+		--if did not cancel this timer in 8 sec we assume he skipped one.
+		filler = mod:ScheduleTimer(function() arcaneStormCount = arcaneStormCount + 1 end, 8)
 	end
 	
 	function mod:ArcaneStorm(_, spellId, _, _, spellName)
 		self:Message(77896, spellName, "Urgent", spellId)
 		
 		--this happens if he goes into black phase - need to reset "rotation"
-		if not last or GetTime()-last > 60 then arcaneStormCount = 0 end
+		if not last or GetTime()-last > 50 then arcaneStormCount = 0 end
 		last = GetTime()
 		arcaneStormCount = arcaneStormCount + 1
 		local t, t2 = times[arcaneStormCount], times[(arcaneStormCount+1)]
