@@ -533,12 +533,14 @@ do --Nef in HC
 			
 			hideNefBars()
 			
+			local matchingPredictionsCount = 0
 			predictionSolutions = {[A] = {},[M] = {},[T] = {},[E] = {}}
 			for i,pred in pairs(fittingRotations) do
 				local check, upcoming = pred[nefActionCounter-1], pred[nefActionCounter]
 				local upT, upB = unpack(upcoming)
 				
 				if matchPrediction(check, {t,boss}) then
+					matchingPredictionsCount = matchingPredictionsCount + 1
 					predictionSolutions[upB][#predictionSolutions[upB] + 1] = upT
 				else
 					fittingRotations[i] = nil
@@ -551,6 +553,9 @@ do --Nef in HC
 					if i > 1 then
 						--to make the strings still diff from each other
 						txt = txt.." " 
+					end
+					if matchingPredictionsCount == 1 then --if this one is the only left possible way - show it.
+						mod:Bar(nefOptionRelative[solutionBoss], txt, timer, nefIconByName[solutionBoss])
 					end
 					showedTimers[txt] = GetTime() + timer
 				end
