@@ -130,7 +130,7 @@ end
 
 function mod:OnEngage(diff)
 	if diff > 2 then
-		self:Bar("phase", L["next_phase"], 16, "INV_ELEMENTAL_PRIMAL_SHADOW")
+		self:Bar("phase", L["next_phase"], 16+4, "INV_ELEMENTAL_PRIMAL_SHADOW")
 		self:Berserk(720)
 	else
 		self:Berserk(420)
@@ -140,7 +140,8 @@ function mod:OnEngage(diff)
 	phaseCounter = 0
 	arcaneStormCount = -1
 	addCastCount = -1 --first is "out-of-phase"
-	self:Bar(77569,releaseAberration,16,77569) --not confirmed for NM
+	self:Bar(77569,releaseAberration,15,77569) 	--not confirmed for NM
+	self:Bar(77896,arcaneStorm,10,77896)		--not confirmed!
 	isChilled, currentPhase, startPhase = nil, nil, nil
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
 end
