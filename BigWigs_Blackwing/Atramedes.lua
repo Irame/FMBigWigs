@@ -150,7 +150,7 @@ end
 do
 	local function groundPhase(self)
 		mod:Message("ground_phase", L["ground_phase"], "Attention", 61882) -- Earthquake Icon
-		mod:Bar("air_phase", L["air_phase"], 90, 5740) -- Rain of Fire Icon -- probably not correct - need longer fight for this!
+		mod:Bar("air_phase", L["air_phase"], 110, 5740) -- Rain of Fire Icon -- probably not correct! only know that 90sec was too low
 		mod:Bar(78075, sonicBreath, 25-5, 78075)
 		-- XXX need a good trigger for ground phase start to make this even more accurate
 		
