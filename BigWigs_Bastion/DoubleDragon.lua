@@ -67,7 +67,7 @@ function mod:OnBossEnable()
 	-- Phase Switch -- should be able to do this easier once we get Transcriptor logs
 	self:Log("SPELL_CAST_START", "DazzlingDestruction", 86408)
 	self:Yell("DeepBreath", L["valiona_trigger"])
-	self:Emote("DeepBreathCast", deepBreath)
+	--self:Emote("DeepBreathCast", deepBreath)
 
 	self:Log("SPELL_AURA_APPLIED", "BlackoutApplied", 86788, 92877, 92876, 92878)
 	self:Log("SPELL_AURA_REMOVED", "BlackoutRemoved", 86788, 92877, 92876, 92878)
@@ -151,16 +151,6 @@ function mod:DazzlingDestruction()
 		phaseCount = 0
 	end
 end
-
---[[ She emotes 3 times, every time she does a breath]]
-function mod:DeepBreathCast() 
-	phaseCount = phaseCount + 1
-	self:Message(86059, L["breath_message"], "Important", 92194, "Alarm")
-	if phaseCount == 3 then
-		self:Bar("phase_switch", L["phase_bar"]:format(theralion), 105, 60639)
-		phaseCount = 0
-	end
-end--She does not emote on FM
 
 -- Valiona does this when she fires the first deep breath and begins the landing phase
 -- It only triggers once from her yell, not 3 times.
