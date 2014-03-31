@@ -72,9 +72,6 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "BlackoutApplied", 86788, 92877, 92876, 92878)
 	self:Log("SPELL_AURA_REMOVED", "BlackoutRemoved", 86788, 92877, 92876, 92878)
 	self:Log("SPELL_CAST_START", "DevouringFlames", 86840)
-	
-	self:Log("SPELL_CAST_START", "ValionaMeteorStart",86013,92860,92859,92861)--10N, 10H, 25N, 25H(guessed)
-	self:Log("SPELL_CAST_SUCCESS", "ValionaMeteorEnd",86014,92864,92863,92864)
 
 	self:Log("SPELL_AURA_APPLIED", "EngulfingMagicApplied", 86622, 95640, 95639, 95641)
 	self:Log("SPELL_AURA_REMOVED", "EngulfingMagicRemoved", 86622, 95640, 95639, 95641)
@@ -165,70 +162,15 @@ function mod:DeepBreathCast()
 	end
 end--She does not emote on FM
 
-do
-	local informed = false
-	
-	local messages = {}
-	local function MessageIn(t, extend)
-		if not t or t == 0 then 
-			mod:Message(86059, L["breath_message"]..extend or "", "Important", 92194, "Alarm")
-		else
-			local m = mod:ScheduleTimer(function() mod:Message(86059, L["breath_message"]..extend or "", "Important", 92194, "Alarm") end,t)
-			messages = {m,unpack(messages)}
-		end
-	end
-	
-	local function interruptMessaging()
-		for _,mess in pairs(messages) do
-			mod:CancelTimer(mess, true)
-		end
-		messages = {}
-	end
-	
-	function mod:ValionaMeteorStart()
-		--as the Spell started Flying from Valiona
-		local cast1 = UnitCastingInfo("boss1")
-		local cast2 = UnitCastingInfo("boss2")
-		if not cast1 and not cast2 then
-			if informed then return end
-			informed = true
-			
-			MessageIn(0 , " #1")
-			MessageIn(16, " #2")
-			MessageIn(32, " #3")
-		else
-			if not informed then return end
-			informed = false
-			interruptMessaging()
-		end
-	end
-
-	function mod:ValionaMeteorEnd()
-		--this event hits ~1.5 sec. after the above
-		--as the Spell has reached his target
-		local cast1 = UnitCastingInfo("boss1")
-		local cast2 = UnitCastingInfo("boss2")
-		if not cast1 and not cast2 then
-			if informed then return end
-			informed = true
-			
-			MessageIn(0 , " #1")
-			MessageIn(14, " #2")
-			MessageIn(30, " #3")
-		else
-			if not informed then return end
-			informed = false
-			interruptMessaging()
-		end
-	end
-end
-
 -- Valiona does this when she fires the first deep breath and begins the landing phase
 -- It only triggers once from her yell, not 3 times.
 function mod:DeepBreath()
-	--not confirmed for FM
 	self:Bar("phase_switch", L["phase_bar"]:format(valiona), 57, 60639)
 	self:ScheduleTimer(valionaHasLanded, 57)
+	
+	self:Message(86059, L["breath_message"].." #1", "Important", 92194, "Alarm")
+	self:DelayedMessage(86059,16, L["breath_message"].." #2", "Important", 92194, "Alarm")
+	self:DelayedMessage(86059,32, L["breath_message"].." #3", "Important", 92194, "Alarm")
 end
 
 function mod:BlackoutApplied(player, spellId, _, _, spellName)
