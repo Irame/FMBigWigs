@@ -167,38 +167,58 @@ end--She does not emote on FM
 
 do
 	local informed = false
-	local function resetInformed() 
-		informed = false 
+	
+	local messages = {}
+	local function MessageIn(t, extend)
+		if not t or t == 0 then 
+			mod:Message(86059, L["breath_message"]..extend or "", "Important", 92194, "Alarm")
+		else
+			local m = mod:ScheduleTimer(function() mod:Message(86059, L["breath_message"]..extend or "", "Important", 92194, "Alarm") end,t)
+			messages = {m,unpack(messages)}
+		end
+	end
+	
+	local function interruptMessaging()
+		for _,mess in pairs(messages) do
+			mod:CancelTimer(mess, true)
+		end
+		messages = {}
 	end
 	
 	function mod:ValionaMeteorStart()
-		if informed then return end
-		
+		--as the Spell started Flying from Valiona
 		local cast1 = UnitCastingInfo("boss1")
 		local cast2 = UnitCastingInfo("boss2")
 		if not cast1 and not cast2 then
+			if informed then return end
 			informed = true
-			self:ScheduleTimer(resetInformed, 10)
 			
-			self:Message(86059, L["breath_message"].." #1", "Important", 92194, "Alarm")
-			self:DelayedMessage(86059, 16, L["breath_message"].." #2", "Important", 92194, "Alarm")
-			self:DelayedMessage(86059, 32, L["breath_message"].." #3", "Important", 92194, "Alarm")
+			MessageIn(0 , " #1")
+			MessageIn(16, " #2")
+			MessageIn(32, " #3")
+		else
+			if not informed then return end
+			informed = false
+			interruptMessaging()
 		end
 	end
 
 	function mod:ValionaMeteorEnd()
 		--this event hits ~1.5 sec. after the above
-		if informed then return end
-		
+		--as the Spell has reached his target
 		local cast1 = UnitCastingInfo("boss1")
 		local cast2 = UnitCastingInfo("boss2")
 		if not cast1 and not cast2 then
+			if informed then return end
 			informed = true
-			self:ScheduleTimer(resetInformed, 60)
 			
-			self:Message(86059, L["breath_message"].." #1", "Important", 92194, "Alarm")
-			self:DelayedMessage(86059, 14, L["breath_message"].." #2", "Important", 92194, "Alarm")
-			self:DelayedMessage(86059, 30, L["breath_message"].." #3", "Important", 92194, "Alarm")
+			MessageIn(0 , " #1")
+			MessageIn(14, " #2")
+			MessageIn(30, " #3")
+		else
+			if not informed then return end
+			informed = false
+			interruptMessaging()
 		end
 	end
 end
