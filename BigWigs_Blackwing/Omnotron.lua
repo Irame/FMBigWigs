@@ -361,6 +361,14 @@ do --Nef in HC
 		predictions[A] = {}
 		
 		local function CreatePredictionTable(start, preRot, rot)
+			--we want a start and preRot/rot to be a not empty table or else we will return a table that always returns empty tables.
+			if not (start and type(preRot) == "table" and #preRot ~= 0 and type(rot) == "table" and #rot ~= 0) then 
+				return setmetatable({}, {__index = function(tbl, num) 
+					rawset(tbl, num, {})
+					return {} 
+				end})
+			end
+			
 			local p = setmetatable({}, {__index = function(tbl, num)
 					local pred
 					if num > #preRot then
@@ -384,14 +392,14 @@ do --Nef in HC
 		
 		do --M1
 			local start = M
-			local preRot = {{45,E},{51,A}, {24,M},{43,E}}
+			local preRot = {{45,E},{51+2,A}, {24,M},{43,E}}
 			local rot = {{52,A}, {23,M}, {44,E}}
 			CreatePredictionTable(start, preRot, rot)
 		end
 		
 		do --M2
-			local start = M	--first is pretty variable.
-			local preRot = {{55,E},{40,E},{32,T},{45,E}}
+			local start = M	--all of these are pretty variable.
+			local preRot = {{55,E},{40,E},{32+1,T},{45,E}}
 			local rot = {{40,E}, {32,T}, {45,E}}
 			CreatePredictionTable(start, preRot, rot)
 		end	
@@ -400,6 +408,8 @@ do --Nef in HC
 			--happened once, im Adding :) - and a second time
 			local start = M
 			local preRot = {{67,A},{30,E},{32,T},{44,E},{39,E}}
+			local rot = {{}}
+			CreatePredictionTable(start, preRot, rot)
 		end
 			
 		do --E1
@@ -425,7 +435,7 @@ do --Nef in HC
 		
 		do --E4
 			local start = E
-			local preRot = {{36,M},{65,A},{33,T}}
+			local preRot = {{36+1,M},{65,A},{33-1,T}}
 			local rot = {{58,A}, {30,A}, {30,T}}
 			CreatePredictionTable(start, preRot, rot)
 		end
@@ -433,6 +443,8 @@ do --Nef in HC
 		do --E5
 			local start = E --one time seen
 			local preRot = {{37,M},{67,A},{18,E},{35,M}}
+			local rot = {{}}
+			CreatePredictionTable(start, preRot, rot)
 		end
 
 		do --A1
@@ -444,7 +456,7 @@ do --Nef in HC
 		
 		do --A2
 			local start = A
-			local preRot = {{31,A},{20,M}, {36,E},{33,T}}
+			local preRot = {{31-1,A},{20+1,M}, {36,E},{33,T}}
 			local rot = {{48,E}, {40,E}, {30,T}}
 			CreatePredictionTable(start, preRot, rot)
 		end	
@@ -473,6 +485,8 @@ do --Nef in HC
 		do --A5
 			local start = A
 			local preRot = {{32,A},{19,E},{40,E}}
+			local rot = {{}}
+			CreatePredictionTable(start, preRot, rot)
 		end
 		
 		
