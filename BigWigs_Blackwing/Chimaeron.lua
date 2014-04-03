@@ -75,7 +75,8 @@ end
 --
 
 function mod:SystemFailureStart(_, spellId, _, _, spellName)
-	self:SendMessage("BigWigs_StopBar", self, L["next_system_failure"])
+	self:StopBar(L["next_system_failure"])
+	self:StopBar(GetSpellInfo(82848)) --Massacre
 	self:Bar(88853, spellName, 30, spellId)
 	self:Message(88853, spellName, "Important", spellId, "Alarm")
 	self:FlashShake(88853)
