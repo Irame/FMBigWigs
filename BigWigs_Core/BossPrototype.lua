@@ -610,7 +610,7 @@ end
 
 function boss:StopBar(text)
 	if tostring(text) then
-		self:SendMessage("BigWigs_StopBar", self, text)
+		self:SendMessage("BigWigs_StopBar", self, tostring(text))
 	end
 end
 
