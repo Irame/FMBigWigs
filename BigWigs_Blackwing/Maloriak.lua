@@ -228,6 +228,7 @@ function mod:Dark()
 	currentPhase = "dark"
 	addCastCount = 0
 	self:CancelArcaneStormTimers()
+	self:StopBar(releaseAberration)
 	self:Message("phase", L["dark_phase"], "Positive", "Interface\\Icons\\INV_ELEMENTAL_PRIMAL_SHADOW", "Long")
 	if not isChilled then
 		self:CloseProximity(77699)
