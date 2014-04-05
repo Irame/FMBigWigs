@@ -147,7 +147,6 @@ function mod:DazzlingDestruction()
 		
 		--88 sec till valiona stats to fly - not confirmed
 		self:Bar(86059,L.valiona_fly,88,92194)
-		self:ScheduleTimer(function() mod:ValionaMeteorStart() end,88) --force Check at that point!
 		phaseCount = 0
 	end
 end
