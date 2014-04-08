@@ -392,14 +392,14 @@ do --Nef in HC
 		
 		do --M1
 			local start = M
-			local preRot = {{45,E},{51+2,A}, {24,M},{43,E}}
+			local preRot = {{45-1,E},{51+2,A}, {24,M},{43+1,E}}
 			local rot = {{52,A}, {23,M}, {44,E}}
 			CreatePredictionTable(start, preRot, rot)
 		end
 		
 		do --M2
 			local start = M	--all of these are pretty variable.
-			local preRot = {{55,E},{40,E},{32+1,T},{45,E}}
+			local preRot = {{55-1,E},{40,E},{32,T},{45,E}}
 			local rot = {{40,E}, {32,T}, {45,E}}
 			CreatePredictionTable(start, preRot, rot)
 		end	
@@ -421,7 +421,7 @@ do --Nef in HC
 
 		do --E2
 			local start = E	
-			local preRot = {{45,A},{25,M},{40,T},{35,E},{50,A}}
+			local preRot = {{45,A},{25-1,M},{40-2,T},{35,E},{50,A}}
 			local rot = {{25,M}, {40,T}, {60,A}}
 			CreatePredictionTable(start, preRot, rot)
 		end
@@ -449,7 +449,7 @@ do --Nef in HC
 
 		do --A1
 			local start = A
-			local preRot = {{31,A},{23,M},{40,T},{30,T}}
+			local preRot = {{31-1,A},{23-1,M},{40,T},{30,T}}
 			local rot = {{35,E}, {45,M}, {40,T}}
 			CreatePredictionTable(start, preRot, rot)
 		end
