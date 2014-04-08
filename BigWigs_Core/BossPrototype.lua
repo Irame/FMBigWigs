@@ -497,7 +497,6 @@ end
 -- PROXIMITY
 function boss:OpenProximity(range, key, player, isReverse)
 	if checkFlag(self, key or "proximity", C.PROXIMITY) then
-		self:CloseProximity()
 		self:SendMessage("BigWigs_ShowProximity", self, range, key, player, isReverse)
 	end
 end
