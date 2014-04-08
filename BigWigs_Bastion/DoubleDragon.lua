@@ -140,10 +140,13 @@ function mod:DazzlingDestruction()
 	phaseCount = phaseCount + 1
 	if phaseCount == 1 then
 		self:Message(86408, L["dazzling_message"], "Important", 86408, "Alarm")
-		self:CloseProximity(86369)
 	elseif phaseCount == 3 then
 		self:ScheduleTimer(theralionHasLanded, 5)
 		self:Message("phase_switch", L["phase_bar"]:format(theralion), "Positive", 60639)
+		
+		--will be opened after last Blackout(after phaseCounter == 1) - still need to be closed
+		self:CloseProximity(86369)
+		self:ScheduleTimer(function() self:CloseProximity(86369) end, 10)
 		
 		--88 sec till valiona stats to fly - not confirmed
 		self:Bar(86059,L.valiona_fly,88,92194)
@@ -177,6 +180,7 @@ function mod:BlackoutApplied(player, spellId, _, _, spellName)
 end
 
 function mod:BlackoutRemoved(player, spellId, _, _, spellName)
+	self:CloseProximity(86788)
 	self:OpenProximity(8, 86369)
 	self:PrimaryIcon(86788)
 end
@@ -230,7 +234,7 @@ end
 
 function mod:EngulfingMagicRemoved(player)
 	if UnitIsUnit(player, "player") then
-		self:CloseProximity()
+		self:CloseProximity(86622)
 	end
 end
 
