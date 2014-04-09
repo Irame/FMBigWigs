@@ -106,7 +106,7 @@ do
 		local bossId = UnitGUID("boss2") == sGUID and "boss2target" or "boss1target"
 		if not UnitName(bossId) then return end --The first is sometimes delayed longer than 0.3
 		if UnitIsUnit(bossId, "player") then
-			mod:LocalMessage(86369, CL["you"]:format(L["blast_message"]), "Personal", 86369, "Long")
+			mod:LocalMessage(86369, CL["you"]:format(L["blast_message"]), "Personal", 86369)
 		end
 	end
 	function mod:TwilightBlast(...)
