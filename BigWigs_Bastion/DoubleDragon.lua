@@ -18,6 +18,7 @@ local theralion = EJ_GetSectionInfo(2994)
 local valiona = EJ_GetSectionInfo(2985)
 local emTargets = mod:NewTargetList()
 local markWarned = false
+local phase = valiona
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -93,6 +94,7 @@ function mod:OnEngage(diff)
 	self:OpenProximity(8, 86369)
 	self:Berserk(600)
 	phaseCount = 0
+	phase = valiona
 end
 
 --------------------------------------------------------------------------------
@@ -119,6 +121,8 @@ local function valionaHasLanded()
 	mod:Bar(86840, devouringFlames, 24, 86840)
 	mod:Bar(86788, blackout, 9, 86788)
 	mod:OpenProximity(8, 86369)
+	
+	phase = valiona
 end
 
 local function theralionHasLanded()
@@ -126,6 +130,9 @@ local function theralionHasLanded()
 	mod:SendMessage("BigWigs_StopBar", mod, devouringFlames)
 	mod:Bar("phase_switch", L["phase_bar"]:format(valiona), 130, 60639)
 	mod:Bar(86622, engulfing, 17, 86622) --Probably not accurate! + not confirmed for HM
+	
+	mod:CloseProximity(86369) --range for valiona
+	phase = theralion
 end
 
 function mod:TwilightShift(player, spellId, _, _, spellName, stack)
@@ -139,14 +146,11 @@ end
 function mod:DazzlingDestruction()
 	phaseCount = phaseCount + 1
 	if phaseCount == 1 then
+		self:CloseProximity(86369) --range for valiona, could falsly close blackout
 		self:Message(86408, L["dazzling_message"], "Important", 86408, "Alarm")
 	elseif phaseCount == 3 then
 		self:ScheduleTimer(theralionHasLanded, 5)
 		self:Message("phase_switch", L["phase_bar"]:format(theralion), "Positive", 60639)
-		
-		--will be opened after last Blackout(after phaseCounter == 1) - still need to be closed
-		self:CloseProximity(86369)
-		self:ScheduleTimer(function() self:CloseProximity(86369) end, 10)
 		
 		--88 sec till valiona stats to fly - not confirmed
 		self:Bar(86059,L.valiona_fly,88,92194)
@@ -181,8 +185,10 @@ end
 
 function mod:BlackoutRemoved(player, spellId, _, _, spellName)
 	self:CloseProximity(86788)
-	self:OpenProximity(8, 86369)
 	self:PrimaryIcon(86788)
+	if phase == valiona then 
+		self:OpenProximity(8, 86369)
+	end
 end
 
 local function markRemoved()
