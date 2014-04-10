@@ -423,8 +423,17 @@ do --Nef in HC
 		end
 			
 		do --E1
+			local function f(timer,ownFunc)
+				if bossActivations[2] and bossActivations[2][1] == A then --normally always true.
+					local t = GetTime() - bossActivations[2][1] 
+					if t >= 25 and t <= 29 then	--should be around 27
+						return true
+					end
+				end
+			end
+			
 			local start = E	--this one however never shows, so we force it to be.
-			local preRot = {{44-1,A},{29,A},{21,M},{40,T},{59,A}}
+			local preRot = {{44-1,A},{29,A,f},{21,M},{40,T},{59,A}}
 			local rot = {{20,M}, {40,T}, {60,A}}
 			CreatePredictionTable(start, preRot, rot)
 		end
