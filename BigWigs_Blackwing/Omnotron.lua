@@ -45,6 +45,7 @@ L = mod:GetLocale()
 
 --Nef-Timers
 local showedTimers = {}--obviously the nef-timers
+local bossActivations = {}
 local hcNef = {}
 local lastNefAction = nil
 local M, T, E, A = GetSpellInfo(92023),GetSpellInfo(91849),GetSpellInfo(92051),L.pool --"Magmatron","Toxitron","Electron","Arkanotron"
@@ -104,6 +105,7 @@ local countUsedSpells = {}
 
 function mod:OnEngage(diff)
 	lastNefAction = nil
+	bossActivations = {}
 	if diff > 2 then
 		countUsedSpells = {}
 		self:Berserk(600)
@@ -150,6 +152,8 @@ end
 function mod:GolemActivated(unit,unitGUID)
 	local bossID = self.GetMobIdByGUID[unitGUID]
 	if bossID == 42178 then --Magmatron 42178
+		bossActivations[#bossActivations + 1] = {M,GetTime()}
+		
 		countUsedSpells.AcquiringTarget = 0
 		self:Bar(79501, L.acquiring_target, 20, 79501) -- -4sec(10HC)
 		hcNef.realtimeAdjust(M,20,47)
@@ -163,6 +167,8 @@ function mod:GolemActivated(unit,unitGUID)
 		end
 		
 	elseif bossID == 42179 then --Elektron 42179
+		bossActivations[#bossActivations + 1] = {E,GetTime()}
+		
 		countUsedSpells.LightningConductor = 0
 		self:Bar(79888, Lightning_Conductor, 13, 79888) --same Timer NH/HC
 		hcNef.realtimeAdjust(E,13,33,53)
@@ -173,6 +179,8 @@ function mod:GolemActivated(unit,unitGUID)
 		end
 		
 	elseif bossID == 42180 then --Toxitron 42180
+		bossActivations[#bossActivations + 1] = {T,GetTime()}
+		
 		countUsedSpells.PoisonProtocol = 0
 		countUsedSpells.ChemicalCloud = 0
 		if self:Difficulty() > 2 then --HC
@@ -190,6 +198,8 @@ function mod:GolemActivated(unit,unitGUID)
 		end
 		
 	elseif bossID == 42166 then --Arkanotron 42166
+		bossActivations[#bossActivations + 1] = {A,GetTime()}
+		
 			--16sec Pool#1 +12/+19 for explo = 28/35
 			--46sec Pool#2 +12/+19 for explo = 58/65
 		--try realTimeAdjust - pretty sure those wont work as good as the others do.
@@ -413,8 +423,8 @@ do --Nef in HC
 		end
 			
 		do --E1
-			local start = E
-			local preRot = {{44,A},{29,A},{21,M},{40,T},{59,A}}
+			local start = E	--this one however never shows, so we force it to be.
+			local preRot = {{44-1,A},{29,A},{21,M},{40,T},{59,A}}
 			local rot = {{20,M}, {40,T}, {60,A}}
 			CreatePredictionTable(start, preRot, rot)
 		end
@@ -563,11 +573,12 @@ do --Nef in HC
 			predictionSolutions = {[A] = {},[M] = {},[T] = {},[E] = {}}
 			for i,pred in pairs(fittingRotations) do
 				local check, upcoming = pred[nefActionCounter-1], pred[nefActionCounter]
-				local upT, upB = unpack(upcoming)
+				local upT, upB, upForce = unpack(upcoming) 	--upForce is if the timer should be forced to be shown instead
+															--of being confirmed by adjustments(can still be adjusted later)
 				
 				if matchPrediction(check, {t,boss}) then
 					matchingPredictionsCount = matchingPredictionsCount + 1
-					predictionSolutions[upB][#predictionSolutions[upB] + 1] = upT
+					predictionSolutions[upB][#predictionSolutions[upB] + 1] = {upT,upForce}
 				else
 					fittingRotations[i] = nil
 				end
@@ -575,12 +586,17 @@ do --Nef in HC
 			
 			for solutionBoss,bossTbl in pairs(predictionSolutions) do --solutionBoss == E|M|A|T
 				local txt = solutionBoss
-				for i,timer in pairs(bossTbl) do
+				for i,timerTbl in pairs(bossTbl) do
+					local timer, force = unpack(timerTbl)
+					
+					--call the function with all we can bring.
+					if type(force) == "function" then force = force(timer,force) end
+					
 					if i > 1 then
 						--to make the strings still diff from each other
 						txt = txt.." " 
 					end
-					if matchingPredictionsCount == 1 then --if this one is the only left possible way - show it.
+					if force or matchingPredictionsCount == 1 then --if this one is the only left possible way - show it. / or if its forced to be shown
 						mod:Bar(nefOptionRelative[solutionBoss], txt, timer, nefIconByName[solutionBoss])
 					end
 					showedTimers[txt] = GetTime() + timer
