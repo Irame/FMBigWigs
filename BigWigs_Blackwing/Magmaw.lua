@@ -70,8 +70,8 @@ end
 
 function mod:OnBossEnable()
 	--heroic
-	self:Log("SPELL_PERIODIC_DAMAGE", "Fire", 92197) --10HM ID
-	self:Log("SPELL_DAMAGE", "Fire", 92197)
+	self:Log("SPELL_DAMAGE", "Fire", 92197, 92198, 92191, 92192)--Fire itself & initial dmg on Skeleton spawn
+	
 	self:Log("SPELL_SUMMON", "BlazingInferno", 92154, 92190, 92191, 92192)
 	self:Yell("Phase2", L["phase2_yell"])
 
