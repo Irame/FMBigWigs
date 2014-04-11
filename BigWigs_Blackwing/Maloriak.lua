@@ -139,9 +139,8 @@ function mod:OnEngage(diff)
 	aberrations = 18
 	phaseCounter = 0
 	arcaneStormCount = -1
-	addCastCount = -1 --first is "out-of-phase"
-	self:Bar(77569,releaseAberration,15,77569) 	--not confirmed for NM
-	self:Bar(77896,arcaneStorm,10,77896)		--not confirmed!
+	addCastCount = 0 --May fuck up NM
+	self:Bar(77896,arcaneStorm,15,77896)--not confirmed for NM
 	isChilled, currentPhase, startPhase = nil, nil, nil
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
 end
