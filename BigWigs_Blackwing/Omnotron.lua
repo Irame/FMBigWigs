@@ -142,6 +142,7 @@ end
 
 function mod:PoolExplosion()
 	self:Message(91879, L["pool"], "Urgent", 91879)
+	if self:Difficulty() < 3 then return end
 	hcNef.spellUsed(A)
 end
 
@@ -149,68 +150,94 @@ function mod:PoolSpawned()
 	hcNef.realtimeAdjust(A,12,19) --so random - just try it with two spots
 end
 
-function mod:GolemActivated(unit,unitGUID)
-	local bossID = self.GetMobIdByGUID[unitGUID]
-	if bossID == 42178 then --Magmatron 42178
-		bossActivations[#bossActivations + 1] = {M,GetTime()}
-		
-		countUsedSpells.AcquiringTarget = 0
-		self:Bar(79501, L.acquiring_target, 20, 79501) -- -4sec(10HC)
-		hcNef.realtimeAdjust(M,20,47)
-		
-		countUsedSpells.Incinerate = 0
-		self:Bar(79023, L.incinerate, 10.5, 79023)
-		
-		if not lastNefAction and self:Difficulty() > 2 then --first Aquiring is Rooted.
-			self:Bar(nefOptionRelative[M], M, 20, nefIconByName[M])
-			showedTimers[M] = GetTime() + 20
-		end
-		
-	elseif bossID == 42179 then --Elektron 42179
-		bossActivations[#bossActivations + 1] = {E,GetTime()}
-		
-		countUsedSpells.LightningConductor = 0
-		self:Bar(79888, Lightning_Conductor, 13, 79888) --same Timer NH/HC
-		hcNef.realtimeAdjust(E,13,33,53)
-		
-		if not lastNefAction and self:Difficulty() > 2 then --first Conductor is a ShadowConductor.
-			self:Bar(nefOptionRelative[E], E, 13, nefIconByName[E])
-			showedTimers[E] = GetTime() + 13
-		end
-		
-	elseif bossID == 42180 then --Toxitron 42180
-		bossActivations[#bossActivations + 1] = {T,GetTime()}
-		
-		countUsedSpells.PoisonProtocol = 0
-		countUsedSpells.ChemicalCloud = 0
-		if self:Difficulty() > 2 then --HC
-			self:Bar(91513, Poison_Protocol, 15, 91513) 
-			self:Bar(80161, Chemical_Cloud, 25, 80161)
-			hcNef.realtimeAdjust(T,25,55)
-		else --NH
-			self:Bar(91513, Poison_Protocol, 21, 91513)
-			self:Bar(80161, Chemical_Cloud, 11, 80161)
-		end
-		
-		if not lastNefAction and self:Difficulty() > 2 then --Currently Omnotron cannot start with Toxitron, but we will assume it would be the first Chemical Cloud.
-			self:Bar(nefOptionRelative[T], T, 25, nefIconByName[T])
-			showedTimers[T] = GetTime() + 25
-		end
-		
-	elseif bossID == 42166 then --Arkanotron 42166
-		bossActivations[#bossActivations + 1] = {A,GetTime()}
-		
-			--16sec Pool#1 +12/+19 for explo = 28/35
-			--46sec Pool#2 +12/+19 for explo = 58/65
-		--try realTimeAdjust - pretty sure those wont work as good as the others do.
-		hcNef.realtimeAdjust(A, 28, 35, 58, 65)
-		
-		if not lastNefAction and self:Difficulty() > 2 then --this one is a little bit tricky because its related to how fast arcanotron is kicked
-			self:Bar(nefOptionRelative[A], A, 27, nefIconByName[A])
-			showedTimers[A] = GetTime() + 27
-		end
-	
+do
+	local registered = {}
+	function mod:RegisterNextGolem(f)
+		--should be sorted/called by who first Registered
+		registered[#registered + 1] = f
 	end
+	
+	local function nextGolem(golem)
+		--we want to make us able to register within the call.
+		local tbl = registered 
+		registered = {}
+		for _,f in pairs(tbl) do
+			if f and type(f) == "function" then
+				f(golem)
+			end
+		end
+	end
+	
+	function mod:GolemActivated(unit,unitGUID)
+		local bossID = self.GetMobIdByGUID[unitGUID]
+		if bossID == 42178 then --Magmatron 42178
+			nextGolem(M)
+			
+			countUsedSpells.AcquiringTarget = 0
+			self:Bar(79501, L.acquiring_target, 20, 79501) -- -4sec(10HC)
+			hcNef.realtimeAdjust(M,20,47)
+			
+			countUsedSpells.Incinerate = 0
+			self:Bar(79023, L.incinerate, 10.5, 79023)
+			
+			if not lastNefAction and self:Difficulty() > 2 then --first Aquiring is Rooted.
+				self:Bar(nefOptionRelative[M], M, 20, nefIconByName[M])
+				showedTimers[M] = GetTime() + 20
+			end
+			
+		elseif bossID == 42179 then --Elektron 42179
+			nextGolem(E)
+			
+			countUsedSpells.LightningConductor = 0
+			self:Bar(79888, Lightning_Conductor, 13, 79888) --same Timer NH/HC
+			hcNef.realtimeAdjust(E,13,33,53)
+			
+			if not lastNefAction and self:Difficulty() > 2 then --first Conductor is a ShadowConductor.
+				self:Bar(nefOptionRelative[E], E, 13, nefIconByName[E])
+				showedTimers[E] = GetTime() + 13
+			end
+			
+		elseif bossID == 42180 then --Toxitron 42180
+			nextGolem(T)
+			
+			countUsedSpells.PoisonProtocol = 0
+			countUsedSpells.ChemicalCloud = 0
+			if self:Difficulty() > 2 then --HC
+				self:Bar(91513, Poison_Protocol, 15, 91513) 
+				self:Bar(80161, Chemical_Cloud, 25, 80161)
+				hcNef.realtimeAdjust(T,25,55)
+			else --NH
+				self:Bar(91513, Poison_Protocol, 21, 91513)
+				self:Bar(80161, Chemical_Cloud, 11, 80161)
+			end
+			
+			if not lastNefAction and self:Difficulty() > 2 then --Currently Omnotron cannot start with Toxitron, but we will assume it would be the first Chemical Cloud.
+				self:Bar(nefOptionRelative[T], T, 25, nefIconByName[T])
+				showedTimers[T] = GetTime() + 25
+			end
+			
+		elseif bossID == 42166 then --Arkanotron 42166
+			nextGolem(A)
+			
+				--16sec Pool#1 +12/+19 for explo = 28/35
+				--46sec Pool#2 +12/+19 for explo = 58/65
+			--try realTimeAdjust - pretty sure those wont work as good as the others do.
+			hcNef.realtimeAdjust(A, 28, 35, 58, 65)
+			
+			if not lastNefAction and self:Difficulty() > 2 then --this one is a little bit tricky because its related to how fast arcanotron is kicked
+				self:Bar(nefOptionRelative[A], A, 27, nefIconByName[A])
+				showedTimers[A] = GetTime() + 27
+			end
+		
+		end
+	end
+	
+	--this one will always be called before each other, because its always the first registered function.
+	local function bossActivationCall(golem)	
+		bossActivations[#bossActivations + 1] = {golem,GetTime()}
+		mod:RegisterNextGolem(bossActivationCall)
+	end
+	mod:RegisterNextGolem(bossActivationCall)
 end
 
 do
@@ -237,6 +264,7 @@ end
 
 function mod:Grip(_, spellId, _, _, spellName)
 	self:Message(91849, spellName, "Urgent", 91849)
+	if self:Difficulty() < 3 then return end
 	hcNef.spellUsed(T)
 end
 
@@ -246,11 +274,13 @@ function mod:ShadowInfusion(player, spellId, _, _, spellName)
 	end
 	self:TargetMessage(92048, spellName, player, "Urgent", spellId)
 	self:SecondaryIcon(92048, player)
+	if self:Difficulty() < 3 then return end
 	hcNef.spellUsed(E)
 end
 
 function mod:EncasingShadows(player, spellId, _, _, spellName)
 	self:TargetMessage(92023, spellName, player, "Urgent", spellId)
+	if self:Difficulty() < 3 then return end
 	hcNef.spellUsed(M)
 end
 
@@ -409,8 +439,8 @@ do --Nef in HC
 		
 		do --M2
 			local start = M	--all of these are pretty variable.
-			local preRot = {{55-1,E},{40,E},{32,T},{45,E}}
-			local rot = {{40,E}, {32,T}, {45,E}}
+			local preRot = {{55-1,E},{40,E},{32,T},{45+2,E}}
+			local rot = {{40,E}, {32+1,T}, {45,E}}
 			CreatePredictionTable(start, preRot, rot)
 		end	
 		
@@ -423,13 +453,16 @@ do --Nef in HC
 		end
 			
 		do --E1
-			local function f(timer,ownFunc)
-				if bossActivations[2] and bossActivations[2][1] == A then --normally always true.
-					local t = GetTime() - bossActivations[2][1] 
-					if t >= 25 and t <= 29 then	--should be around 27
-						return true
+			--v complete nonsense.
+			local function f(timer,txt,ownFunc)
+				local t = GetTime()
+				mod:RegisterNextGolem(function(golem) 
+					if GetTime() - t < 5 then -- should be around 3
+						--Explosions mostly happen ~26-28 sec after a Boss did Activate.
+						mod:Bar(nefOptionRelative[A], txt, 27, nefIconByName[A])
+						showedTimers[txt] = GetTime() + 27
 					end
-				end
+				end)
 			end
 			
 			local start = E	--this one however never shows, so we force it to be.
@@ -453,8 +486,29 @@ do --Nef in HC
 		end
 		
 		do --E4
+			local function f(timer,txt,ownFunc)
+				-- +9sec A spawn -> 30sec T spawn -> 25sec: Action
+				local t = GetTime()
+				mod:RegisterNextGolem(function(golem)
+					if golem == A and math.abs((GetTime()-t)-9) < 4 then
+						local timer = showedTimers[txt] - GetTime()
+						if timer > 0 then 
+							mod:Bar(nefOptionRelative[A], txt, timer, nefIconByName[A])
+							mod:RegisterNextGolem(function(golem2)
+								--no time check needed, because its alsways 30 sec.
+								--make sure nothing else happened
+								if golem2 ~= T and lastNefAction == M then
+									mod:StopBar(txt)
+									showedTimers[txt] = nil
+								end
+							end)
+						end
+					end
+				end)
+			end		
+		
 			local start = E
-			local preRot = {{36+1,M},{65,A},{33-1,T}}
+			local preRot = {{36+1,M},{65,A,f},{33-1,T}}
 			local rot = {{58,A}, {30,A}, {30,T}}
 			CreatePredictionTable(start, preRot, rot)
 		end
@@ -580,10 +634,14 @@ do --Nef in HC
 			
 			local matchingPredictionsCount = 0
 			predictionSolutions = {[A] = {},[M] = {},[T] = {},[E] = {}}
+			--go throught all still matching rotations(according to previous action)
+			--filter out those which are not anymore matching
+			--and put those that still match into predictionSolutions
 			for i,pred in pairs(fittingRotations) do
 				local check, upcoming = pred[nefActionCounter-1], pred[nefActionCounter]
 				local upT, upB, upForce = unpack(upcoming) 	--upForce is if the timer should be forced to be shown instead
 															--of being confirmed by adjustments(can still be adjusted later)
+															--this can also be a function being called later in code.
 				
 				if matchPrediction(check, {t,boss}) then
 					matchingPredictionsCount = matchingPredictionsCount + 1
@@ -593,19 +651,24 @@ do --Nef in HC
 				end
 			end
 			
+			--go throught the built table of "could-be-happening" actions
+			--maybe show them, depending on howmany/which there are.
+			--all timers get a unique text so all could be shown simutaniously.
 			for solutionBoss,bossTbl in pairs(predictionSolutions) do --solutionBoss == E|M|A|T
 				local txt = solutionBoss
-				for i,timerTbl in pairs(bossTbl) do
+				for i,timerTbl in pairs(bossTbl) do				
+					if i > 1 then
+						--to make the strings still diff from each other
+						txt = txt.." "
+					end
+					
 					local timer, force = unpack(timerTbl)
 					
 					--call the function with all we can bring.
-					if type(force) == "function" then force = force(timer,force) end
+					if type(force) == "function" then force = force(timer,txt,force) end
 					
-					if i > 1 then
-						--to make the strings still diff from each other
-						txt = txt.." " 
-					end
-					if force or matchingPredictionsCount == 1 then --if this one is the only left possible way - show it. / or if its forced to be shown
+					--if this one is the only left possible way - show it. / or if its forced to be shown
+					if force or matchingPredictionsCount == 1 then 
 						mod:Bar(nefOptionRelative[solutionBoss], txt, timer, nefIconByName[solutionBoss])
 					end
 					showedTimers[txt] = GetTime() + timer
