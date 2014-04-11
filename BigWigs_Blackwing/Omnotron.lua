@@ -453,11 +453,10 @@ do --Nef in HC
 		end
 			
 		do --E1
-			--v complete nonsense.
 			local function f(timer,txt,ownFunc)
 				local t = GetTime()
 				mod:RegisterNextGolem(function(golem) 
-					if GetTime() - t < 5 then -- should be around 3
+					if golem == M and GetTime() - t < 5 then -- should be around 3
 						--Explosions mostly happen ~26-28 sec after a Boss did Activate.
 						mod:Bar(nefOptionRelative[A], txt, 27, nefIconByName[A])
 						showedTimers[txt] = GetTime() + 27
