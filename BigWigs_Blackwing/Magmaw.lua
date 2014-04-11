@@ -19,7 +19,7 @@ local mangle = "~"..GetSpellInfo(89773)
 local L = mod:NewLocale("enUS", true)
 if L then
 	-- heroic
-	L.fire = "Skeleton Fire"
+	L.fire = "Ignition (Fire)"
 	L.fire_desc = "Warning for when you stand in a Skeletons Fire."
 	L.fire_message = "Fire under YOU!"
 	
