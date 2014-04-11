@@ -32,6 +32,10 @@ end
 L = BigWigs:NewBossLocale("Magmaw", "deDE")
 if L then
 	-- heroic
+	L.fire = "Skelett Feuer"
+	L.fire_desc = "Warnt dich, wenn du im Feuer eines Skeletts stehst."
+	L.fire_message = "Feuer unter DIR!"
+	
 	L.blazing = "Loderndes Knochenkonstrukt"
 	L.blazing_desc = "Warnt vor dem Auftauchen der Lodernden Knochenkonstrukte."
 	L.blazing_message = "Skelett kommt!"

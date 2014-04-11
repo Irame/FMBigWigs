@@ -19,6 +19,10 @@ local mangle = "~"..GetSpellInfo(89773)
 local L = mod:NewLocale("enUS", true)
 if L then
 	-- heroic
+	L.fire = "Skeleton Fire"
+	L.fire_desc = "Warning for when you stand in a Skeletons Fire."
+	L.fire_message = "Fire under YOU!"
+	
 	L.blazing = "Skeleton Adds"
 	L.blazing_desc = "Summons Blazing Bone Construct."
 	L.blazing_message = "Add incoming!"
@@ -55,7 +59,7 @@ L = mod:GetLocale()
 function mod:GetOptions()
 	return {
 		"slump", 79011, 89773, 78006, {78941, "FLASHSHAKE", "WHISPER", "PROXIMITY"}, 77690,
-		"blazing", "armageddon", {"phase2", "PROXIMITY"},
+		"blazing", {"fire", "FLASHSHAKE"}, "armageddon", {"phase2", "PROXIMITY"},
 		"berserk", "bosskill"
 	}, {
 		slump = "normal",
@@ -66,6 +70,8 @@ end
 
 function mod:OnBossEnable()
 	--heroic
+	self:Log("SPELL_PERIODIC_DAMAGE", "Fire", 92197) --10HM ID
+	self:Log("SPELL_DAMAGE", "Fire", 92197)
 	self:Log("SPELL_SUMMON", "BlazingInferno", 92154, 92190, 92191, 92192)
 	self:Yell("Phase2", L["phase2_yell"])
 
@@ -112,6 +118,19 @@ function mod:Armageddon(_, spellId, _, _, spellName)
 	if not isHeadPhase then return end
 	self:Message(79011, spellName, "Important", spellId, "Alarm")
 	self:Bar(79011, spellName, 8, spellId)
+end
+
+do
+	local last = 0 
+	function mod:Fire(player, spellId)
+		if not UnitIsUnit(player, "player") then return end
+		local time = GetTime()
+		if (time - last) > 2 then
+			last = time
+			self:LocalMessage("fire", L["fire_message"], "Personal", spellId, "Info")
+			self:FlashShake("fire")
+		end		
+	end
 end
 
 do
