@@ -439,7 +439,7 @@ do --Nef in HC
 		
 		do --M2
 			local start = M	--all of these are pretty variable.
-			local preRot = {{55-1,E},{40,E},{32,T},{45+2,E}}
+			local preRot = {{55-2,E},{40,E},{32+2,T},{45+1,E}}
 			local rot = {{40,E}, {32+1,T}, {45,E}}
 			CreatePredictionTable(start, preRot, rot)
 		end	
@@ -494,9 +494,8 @@ do --Nef in HC
 						if timer > 0 then 
 							mod:Bar(nefOptionRelative[A], txt, timer, nefIconByName[A])
 							mod:RegisterNextGolem(function(golem2)
-								--no time check needed, because its alsways 30 sec.
-								--make sure nothing else happened
 								if golem2 ~= T and lastNefAction == M then
+									--if its the wrong golem and the Bar is not hidden by a new NefAction.
 									mod:StopBar(txt)
 									showedTimers[txt] = nil
 								end
@@ -504,10 +503,20 @@ do --Nef in HC
 						end
 					end
 				end)
-			end		
-		
+			end	
+			
+			local function f2(timer,txt)
+				local t = GetTime()
+				mod:RegisterNextGolem(function(golem)
+					local diff = GetTime() - t
+					if diff < 6 and golem == E then
+						mod:Bar(nefOptionRelative[T], txt, timer-diff, nefIconByName[T])
+					end
+				end)
+			end
+			
 			local start = E
-			local preRot = {{36+1,M},{65,A,f},{33-1,T}}
+			local preRot = {{36+1,M},{65,A,f},{33-1,T,f2}}
 			local rot = {{58,A}, {30,A}, {30,T}}
 			CreatePredictionTable(start, preRot, rot)
 		end
@@ -520,9 +529,19 @@ do --Nef in HC
 		end
 
 		do --A1
+			local function f(timer,txt,ownFunc)
+				local t = GetTime()
+				mod:RegisterNextGolem(function(golem)
+					local diff = GetTime() - t
+					if diff <= 6 and golem == E then
+						mod:Bar(nefOptionRelative[A], txt, timer-diff, nefIconByName[A])
+					end
+				end)
+			end
+			
 			local start = A
-			local preRot = {{31-1,A},{23-1,M},{40,T},{30,T}}
-			local rot = {{35,E}, {45,M}, {40,T}}
+			local preRot = {{31-1,A,f},{23+0,M},{40-1,T},{30,T}}
+			local rot = {{35+1,E}, {45,M}, {40,T}}
 			CreatePredictionTable(start, preRot, rot)
 		end
 		
@@ -532,7 +551,6 @@ do --Nef in HC
 			local rot = {{48,E}, {40,E}, {30,T}}
 			CreatePredictionTable(start, preRot, rot)
 		end	
-		
 		do --A3
 			local start = A
 			local preRot = {{20,E},{37,M}, {39,T},{45,E}}
@@ -554,13 +572,28 @@ do --Nef in HC
 			CreatePredictionTable(start, preRot, rot)
 		end
 		
-		do --A5
+		do --A6
 			local start = A
 			local preRot = {{32,A},{19,E},{40,E}}
 			local rot = {{}}
 			CreatePredictionTable(start, preRot, rot)
 		end
 		
+		do --A7
+			--not enough data for full rotation.
+			local start = A
+			local preRot = {{24,M},{41,E},{53,A},{30,A},{21,M},{37,E},{33,T}}
+			local rot = {{}}
+			CreatePredictionTable(start, preRot, rot)
+		end
+		
+		do --A8
+			--seen once assuming rotation little bit
+			local start = A
+			local preRot = {{38,E},{45,M},{40,T},{36,E},{42,M}}
+			local rot = {{40,T},{35,E},{42,M}}
+			CreatePredictionTable(start, preRot, rot)
+		end
 		
 	end
 	
