@@ -59,7 +59,9 @@ function mod:Warmup(_, msg)
 	end
 end
 
+local isLastPhase
 function mod:OnEngage(diff)
+	isLastPhase = false
 	self:SendMessage("BigWigs_StopBar", self, self.displayName)
 	self:Berserk(450)
 	if diff < 3 then
@@ -88,6 +90,9 @@ function mod:SystemFailureEnd(_, spellId)
 		if self:Difficulty() < 3 then
 			self:Bar(88853, L["next_system_failure"], 65, spellId)
 		end
+		if not isLastPhase then --Massacre
+			self:Bar(82848, GetSpellInfo(82848), 27, spellId)
+		end
 		self:FlashShake(88853)
 		self:OpenProximity(6, 82935)
 	end
@@ -95,14 +100,16 @@ end
 
 function mod:Massacre(_, spellId, _, _, spellName)
 	self:Message(82848, spellName, "Attention", spellId)
-	self:Bar(82848, spellName, 30, spellId)
+	self:Bar(82848, spellName, 34, spellId)
 	self:Bar(82935, GetSpellInfo(82935), 19, 82935) --Caustic Slime
 end
 
 function mod:Mortality(_, spellId, _, _, spellName)
+	isLastPhase = true
 	self:Message(82890, spellName, "Important", spellId, "Long")
 	self:CloseProximity(82935)
-	self:SendMessage("BigWigs_StopBar", self, L["next_system_failure"])
+	self:StopBar(L["next_system_failure"])
+	self:StopBar(GetSpellInfo(82848)) --Massacre
 end
 
 function mod:Break(player, spellId, _, _, _, stack)
