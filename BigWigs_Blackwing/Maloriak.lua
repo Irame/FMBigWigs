@@ -259,6 +259,9 @@ do
 	local function release()
 		aberrations = aberrations - 3
 		mod:Message(77569, L["release_aberration_message"]:format(aberrations), "Important", 688, "Alert") --Summon Imp Icon
+		if aberrations == 0 then
+			mod:StopBar(releaseAberration)
+		end
 	end
 	function mod:ReleaseAberrations()
 		-- He keeps casting it even if there are no adds left to release...
@@ -319,8 +322,10 @@ function mod:ReleaseAll(_, spellId)
 	if not isChilled then
 		self:CloseProximity(77699)
 	end
-	self:SendMessage("BigWigs_StopBar", self, scorchingBlast)
-	self:SendMessage("BigWigs_StopBar", self, flashFreeze)
+	self:StopBar(scorchingBlast)
+	self:StopBar(flashFreeze)
+	self:StopBar(releaseAberration)
+	self:CancelArcaneStormTimers()
 	self:Message(77991, L["release_all"]:format(aberrations + 2), "Important", spellId, "Alert")
 	self:Bar(78194, "~"..GetSpellInfo(78194), 12.5, 78194)
 end
