@@ -174,11 +174,14 @@ end
 
 function mod:Red()
 	if currentPhase == "red" then return end
-	currentPhase = "red"
 	if not startPhase then 
 		self:Bar(77569,releaseAberration,15,77569) --not confirmed for NM
-		startPhase = "red" 
+		if currentPhase == "dark" then 
+			self:Bar(77896,arcaneStorm,8,77896)
+		end
+		startPhase = "red"
 	end
+	currentPhase = "red"
 	
 	self:SendMessage("BigWigs_StopBar", self, flashFreeze)
 	self:Bar(77679, scorchingBlast, 25, 77679)
@@ -191,11 +194,14 @@ end
 
 function mod:Blue()
 	if currentPhase == "blue" then return end
-	currentPhase = "blue"
 	if not startPhase then 
 		self:Bar(77569,releaseAberration,15,77569) --not confirmed for NM
+		if currentPhase == "dark" then 
+			self:Bar(77896,arcaneStorm,8,77896)
+		end
 		startPhase = "blue" 
 	end
+	currentPhase = "blue"
 	
 	self:SendMessage("BigWigs_StopBar", self, scorchingBlast)
 	self:Bar(77699, flashFreeze, 20, 77699)
