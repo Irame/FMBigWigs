@@ -46,7 +46,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "DoubleAttack", 88826)
 	self:Log("SPELL_CAST_START", "Massacre", 82848)
 	
-	self:Log("SPELL_CAST_START", "Slime", 82935, 88915, 88916, 88917)
+	self:Log("SPELL_CAST_SUCCESS", "Slime", 82935, 88915, 88916, 88917)
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "Warmup")
