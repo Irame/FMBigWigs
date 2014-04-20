@@ -45,6 +45,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED_DOSE", "Break", 82881)
 	self:Log("SPELL_AURA_APPLIED", "DoubleAttack", 88826)
 	self:Log("SPELL_CAST_START", "Massacre", 82848)
+	
+	self:Log("SPELL_CAST_START", "Slime", 82935, 88915, 88916, 88917)
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 	self:RegisterEvent("CHAT_MSG_MONSTER_EMOTE", "Warmup")
@@ -76,9 +78,14 @@ end
 -- Event Handlers
 --
 
+function mod:Slime()
+	self:Bar(82935, GetSpellInfo(82935), 5, 82935)
+end
+
 function mod:SystemFailureStart(_, spellId, _, _, spellName)
 	self:StopBar(L["next_system_failure"])
 	self:StopBar(GetSpellInfo(82848)) --Massacre
+	self:Bar(82935, GetSpellInfo(82935), 15, 82935) --Caustic Slime
 	self:Bar(88853, spellName, 30, spellId)
 	self:Message(88853, spellName, "Important", spellId, "Alarm")
 	self:FlashShake(88853)
@@ -93,6 +100,7 @@ function mod:SystemFailureEnd(_, spellId)
 		if not isLastPhase then --Massacre
 			self:Bar(82848, GetSpellInfo(82848), 27, spellId)
 		end
+		self:Bar(82935, GetSpellInfo(82935), 15, 82935) --Caustic Slime
 		self:FlashShake(88853)
 		self:OpenProximity(6, 82935)
 	end
@@ -101,7 +109,7 @@ end
 function mod:Massacre(_, spellId, _, _, spellName)
 	self:Message(82848, spellName, "Attention", spellId)
 	self:Bar(82848, spellName, 34, spellId)
-	self:Bar(82935, GetSpellInfo(82935), 19, 82935) --Caustic Slime
+	self:Bar(82935, GetSpellInfo(82935), 10, 82935) --Caustic Slime
 end
 
 function mod:Mortality(_, spellId, _, _, spellName)
