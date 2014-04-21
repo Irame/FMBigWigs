@@ -130,9 +130,12 @@ end
 
 function mod:OnEngage(diff)
 	if diff > 2 then
-		self:Bar("phase", L["next_phase"], 16+4, "INV_ELEMENTAL_PRIMAL_SHADOW")
+		self:Bar("phase", L["dark_phase"], 20, "INV_ELEMENTAL_PRIMAL_SHADOW")
+		self:SetNextPhase(20, "dark")
 		self:Berserk(720)
 	else
+		self:Bar("phase", L["next_phase"], 20, "INV_ALCHEMY_ELIXIR_EMPTY")
+		self:SetNextPhase(20, "colored")
 		self:Berserk(420)
 	end
 	self:OpenProximity(8, 77699)
@@ -162,13 +165,33 @@ do
 	end
 end
 
-local function nextPhase(timeToNext)
-	phaseCounter = phaseCounter + 1
-	local diff = mod:Difficulty()
-	if (diff < 3 and phaseCounter == 2) or (diff > 2 and phaseCounter == 3) then
-		mod:Bar("phase", L["green_phase_bar"], timeToNext, "INV_POTION_162")
-	else
-		mod:Bar("phase", L["next_phase"], timeToNext, "INV_ALCHEMY_ELIXIR_EMPTY")
+local nextPhase
+do
+	local nextTime
+	local nextDesc
+	function mod:GetNextPhase()
+		return nextDesc, nextTime
+	end
+	
+	function mod:SetNextPhase(timeToNext, desc)
+		nextTime = GetTime() + timeToNext
+		nextDesc = desc
+	end
+	
+	nextPhase = function(timeToNext)
+		phaseCounter = phaseCounter + 1
+		local diff = mod:Difficulty()
+		if (diff < 3 and phaseCounter == 2) or (diff > 2 and phaseCounter == 3) then
+			mod:Bar("phase", L["green_phase_bar"], timeToNext, "INV_POTION_162")
+			nextDesc = "green"
+		elseif phaseCounter == 4 then --can only happen in HM
+			mod:Bar("phase", L["dark_phase"], tomeToNext, "INV_ELEMENTAL_PRIMAL_SHADOW")
+			nextDesc = "dark"
+		else
+			mod:Bar("phase", L["next_phase"], timeToNext, "INV_ALCHEMY_ELIXIR_EMPTY")
+			nextDesc = "colored"
+		end
+		nextTime = GetTime() + timeToNext
 	end
 end
 
@@ -183,7 +206,7 @@ function mod:Red()
 	end
 	currentPhase = "red"
 	
-	self:SendMessage("BigWigs_StopBar", self, flashFreeze)
+	self:StopBar(flashFreeze)
 	self:Bar(77679, scorchingBlast, 25, 77679)
 	self:Message("phase", L["red_phase"], "Positive", "Interface\\Icons\\INV_POTION_24", "Long")
 	if not isChilled then
@@ -203,7 +226,7 @@ function mod:Blue()
 	end
 	currentPhase = "blue"
 	
-	self:SendMessage("BigWigs_StopBar", self, scorchingBlast)
+	self:StopBar(scorchingBlast)
 	self:Bar(77699, flashFreeze, 20, 77699)
 	self:Message("phase", L["blue_phase"], "Positive", "Interface\\Icons\\INV_POTION_20", "Long")
 	self:OpenProximity(8, 77699)
@@ -213,8 +236,8 @@ end
 function mod:Green()
 	if currentPhase == "green" then return end
 	currentPhase = "green"
-	self:SendMessage("BigWigs_StopBar", self, scorchingBlast)
-	self:SendMessage("BigWigs_StopBar", self, flashFreeze)
+	self:StopBar(scorchingBlast)
+	self:StopBar(flashFreeze)
 	self:Bar(77615, debilitatingSlime, 15, 77615)
 	self:Message("phase", L["green_phase"], "Positive", "Interface\\Icons\\INV_POTION_162", "Long")
 	if not isChilled then
@@ -242,7 +265,10 @@ function mod:Dark()
 end
 
 function mod:FlashFreezeTimer(_, spellId, _, _, spellName)
-	self:Bar(77699, flashFreeze, 15, spellId)
+	local n,t = mod:GetNextPhase()
+	if GetTime()+15 < t then
+		self:Bar(77699, flashFreeze, 15, spellId)
+	end
 end
 
 function mod:FlashFreeze(player, spellId, _, _, spellName)
@@ -299,8 +325,6 @@ do
 				self:Bar(77569,releaseAberration,15,77569)
 			end
 		end
-		
-		
 	end
 	function mod:Interrupt(_, _, _, secSpellId)
 		if secSpellId ~= 77569 then return end
@@ -321,7 +345,10 @@ end
 
 function mod:ScorchingBlast(_, spellId, _, _, spellName)
 	self:Message(77679, spellName, "Attention", spellId)
-	self:Bar(77679, scorchingBlast, 10, 77679)
+	local n,t = mod:GetNextPhase()
+	if GetTime()+10 < t then
+		self:Bar(77679, scorchingBlast, 10, 77679)
+	end
 end
 
 function mod:ReleaseAll(_, spellId)
