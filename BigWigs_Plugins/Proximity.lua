@@ -288,6 +288,7 @@ end
 local locked = nil
 local function lockDisplay()
 	if locked then return end
+	anchor:EnableMouse(false)
 	anchor:SetMovable(false)
 	anchor:SetResizable(false)
 	anchor:RegisterForDrag()
@@ -299,6 +300,7 @@ local function lockDisplay()
 end
 local function unlockDisplay()
 	if not locked then return end
+	anchor:EnableMouse(true)
 	anchor:SetMovable(true)
 	anchor:SetResizable(true)
 	anchor:RegisterForDrag("LeftButton")
