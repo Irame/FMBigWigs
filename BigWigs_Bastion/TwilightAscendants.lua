@@ -94,7 +94,7 @@ function mod:OnBossEnable()
 
 	--normal
 	self:Log("SPELL_AURA_APPLIED", "LightningRodApplied", 83099)
-	self:Log("SPELL_AURA_REMOVED", "LightningRodRemoved", 83099)
+	self:Log("SPELL_CAST_SUCCESS", "LightningRodRemoved", 83282, 92448, 92449, 92450)
 
 	--Shield
 	self:Log("SPELL_CAST_START", "FlameShield", 82631, 92513, 92512, 92514)
@@ -269,7 +269,7 @@ do
 end
 
 function mod:FlameShield(_, spellId)
-	self:Bar(82631, L["shield_bar"], 65, spellId)
+	self:Bar(82631, L["shield_bar"], 67, spellId)
 	self:Message(82631, L["shield_up_message"], "Important", spellId, "Alert")
 end
 
@@ -278,12 +278,12 @@ function mod:FlameShieldRemoved(_, spellId)
 end
 
 function mod:HardenSkinStart(_, spellId, _, _, spellName)
-	self:Bar(83718, spellName, 44, spellId)
+	self:Bar(83718, spellName, 42, spellId)
 	self:Message(83718, spellName, "Urgent", spellId, "Info")
 end
 
 function mod:Glaciate(_, spellId, _, _, spellName)
-	self:Bar(82746, spellName, 40, spellId)
+	self:Bar(82746, spellName, 38, spellId)
 	self:Message(82746, spellName, "Attention", spellId, "Alert")
 end
 
@@ -307,7 +307,7 @@ function mod:BurningBlood(player, spellId, _, _, spellName)
 	end
 end
 
-do
+do--thundershock & quake
 	local currentTimer = nil
 	local buff = {[83565] = GetSpellInfo(83500), [83067] = GetSpellInfo(83581)}
 	local name = {[83565] = quake, [83067] = thundershock}
@@ -323,26 +323,14 @@ do
 		timeLeft = timeLeft - 2
 	end
 	
-	local function quakeSpam()
-		--self:Bar(83565, quake, 10, 83565)
-		self:Message(83565, L["thundershock_quake_soon"]:format(quake), "Important", 83565, "Info")
+	local function spam(id)
+		mod:Message(id, L["thundershock_quake_soon"]:format(name[id]), "Important", id, "Info")
 		timeLeft = 8
 		if currentTimer then 
-			self:CancelTimer(currentTimer,true)
+			mod:CancelTimer(currentTimer,true)
 			currentTimer = nil 
 		end
-		currentTimer = self:ScheduleRepeatingTimer(incoming, 2, 83565)
-	end
-
-	local function thundershockSpam()
-		self:Message(83067, L["thundershock_quake_soon"]:format(thundershock), "Important", 83067, "Info")
-		--self:Bar(83067, thundershock, 10, 83067)
-		timeLeft = 8
-		if currentTimer then 
-			self:CancelTimer(currentTimer,true)
-			currentTimer = nil 
-		end
-		currentTimer = self:ScheduleRepeatingTimer(thunderShockIncoming, 2, 83067)
+		currentTimer = mod:ScheduleRepeatingTimer(incoming, 2, id)
 	end
 	
 	local nextQuake, nextThunder --we want only the next happening thing to be shown, so we save us the times.
@@ -350,7 +338,7 @@ do
 		self:Bar(83067, thundershock, nextThunder-GetTime(), 83067)
 		
 		nextQuake = GetTime() + 72 -- +2 for Casttime
-		self:ScheduleTimer(quakeSpam,62)
+		self:ScheduleTimer(spam, 62, 83565) --quake
 		self:Message(83565, spellName, "Important", spellId, "Alarm")
 		
 		self:ScheduleTimer(function(self)
@@ -364,7 +352,7 @@ do
 		self:Bar(83565, quake, nextQuake-GetTime(), 83565)
 		
 		nextThunder = GetTime() + 72
-		self:ScheduleTimer(thundershockSpam,62)
+		self:ScheduleTimer(spam, 62, 83067) --thunder
 		self:Message(83067, spellName, "Important", spellId, "Alarm")
 		
 		self:ScheduleTimer(function(self)
@@ -382,14 +370,15 @@ do
 		self:StopBar(glaciate)
 		self:CancelAllTimers()
 		
+		self:Bar(83565, quake, 30+2, 83565)-- 2 as casttime
+		
 		nextQuake = GetTime() + 32
-		self:Bar(83565, quake, 30+2, 83565)--maybe 30 + casttime
-		self:ScheduleTimer(quakeSpam, 30+2 -10)
+		self:ScheduleTimer(spam, 30+2 -10, 83565) --quake
 		
 		nextThunder = GetTime() + 32+35
-		self:ScheduleTimer(thundershockSpam, 32+35 -10)
+		self:ScheduleTimer(spam, 32+35 -10, 83067) --thunder
 		
-		self:Bar(83718, hardenSkin, 25.5, 83718)
+		self:Bar(83718, hardenSkin, 29.5, 83718)
 		-- XXX this needs to be delayed
 	end
 end
