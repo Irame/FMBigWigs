@@ -16,6 +16,7 @@ local quake, thundershock, hardenSkin = GetSpellInfo(83565), GetSpellInfo(83067)
 local gravityCrush = GetSpellInfo(84948)
 local crushMarked = false
 local timeLeft = 8
+local triggerCount = 0
 local first = nil
 local lastLastPhase = 0
 
@@ -27,6 +28,7 @@ local L = mod:NewLocale("enUS", true)
 if L then
 	L.static_overload_say = "Overload on ME!"
 	L.gravity_core_say = "Gravity on ME!"
+	L.frost_beacon_say = "Frozen Orb on ME!"
 	L.health_report = "%s at %d%%, phase change soon!"
 	L.switch = "Switch"
 	L.switch_desc = "Warning for boss switches."
@@ -35,10 +37,11 @@ if L then
 	L.shield_down_message = "Shield is DOWN!"
 	L.shield_bar = "Shield"
 
-	L.switch_trigger = "We will handle them!"
+	L.switch_trigger = "Enough of this foolishness!" --"We will handle them!" FM-Style.
 
 	L.thundershock_quake_soon = "%s in 10sec!"
 
+	--FM yells this on caststart - noneed
 	L.quake_trigger = "The ground beneath you rumbles ominously..."
 	L.thundershock_trigger = "The surrounding air crackles with energy..."
 
@@ -68,7 +71,7 @@ function mod:GetOptions()
 		-- Heroic
 		{92067, "FLASHSHAKE", "SAY", "ICON", "PROXIMITY"},
 		{92075, "FLASHSHAKE", "SAY", "ICON"},
-		{92307, "FLASHSHAKE", "ICON", "WHISPER"},
+		{92307, "FLASHSHAKE", "SAY", "ICON", "WHISPER"},
 		-- General
 		"switch", "bosskill"
 	}, {
@@ -109,8 +112,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "Quake", 83565, 92544, 92545, 92546)
 	self:Log("SPELL_CAST_START", "Thundershock", 83067, 92469, 92470, 92471)
 
-	self:Emote("QuakeTrigger", L["quake_trigger"])
-	self:Emote("ThundershockTrigger", L["thundershock_trigger"])
+	--self:Emote("QuakeTrigger", L["quake_trigger"])
+	--self:Emote("ThundershockTrigger", L["thundershock_trigger"])
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
@@ -131,6 +134,7 @@ function mod:OnEngage(diff)
 		self:Bar(82631, L["shield_bar"], 34, 82631)
 		self:Bar(82746, glaciate, 30, 82746)
 
+		triggerCount = 0
 		first = nil
 		crushMarked = false
 		self:RegisterEvent("UNIT_HEALTH_FREQUENT")
@@ -225,13 +229,22 @@ function mod:StaticOverloadRemoved()
 	self:PrimaryIcon(92067)
 end
 
-function mod:FrostBeacon(player, spellId, _, _, spellName)
-	if UnitIsUnit(player, "player") then
-		self:FlashShake(92307)
+do
+	local lastOrbGuid
+	function mod:FrostBeacon(player, spellId, _, _, spellName, _, _, _, _, _, sGUID)
+		if UnitIsUnit(player, "player") then
+			self:Say(92307, L["frost_beacon_say"])
+			self:FlashShake(92307)
+		end
+		self:TargetMessage(92307, spellName, player, "Attention", spellId, "Alarm")
+		self:Whisper(92307, player, spellName)
+		self:PrimaryIcon(92307, player)
+		
+		if lastOrbGuid ~= sGUID then--we do not want to restart Bar, if the Orb only searched for a new target.
+			self:Bar(92307,"frozenOrb",20-2,92307)-- -2 for locationMarkerSpawn
+			lastOrbGuid = sGUID
+		end
 	end
-	self:TargetMessage(92307, spellName, player, "Attention", spellId, "Alarm")
-	self:Whisper(92307, player, spellName)
-	self:PrimaryIcon(92307, player)
 end
 
 do
@@ -294,75 +307,98 @@ function mod:BurningBlood(player, spellId, _, _, spellName)
 	end
 end
 
-function mod:Switch()
-	self:SendMessage("BigWigs_StopBar", self, L["shield_bar"])
-	self:SendMessage("BigWigs_StopBar", self, glaciate)
-	self:Bar(83565, quake, 33, 83565)
-	self:Bar(83067, thundershock, 70, 83067)
-	self:Bar(83718, hardenSkin, 25.5, 83718)
-	self:CancelAllTimers()
-	-- XXX this needs to be delayed
-end
-
 do
-	local hardenTimer = nil
-	local flying = GetSpellInfo(83500)
-	local function quakeIncoming()
-		local name, _, icon = UnitDebuff("player", flying)
-		if name then
-			mod:CancelTimer(hardenTimer, true)
+	local currentTimer = nil
+	local buff = {[83565] = GetSpellInfo(83500), [83067] = GetSpellInfo(83581)}
+	local name = {[83565] = quake, [83067] = thundershock}
+	
+	local function incoming(id)
+		local buffName, _, icon = UnitDebuff("player", buff[id])
+		if buffName or timeLeft <= 0 then --do not need to call 0 or lower, 0 is called from Spell itself.
+			mod:CancelTimer(currentTimer, true)
+			currentTimer = nil
 			return
 		end
-		mod:LocalMessage(83565, L["thundershock_quake_spam"]:format(quake, timeLeft), "Personal", icon, "Info")
+		mod:LocalMessage(id, L["thundershock_quake_spam"]:format(name[id], timeLeft), "Personal", icon, "Info")
 		timeLeft = timeLeft - 2
 	end
-
-	function mod:QuakeTrigger()
-		self:Bar(83565, quake, 10, 83565)
+	
+	local function quakeSpam()
+		--self:Bar(83565, quake, 10, 83565)
 		self:Message(83565, L["thundershock_quake_soon"]:format(quake), "Important", 83565, "Info")
 		timeLeft = 8
-		hardenTimer = self:ScheduleRepeatingTimer(quakeIncoming, 2)
-	end
-
-	function mod:Quake(_, spellId, _, _, spellName)
-		self:Bar(83565, spellName, 68, spellId)
-		self:Message(83565, spellName, "Important", spellId, "Alarm")
-		self:CancelTimer(hardenTimer, true) -- Should really wait 3 more sec.
-	end
-end
-
-do
-	local thunderTimer = nil
-	local grounded = GetSpellInfo(83581)
-	local function thunderShockIncoming()
-		local name, _, icon = UnitDebuff("player", grounded)
-		if name then
-			mod:CancelTimer(thunderTimer, true)
-			return
+		if currentTimer then 
+			self:CancelTimer(currentTimer,true)
+			currentTimer = nil 
 		end
-		mod:LocalMessage(83067, L["thundershock_quake_spam"]:format(thundershock, timeLeft), "Personal", icon, "Info")
-		timeLeft = timeLeft - 2
+		currentTimer = self:ScheduleRepeatingTimer(incoming, 2, 83565)
 	end
 
-	function mod:ThundershockTrigger()
+	local function thundershockSpam()
 		self:Message(83067, L["thundershock_quake_soon"]:format(thundershock), "Important", 83067, "Info")
-		self:Bar(83067, thundershock, 10, 83067)
+		--self:Bar(83067, thundershock, 10, 83067)
 		timeLeft = 8
-		thunderTimer = self:ScheduleRepeatingTimer(thunderShockIncoming, 2)
+		if currentTimer then 
+			self:CancelTimer(currentTimer,true)
+			currentTimer = nil 
+		end
+		currentTimer = self:ScheduleRepeatingTimer(thunderShockIncoming, 2, 83067)
+	end
+	
+	local nextQuake, nextThunder --we want only the next happening thing to be shown, so we save us the times.
+	function mod:Quake(_, spellId, _, _, spellName)
+		self:Bar(83067, thundershock, nextThunder-GetTime(), 83067)
+		
+		nextQuake = GetTime() + 72 -- +2 for Casttime
+		self:ScheduleTimer(quakeSpam,62)
+		self:Message(83565, spellName, "Important", spellId, "Alarm")
+		
+		self:ScheduleTimer(function(self)
+			if not currentTimer then return end
+			self:CancelTimer(currentTimer, true)
+			currentTimer = nil
+		end , 3, self)
 	end
 
 	function mod:Thundershock(_, spellId, _, _, spellName)
-		self:Bar(83067, spellName, 65, spellId)
+		self:Bar(83565, quake, nextQuake-GetTime(), 83565)
+		
+		nextThunder = GetTime() + 72
+		self:ScheduleTimer(thundershockSpam,62)
 		self:Message(83067, spellName, "Important", spellId, "Alarm")
-		self:CancelTimer(thunderTimer, true) -- Should really wait 3 more sec but meh.
+		
+		self:ScheduleTimer(function(self)
+			if not currentTimer then return end
+			self:CancelTimer(currentTimer, true)
+			currentTimer = nil
+		end , 3, self)
+	end
+	
+	function mod:Switch()
+		triggerCount = triggerCount + 1
+		if triggerCount > 1 then return end
+		
+		self:StopBar(L["shield_bar"])
+		self:StopBar(glaciate)
+		self:CancelAllTimers()
+		
+		nextQuake = GetTime() + 32
+		self:Bar(83565, quake, 30+2, 83565)--maybe 30 + casttime
+		self:ScheduleTimer(quakeSpam, 30+2 -10)
+		
+		nextThunder = GetTime() + 32+35
+		self:ScheduleTimer(thundershockSpam, 32+35 -10)
+		
+		self:Bar(83718, hardenSkin, 25.5, 83718)
+		-- XXX this needs to be delayed
 	end
 end
 
 function mod:LastPhase()
 	lastLastPhase = GetTime()
-	self:SendMessage("BigWigs_StopBar", self, quake)
-	self:SendMessage("BigWigs_StopBar", self, thundershock)
-	self:SendMessage("BigWigs_StopBar", self, hardenSkin)
+	self:StopBar(quake)
+	self:StopBar(thundershock)
+	self:StopBar(hardenSkin)
 	self:CancelAllTimers()
 	self:Bar(84948, gravityCrush, 43, 84948)
 	self:OpenProximity(10, 92480)

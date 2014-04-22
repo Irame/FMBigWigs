@@ -80,6 +80,7 @@ L = BigWigs:NewBossLocale("Ascendant Council", "deDE")
 if L then
 	L.static_overload_say = "Überladung auf MIR!"
 	L.gravity_core_say = "Gravitation auf MIR!"
+	L.frost_beacon_say = "Gefrorene Kugel auf MIR!"
 	L.health_report = "%s bei %d%%, Wechsel bald!"
 	L.switch = "Wechsel"
 	L.switch_desc = "Warnt, wenn die Bosse wechseln."

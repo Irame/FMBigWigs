@@ -602,7 +602,7 @@ end
 
 
 function boss:Bar(key, text, length, icon, barColor, barEmphasized, barText, barBackground, ...)
-	if checkFlag(self, key, C.BAR) then
+	if checkFlag(self, key, C.BAR) and length > 0 then
 		self:SendMessage("BigWigs_StartBar", self, key, text, length, icons[icon], ...)
 	end
 end
