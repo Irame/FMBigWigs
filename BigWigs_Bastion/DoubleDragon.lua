@@ -165,8 +165,8 @@ function mod:DeepBreath()
 	self:ScheduleTimer(valionaHasLanded, 57)
 	
 	self:Message(86059, L["breath_message"].." #1", "Important", 92194, "Alarm")
-	self:DelayedMessage(86059,16, L["breath_message"].." #2", "Important", 92194, "Alarm")
-	self:DelayedMessage(86059,32, L["breath_message"].." #3", "Important", 92194, "Alarm")
+	self:DelayedMessage(86059,18, L["breath_message"].." #2", "Important", 92194, "Alarm")
+	self:DelayedMessage(86059,34, L["breath_message"].." #3", "Important", 92194, "Alarm")
 end
 
 function mod:BlackoutApplied(player, spellId, _, _, spellName)
