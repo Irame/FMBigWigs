@@ -432,7 +432,7 @@ do --Nef in HC
 		
 		do --M1
 			local start = M
-			local preRot = {{45-1,E},{51+2,A}, {24,M},{43,E}}
+			local preRot = {{45-2,E},{51+3,A}, {24-1,M},{43,E}}
 			local rot = {{52,A}, {23,M}, {44-1,E}}
 			CreatePredictionTable(start, preRot, rot)
 		end
@@ -529,18 +529,8 @@ do --Nef in HC
 		end
 
 		do --A1
-			local function f(timer,txt,ownFunc)
-				local t = GetTime()
-				mod:RegisterNextGolem(function(golem)
-					local diff = GetTime() - t
-					if diff <= 6 and golem == E then
-						mod:Bar(nefOptionRelative[A], txt, timer-diff, nefIconByName[A])
-					end
-				end)
-			end
-			
 			local start = A
-			local preRot = {{31-1,A,f},{23+0,M},{40-2,T},{30,T}}
+			local preRot = {{31-1,A,true},{23+0,M},{40-2,T},{30,T}}
 			local rot = {{35+1,E}, {45,M}, {40,T}}
 			CreatePredictionTable(start, preRot, rot)
 		end
