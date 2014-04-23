@@ -61,7 +61,7 @@ if L then
 	L.dark_phase = "|cFF660099Dark|r phase"
 end
 L = mod:GetLocale()
-
+local L.dark_phase_nocolor = string.gsub(L["dark_phase"]:gsub("|cFF660099",""),"|r","")
 --------------------------------------------------------------------------------
 -- Initialization
 --
@@ -130,7 +130,7 @@ end
 
 function mod:OnEngage(diff)
 	if diff > 2 then
-		self:Bar("phase", L["dark_phase"], 20, "INV_ELEMENTAL_PRIMAL_SHADOW")
+		self:Bar("phase", L["dark_phase_nocolor"], 20, "INV_ELEMENTAL_PRIMAL_SHADOW")
 		self:SetNextPhase(20, "dark")
 		self:Berserk(720)
 	else
@@ -185,7 +185,7 @@ do
 			mod:Bar("phase", L["green_phase_bar"], timeToNext, "INV_POTION_162")
 			nextDesc = "green"
 		elseif phaseCounter == 4 then --can only happen in HM
-			mod:Bar("phase", L["dark_phase"], tomeToNext, "INV_ELEMENTAL_PRIMAL_SHADOW")
+			mod:Bar("phase", L["dark_phase_nocolor"], timeToNext, "INV_ELEMENTAL_PRIMAL_SHADOW")
 			nextDesc = "dark"
 		else
 			mod:Bar("phase", L["next_phase"], timeToNext, "INV_ALCHEMY_ELIXIR_EMPTY")
