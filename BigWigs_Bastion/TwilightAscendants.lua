@@ -241,7 +241,7 @@ do
 		self:PrimaryIcon(92307, player)
 		
 		if lastOrbGuid ~= sGUID then--we do not want to restart Bar, if the Orb only searched for a new target.
-			self:Bar(92307,"frozenOrb",20-2,92307)-- -2 for locationMarkerSpawn
+			self:Bar(92307,GetSpellInfo(84714),20-2,92307)-- -2 for locationMarkerSpawn
 			lastOrbGuid = sGUID
 		end
 	end
