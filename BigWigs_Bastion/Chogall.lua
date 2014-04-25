@@ -17,6 +17,7 @@ local counter = 1
 local corruptingCrash = GetSpellInfo(81685)
 local bigcount = 1
 local oozecount = 1
+local oozeSpawn = 0
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -82,6 +83,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_SUCCESS", "CorruptingCrash", 81685, 93178, 93179, 93180)
 	self:Log("SPELL_DAMAGE", "Blaze", 81538, 93212, 93213, 93214)
 
+	self:Log("SPELL_AURA_APPLIED","BigAddDeath", 81757)--10HM Spell
+	
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
 	self:Death("Win", 43324)
@@ -91,7 +94,9 @@ function mod:OnEngage(diff)
 	bigcount = 1
 	oozecount = 1
 	self:Bar(91303, L["worship_cooldown"], 10, 91303)
-	-- self:Bar(81628, L["adherent_bar"]:format(bigcount), diff > 2 and 75 or 58, 81628)
+	self:Bar(81628, L["adherent_bar"]:format(bigcount), 65, 81628)--1:05 after pull.
+	self:Bar(82299, L["ooze_bar"]:format(oozecount), 105, 82299)--1:45 after pull.
+	oozeSpawn = GetTime() + 105
 	self:Berserk(600)
 	worshipCooldown = 40--24 FM? -- its not 40 sec till the 1st add
 	firstFury = 0
@@ -106,6 +111,26 @@ end
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
+
+function mod:BigAddDeath()
+	bigcount = bigcount + 1
+	--ADD:
+	--#1 @ 8,52 - 68 = 1,08
+	--#2 @ 7,05 - 107 = 1,47 <- maybe 7,07
+	--#3 @ 5,22 - 103 = 1,43
+	--ADD DEATH:
+	--#1 @ 8,17 -> nextspawn: 72
+	--#2 @ 6,36 -> nextspawn: 74
+	--#3 @ 4,49
+	self:Bar(81628, L["adherent_bar"]:format(bigcount), 73, 81628)
+	local time = GetTime()
+	if time > oozeSpawn then
+		-- if we passed the oozespawn - can probably only happen on first BigAdd
+		--DO NOT INCREMENT - it did not happen!
+		self:Bar(82299, L["ooze_bar"]:format(oozecount), 105, 82299)
+		oozeSpawn = GetTime() + 105
+	end
+end
 
 do
 	local last = 0
@@ -188,8 +213,14 @@ do
 end
 
 function mod:FesterBlood(_, spellId, _, _, spellName)
+	--SCHLEIME:
+	--#1 @ 8,15 1:45
+	--#2 @ 6,30 1,45
+	--#3 @ 4,47 1,43
 	self:Message(82299, L["ooze_message"]:format(oozecount), "Attention", spellId, "Alert")
 	oozecount = oozecount + 1
+	self:Bar(82299, L["ooze_bar"]:format(oozecount), 105, 82299)
+	oozeSpawn = GetTime() + 105
 end
 
 function mod:UNIT_HEALTH_FREQUENT(_, unit)
