@@ -74,7 +74,7 @@ function mod:OnBossEnable()
 	--normal
 	self:Log("SPELL_CAST_SUCCESS", "Orders", 81171, 81556)
 	self:Log("SPELL_AURA_APPLIED", "Worship", 91317, 93365, 93366, 93367)
-	self:Log("SPELL_CAST_START", "SummonCorruptingAdherent", 81628)
+	self:Log("SPELL_CAST_START", "SummonCorruptingAdherent", 81628) --does not happen on FM
 	self:Log("SPELL_CAST_START", "FuryOfChogall", 82524)
 	self:Log("SPELL_CAST_START", "FesterBlood", 82299)
 	self:Log("SPELL_CAST_SUCCESS", "LastPhase", 82630)
@@ -90,10 +90,10 @@ end
 function mod:OnEngage(diff)
 	bigcount = 1
 	oozecount = 1
-	self:Bar(91303, L["worship_cooldown"], 11, 91303)
+	self:Bar(91303, L["worship_cooldown"], 10, 91303)
 	-- self:Bar(81628, L["adherent_bar"]:format(bigcount), diff > 2 and 75 or 58, 81628)
 	self:Berserk(600)
-	worshipCooldown = 24 -- its not 40 sec till the 1st add
+	worshipCooldown = 40--24 FM? -- its not 40 sec till the 1st add
 	firstFury = 0
 	counter = 1
 
@@ -127,7 +127,7 @@ do
 		local time = GetTime()
 		if (last-time) > 2 then
 			last = time
-			self:LocalMessage(82235, corruptingCrash, "Urgent", 81685, "Long")
+			self:LocalMessage(81685, corruptingCrash, "Urgent", 81685, "Long")
 		end
 	end
 end
@@ -153,13 +153,13 @@ end
 function mod:FuryOfChogall(_, spellId, _, _, spellName)
 	if firstFury == 1 then
 		self:Message(82524, L["first_fury_message"], "Attention", spellId)
-		self:Bar(91303, L["worship_cooldown"], 10, 91303)
-		worshipCooldown = 40
+		--self:Bar(91303, L["worship_cooldown"], 10, 91303)
+		--worshipCooldown = 40 --maybe 40secs is correct without 
 		firstFury = 2
 	else
 		self:Message(82524, L["fury_message"], "Attention", spellId)
 	end
-	self:Bar(82524, spellName, 47, spellId)
+	self:Bar(82524, spellName, 50, spellId)
 end
 
 function mod:Orders(_, spellId, _, _, spellName)
@@ -167,7 +167,7 @@ function mod:Orders(_, spellId, _, _, spellName)
 	if spellId == 81556 then
 		if self:Difficulty() > 2 then
 			self:Bar(81571, L["unleashed_shadows"], 24, 81571) -- verified for 25man heroic
-		else
+		else --What do those stand for?
 			self:Bar(81571, L["unleashed_shadows"], 15, 81571) -- verified for 10man normal
 		end
 	end
@@ -195,7 +195,7 @@ end
 function mod:UNIT_HEALTH_FREQUENT(_, unit)
 	if unit ~= "boss1" then return end
 	local hp = UnitHealth(unit) / UnitHealthMax(unit) * 100
-	if firstFury == 0 and hp > 86 and hp < 89 then
+	if firstFury == 0 and hp > 86 and hp < 94 then
 		self:Message(82524, L["first_fury_soon"], "Attention", 82524)
 		firstFury = 1
 	elseif hp < 30 then
