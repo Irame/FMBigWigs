@@ -110,10 +110,10 @@ end
 do
 	local last = 0
 	function mod:Blaze(player, spellId, _, _, spellName)
-		local time = GetTime()
-		if (time - last) > 2 then
-			last = time
-			if UnitIsUnit(player, "player") then
+		if UnitIsUnit(player, "player") then
+			local time = GetTime()
+			if (time - last) > 2 then
+				last = time
 				self:LocalMessage(81538, L["blaze_message"], "Personal", spellId, "Info")
 				self:FlashShake(81538)
 			end
