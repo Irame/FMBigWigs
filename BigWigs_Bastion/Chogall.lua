@@ -83,7 +83,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_SUCCESS", "CorruptingCrash", 81685, 93178, 93179, 93180)
 	self:Log("SPELL_DAMAGE", "Blaze", 81538, 93212, 93213, 93214)
 
-	self:Log("SPELL_AURA_APPLIED","BigAddDeath", 81757)--10HM Spell
+	self:Log("SPELL_AURA_APPLIED", "BigAddDeath", 81757)--10HM Spell
+	self:Log("PARTY_KILL", "OrdersDeath", 43592, 43406)--Shadowlord, FireElemental
 	
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
@@ -189,12 +190,18 @@ end
 
 function mod:Orders(_, spellId, _, _, spellName)
 	self:Message("orders", spellName, "Urgent", spellId)
-	if spellId == 81556 then
-		if self:Difficulty() > 2 then
-			self:Bar(81571, L["unleashed_shadows"], 24, 81571) -- verified for 25man heroic
-		else --What do those stand for?
-			self:Bar(81571, L["unleashed_shadows"], 15, 81571) -- verified for 10man normal
-		end
+	if spellId == 81556 then --Shadow Order
+		self:Bar("orders", GetSpellInfo(81556), 53, 81556)
+	else
+		self:Bar("orders", GetSpellInfo(81171), 53, 81171)
+	end
+end
+
+function mod:OrdersDeath(mobId, GUID, unit, flags)
+	if mobId == 43592 then --shadowlord
+		self:Bar("orders", GetSpellInfo(81556), 16, 81556)
+	else
+		self:Bar("orders", GetSpellInfo(81171), 16, 81171)
 	end
 end
 
