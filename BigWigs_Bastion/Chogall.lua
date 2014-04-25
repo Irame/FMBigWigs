@@ -122,28 +122,13 @@ do
 end
 
 do
-	local function checkTarget(sGUID)
-		local mobId = mod:GetUnitIdByGUID(sGUID)
-		if mobId then
-			local player = UnitName(mobId.."target")
-			if not player then return end
-			if UnitIsUnit("player", player) then
-				mod:Say(81685, L["crash_say"])
-				mod:FlashShake(81685)
-			end
-			mod:TargetMessage(81685, corruptingCrash, player, "Urgent", 81685, "Long")
-			if counter == 1 then
-				mod:PrimaryIcon(81685, player)
-			else
-				mod:SecondaryIcon(81685, player)
-			end
-			if mod:Difficulty() == 4 then counter = counter + 1 end
-		end
-		if counter > 2 then counter = 1 end
-	end
+	local last = 0
 	function mod:CorruptingCrash(...)
-		local sGUID = select(11, ...)
-		self:ScheduleTimer(checkTarget, 0.2, sGUID)
+		local time = GetTime()
+		if (last-time) > 2 then
+			last = time
+			self:LocalMessage(82235, corruptingCrash, "Urgent", 81685, "Long")
+		end
 	end
 end
 
