@@ -61,7 +61,7 @@ if L then
 	L.dark_phase = "|cFF660099Dark|r phase"
 end
 L = mod:GetLocale()
-local L.dark_phase_nocolor = string.gsub(L["dark_phase"]:gsub("|cFF660099",""),"|r","")
+L.dark_phase_nocolor = string.gsub(L["dark_phase"]:gsub("|cFF660099",""),"|r","")
 --------------------------------------------------------------------------------
 -- Initialization
 --
