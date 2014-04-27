@@ -460,7 +460,6 @@ do --Nef in HC
 						--Explosions mostly happen ~26-28 sec after a Boss did Activate.
 						mod:Bar(nefOptionRelative[A], txt, 27, nefIconByName[A])
 						showedTimers[txt] = GetTime() + 27
-						hcNef.realtimeAdjust(A,"saves")
 					end
 				end)
 			end
@@ -494,7 +493,6 @@ do --Nef in HC
 						local timer = showedTimers[txt] - GetTime()
 						if timer > 0 then 
 							mod:Bar(nefOptionRelative[A], txt, timer, nefIconByName[A])
-							hcNef.realtimeAdjust(A,"saves")
 							mod:RegisterNextGolem(function(golem2)
 								if golem2 ~= T and lastNefAction == M then
 									--if its the wrong golem and the Bar is not hidden by a new NefAction.
@@ -513,7 +511,6 @@ do --Nef in HC
 					local diff = GetTime() - t
 					if diff < 6 and golem == E then
 						mod:Bar(nefOptionRelative[T], txt, timer-diff, nefIconByName[T])
-						hcNef.realtimeAdjust(T,"saves")
 					end
 				end)
 			end
