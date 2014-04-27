@@ -490,17 +490,15 @@ do --Nef in HC
 				local t = GetTime()
 				mod:RegisterNextGolem(function(golem)
 					if golem == A and math.abs((GetTime()-t)-9) < 4 then
-						local timer = showedTimers[txt] - GetTime()
-						if timer > 0 then 
-							mod:Bar(nefOptionRelative[A], txt, timer, nefIconByName[A])
-							mod:RegisterNextGolem(function(golem2)
-								if golem2 ~= T and lastNefAction == M then
-									--if its the wrong golem and the Bar is not hidden by a new NefAction.
-									mod:StopBar(txt)
-									showedTimers[txt] = nil
-								end
-							end)
-						end
+						mod:Bar(nefOptionRelative[A], txt, 57, nefIconByName[A])
+						showedTimers[txt] = GetTime() + 57
+						mod:RegisterNextGolem(function(golem2)
+							if golem2 ~= T and lastNefAction == M then
+								--if its the wrong golem and the Bar is not hidden by a new NefAction.
+								mod:StopBar(txt)
+								showedTimers[txt] = nil
+							end
+						end)
 					end
 				end)
 			end	
@@ -510,7 +508,7 @@ do --Nef in HC
 				mod:RegisterNextGolem(function(golem)
 					local diff = GetTime() - t
 					if diff < 6 and golem == E then
-						mod:Bar(nefOptionRelative[T], txt, timer-diff, nefIconByName[T])
+						mod:Bar(nefOptionRelative[T], txt, 25, nefIconByName[T])
 					end
 				end)
 			end
