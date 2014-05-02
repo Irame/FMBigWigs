@@ -261,7 +261,7 @@ function mod:Dark()
 	if not isChilled then
 		self:CloseProximity(77699)
 	end
-	nextPhase(100)
+	nextPhase(100-8)
 end
 
 function mod:FlashFreezeTimer(_, spellId, _, _, spellName)
