@@ -98,7 +98,7 @@ function mod:OnEngage(diff)
 	self:Bar(81628, L["adherent_bar"]:format(bigcount), 65, 81628)--1:05 after pull.
 	self:Bar(82299, L["ooze_bar"]:format(oozecount), 105, 82299)--1:45 after pull.
 	oozeSpawn = GetTime() + 105
-	self:Berserk(600)
+	self:Berserk(600-30)
 	worshipCooldown = 40--24 FM? -- its not 40 sec till the 1st add
 	firstFury = 0
 	counter = 1
@@ -199,9 +199,9 @@ end
 
 function mod:OrdersDeath(mobId, GUID, unit, flags)
 	if mobId == 43592 then --shadowlord
-		self:Bar("orders", GetSpellInfo(81556), 16, 81556)
-	else
 		self:Bar("orders", GetSpellInfo(81171), 16, 81171)
+	else
+		self:Bar("orders", GetSpellInfo(81556), 16, 81556)
 	end
 end
 
@@ -243,8 +243,8 @@ function mod:UNIT_HEALTH_FREQUENT(_, unit)
 end
 
 function mod:LastPhase(_, spellId)
-	self:SendMessage("BigWigs_StopBar", self, L["adherent_bar"])
-	self:SendMessage("BigWigs_StopBar", self, L["ooze_bar"])
+	self:SendMessage("BigWigs_StopBar", self, L["adherent_bar"]:format(bigcount))
+	self:SendMessage("BigWigs_StopBar", self, L["ooze_bar"]:format(oozecount))
 	self:SendMessage("BigWigs_StopBar", self, L["worship_cooldown"])
 	self:Message(82630, L["phase2_message"], "Positive", spellId)
 	self:Bar(82414, L["tentacles_bar"], 6, 82414)
