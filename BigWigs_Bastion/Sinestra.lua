@@ -196,10 +196,10 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage()
-	self:Bar(90125, "~"..breath, 24, 90125)
+	self:Bar(90125, "~"..breath, 24-3, 90125)
 	self:Bar(92852, "~"..slicer, 29, 92852)
 	self:Bar("whelps", L["whelps"], 16, 69005) -- whelp like icon
-	self:ScheduleTimer(nextOrbSpawned, 29)
+	self:ScheduleTimer(nextOrbSpawned, 29+2)
 	eggs = 0
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
 	wipe(whelpGUIDs)
@@ -285,7 +285,7 @@ function mod:UNIT_HEALTH_FREQUENT(_, unit)
 end
 
 function mod:Breath(_, spellId, _, _, spellName)
-	self:Bar(90125, "~"..spellName, 24, spellId)
+	self:Bar(90125, "~"..spellName, 24-3, spellId)
 	self:Message(90125, spellName, "Urgent", spellId)
 end
 
