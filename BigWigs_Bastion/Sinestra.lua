@@ -35,6 +35,7 @@ L = mod:GetLocale()
 -- Locals
 --
 
+local wrackTargets = mod:NewTargetList()
 local breath, slicer = (GetSpellInfo(90125)), (GetSpellInfo(92852))
 local roleCheckWarned = nil
 local eggs = 0
@@ -151,6 +152,7 @@ function mod:GetOptions(CL)
 		90125, -- Breath
 		{92852, "FLASHSHAKE", "ICON"}, -- Twilight Slicer
 		86227, -- Extinction
+		89421, -- Wrack
 		"whelps",
 
 	-- Phase 2
@@ -177,6 +179,9 @@ function mod:OnBossEnable()
 		roleCheckWarned = true
 	end
 
+	self:Log("SPELL_CAST_SUCCESS", "WrackFirstApply", 89421) --10HM ID
+	self:Log("SPELL_AURA_APPLIED", "WrackApplied", 89421, 89435) --SinestraCast, DispeCast
+	
 	self:Log("SPELL_DAMAGE", "OrbDamage", 92954, 92959) -- twilight slicer, twlight pulse 25 man heroic spellIds
 	self:Log("SWING_DAMAGE", "WhelpWatcher", "*")
 	self:Log("SWING_MISS", "WhelpWatcher", "*")
@@ -224,6 +229,27 @@ do
 		local mobId = tonumber(sGUID:sub(7, 10), 16)
 		for i, v in next, whelpIds do
 			if mobId == v then whelpGUIDs[sGUID] = true end
+		end
+	end
+end
+
+function mod:WrackFirstApply(_, spellId, _, _, spellName)
+	self:Bar(89421,spellName,60,spellId)
+end
+
+
+
+do
+	local function WrackMessage(spellName)
+		mod:TargetMessage(89421, spellName, wrackTargets, "Important", 89421)
+		scheduled = nil
+	end
+	
+	function mod:WrackApplied(player, _, _, _, spellName)
+		wrackTargets[wrackTargets# + 1] = player
+		if not sheduled then
+			sheduled = true
+			self:ScheduleTimer(WrackMessage,0.5,spellName)
 		end
 	end
 end
