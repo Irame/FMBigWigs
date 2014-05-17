@@ -92,35 +92,17 @@ function mod:Adrenaline(_, spellId, _, _, spellName, stack)
 	end
 end
 
-do
-	local prev, fired, timer = 0, 0, nil
-	local function checkTarget()
-		fired = fired + 1
-		local player = UnitName("boss1target")
-		if player and not UnitDetailedThreatSituation("boss1target", "boss1") then
-			mod:CancelTimer(timer, true)
-			timer = nil
-			if UnitIsUnit("player", "boss1target") then
-				mod:Say(98476, L["leap_say"])
-				mod:FlashShake(98476)
-			end
-			mod:TargetMessage(98476, leapingFlames, player, "Urgent", 98476, "Long")
-			mod:PrimaryIcon(98476, player)
-			return
+function mod:LeapingFlames(player, ...)
+	-- local t = GetTime() --Throttle as it's sometimes casted twice in a row
+	-- if t-prev < 2 then return end
+	-- prev = t
+	if player then
+		if UnitIsUnit("player", player) then
+			mod:Say(98476, L["leap_say"])
+			mod:FlashShake(98476)
 		end
-		if fired > 18 then
-			mod:CancelTimer(timer, true)
-			timer = nil
-		end
-	end
-	function mod:LeapingFlames()
-		local t = GetTime() --Throttle as it's sometimes casted twice in a row
-		if t-prev > 2 then
-			prev, fired = t, 0
-			if not timer then
-				timer = self:ScheduleRepeatingTimer(checkTarget, 0.05)
-			end
-		end
+		mod:TargetMessage(98476, leapingFlames, player, "Urgent", 98476, "Long")
+		mod:PrimaryIcon(98476, player)
 	end
 end
 
@@ -177,6 +159,7 @@ function mod:SearingSeedsRemoved(player)
 end
 
 function mod:BurningOrbs(_, spellId, _, _, spellName)
+	self:StopBar(flameScythe) --catForm comes -> no cleave anymore
 	self:Bar(98451, spellName, 64, spellId)
 end
 
@@ -188,7 +171,7 @@ do
 	end
 
 	function mod:SearingSeeds(player, spellId, _, _, spellName)
-		self:SendMessage("BigWigs_StopBar", self, leapingFlames)
+		self:StopBar(leapingFlames)--scorpionForm comes -> no leaps anymore
 		if not UnitIsUnit(player, "player") then return end
 		local remaining = (select(7, UnitDebuff("player", spellName))) - GetTime()
 		self:Bar(98450, L["seed_bar"], remaining, spellId)

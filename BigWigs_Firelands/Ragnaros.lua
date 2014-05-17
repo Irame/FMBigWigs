@@ -93,10 +93,10 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "SplittingBlow", 98953, 98952, 98951, 100880, 100883, 100877, 100885, 100882, 100879, 100884, 100881, 100878)
 	self:Log("SPELL_SUMMON", "LivingMeteor", 99317, 100989, 100990, 100991)
 	self:Emote("Dreadflame", dreadflame)
-
+	
 	self:Log("SPELL_AURA_APPLIED", "Wound", 101238, 101239, 101240, 99399)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "Wound", 101238, 101239, 101240, 99399)
-
+	
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
 	self:Death("Deaths", 52409, 53140) -- Ragnaros, Son of Flame
@@ -108,11 +108,11 @@ function mod:OnEngage(diff)
 	self:OpenProximity(6)
 	self:Berserk(1080)
 	lavaWavesCD, dreadflameCD = 30, 40
-	if diff > 2 then
+	--if diff > 2 then
 		engulfingCD = 60
-	else
-		engulfingCD = 40
-	end
+	-- else
+		-- engulfingCD = 40
+	-- end
 	intermissionwarned, infernoWarned, fixateWarned = false, false, false
 	sons = 8
 	phase = 1
