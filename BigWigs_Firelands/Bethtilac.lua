@@ -14,7 +14,7 @@ local devastateCount = 1
 local lastBroodlingTarget = ""
 
 --------------------------------------------------------------------------------
--- Localization
+--  Localization
 --
 
 local L = mod:NewLocale("enUS", true)

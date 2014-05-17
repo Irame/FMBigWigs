@@ -12,7 +12,7 @@ local meteorCount, moltCount, burnCount, initiateCount = 0, 0, 0, 0
 local initiateTimes = {31, 31, 21, 21, 21}
 
 --------------------------------------------------------------------------------
--- Localization
+--  Localization
 --
 
 local L = mod:NewLocale("enUS", true)

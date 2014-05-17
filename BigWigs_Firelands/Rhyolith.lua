@@ -14,7 +14,7 @@ local moltenArmor = GetSpellInfo(98255)
 local lastFragments = nil
 
 --------------------------------------------------------------------------------
--- Localization
+--  Localization
 --
 
 local L = mod:NewLocale("enUS", true)

@@ -10,7 +10,7 @@ local countdownTargets = mod:NewTargetList()
 local countdownCounter, count = 1, 0
 
 --------------------------------------------------------------------------------
--- Localization
+--  Localization
 --
 
 local L = mod:NewLocale("enUS", true)
