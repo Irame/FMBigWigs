@@ -197,10 +197,9 @@ function mod:Orders(_, spellId, _, _, spellName)
 	end
 end
 
-function mod:OrdersDeath(...)
-	local dGUID = select(10,...)
+function mod:OrdersDeath(mobID)
 	--(43592, 43406)--Shadowlord, FireElemental
-	if mobId == self.GetMobIdByGUID[dGUID] then --shadowlord
+	if mobID == 43592 then --shadowlord
 		self:Bar("orders", GetSpellInfo(81171), 16, 81171)
 	else
 		self:Bar("orders", GetSpellInfo(81556), 16, 81556)

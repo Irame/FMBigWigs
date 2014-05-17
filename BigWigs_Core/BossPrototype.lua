@@ -139,6 +139,17 @@ do
 			if not d then return end
 			if type(d) == "function" then d(numericId, dGUID, player, dFlags)
 			else self[d](self, numericId, dGUID, player, dFlags) end
+		elseif event == "PARTY_KILL" then
+			local numericId = tonumber(dGUID:sub(7, 10), 16)
+			local m = combatLogMap[self][event]
+			if m and (m[numericId] or m["*"]) then
+				local func = m[numericId] or m["*"]
+				if type(func) == "function" then
+					func(numericId, dGUID, player, dFlags, sGUID, source, sFlags)
+				else
+					self[func](self, numericId, dGUID, player, dFlags, sGUID, source, sFlags)
+				end
+			end
 		else
 			local m = combatLogMap[self][event]
 			if m and (m[spellId] or m["*"]) then
