@@ -180,7 +180,7 @@ function mod:OnBossEnable()
 	end
 
 	self:Log("SPELL_CAST_SUCCESS", "WrackFirstApply", 89421) --10HM ID
-	self:Log("SPELL_AURA_APPLIED", "WrackApplied", 89421, 89435) --SinestraCast, DispeCast
+	self:Log("SPELL_AURA_APPLIED", "WrackApplied", 89421, 89435) --InitialCast, OnDispelCast both 10HM
 	
 	self:Log("SPELL_DAMAGE", "OrbDamage", 92954, 92959) -- twilight slicer, twlight pulse 25 man heroic spellIds
 	self:Log("SWING_DAMAGE", "WhelpWatcher", "*")
@@ -236,8 +236,6 @@ end
 function mod:WrackFirstApply(_, spellId, _, _, spellName)
 	self:Bar(89421,spellName,60,spellId)
 end
-
-
 
 do
 	local function WrackMessage(spellName)

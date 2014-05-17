@@ -133,7 +133,7 @@ do
 	end
 
 	function boss:COMBAT_LOG_EVENT_UNFILTERED(_, _, event, _, sGUID, source, sFlags, _, dGUID, player, dFlags, _, spellId, spellName, _, secSpellId, buffStack, ...)
-		if event == "UNIT_DIED" or event == "PARTY_KILL" then
+		if event == "UNIT_DIED" then
 			local numericId = tonumber(dGUID:sub(7, 10), 16)
 			local d = deathMap[self][numericId]
 			if not d then return end
