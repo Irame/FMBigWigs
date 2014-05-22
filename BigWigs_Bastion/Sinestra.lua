@@ -244,7 +244,7 @@ do
 	end
 	
 	function mod:WrackApplied(player, _, _, _, spellName)
-		wrackTargets[wrackTargets# + 1] = player
+		wrackTargets[#wrackTargets + 1] = player
 		if not sheduled then
 			sheduled = true
 			self:ScheduleTimer(WrackMessage,0.5,spellName)
