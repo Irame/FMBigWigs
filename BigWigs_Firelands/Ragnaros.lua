@@ -108,11 +108,11 @@ function mod:OnEngage(diff)
 	self:OpenProximity(6)
 	self:Berserk(1080)
 	lavaWavesCD, dreadflameCD = 30, 40
-	--if diff > 2 then
+	if diff > 2 then
 		engulfingCD = 60
-	-- else
-		-- engulfingCD = 40
-	-- end
+	else
+		engulfingCD = 40
+	end
 	intermissionwarned, infernoWarned, fixateWarned = false, false, false
 	sons = 8
 	phase = 1
@@ -190,7 +190,7 @@ do
 		local t = GetTime()
 		if t-prev > 5 then
 			prev = t
-			self:Message(99317, ("%s (%d)"):format(spellName, meteorNumber[meteorCounter]), "Attention", spellId)
+			self:Message(99317, ("%s (%d)"):format(spellName, meteorCounter or meteorNumber[meteorCounter]), "Attention", spellId)
 			meteorCounter = meteorCounter + 1
 			self:Bar(99317, spellName, 45, spellId)
 		end
