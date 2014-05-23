@@ -114,9 +114,20 @@ function mod:HurlSpear(_, _, _, _, spellName)
 	self:Bar(100002, spellName, 41-10, 100002)
 end
 
-function mod:FaceRage(player, _, _, _, spellName)
-	self:TargetMessage(100129, spellName, player, "Important", 100129, "Alert")
-	self:PrimaryIcon(100129, player)
+do
+	handler = nil
+	function mod:FaceRage(player, _, _, _, spellName)
+		self:TargetMessage(100129, spellName, player, "Important", 100129, "Alert")
+		self:PrimaryIcon(100129, player)
+		
+		self:Bar(100129,spellName,30,100129)
+		
+		--sometimes he seems to skip one. Start another 30sec Timer for the upcoming FaceRage
+		if handler then self:CancelTimer(handler, true) end
+		handler = self:ScheduleTimer(function(n) 
+			self:Bar(100129,n,30,100129) 
+		end, 30, spellName)
+	end
 end
 
 function mod:FaceRageRemoved(player)
