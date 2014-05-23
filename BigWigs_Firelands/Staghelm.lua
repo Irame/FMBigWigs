@@ -18,6 +18,13 @@ local leapingFlames, flameScythe = (GetSpellInfo(98476)), (GetSpellInfo(98474))
 -- I don't have data to determine if/when it caps at 3.7, but if it does, it's somewhere much later then it used to be.
 -- So stack beyond 11-12 may falsely report 3.7 until data for more specials can be determined (although it was already wrong to begin with post 4.3 so this is unchanged)
 local specialCD = {17.3, 14.4, 12, 10.9, 9.6, 8.4, 8.4, 7.2, 7.2, 6.0, 6.0}
+specialCD = {__index = function(tbl, key)
+	local enMult = (0.2*key)+1
+	local val = 100 / (5*enMult)
+	val = floor(val/2)*2 -- <- remove line on EnergyFix
+	tbl[key] = val
+	return val
+end}
 local specialCounter = 1
 local form = "cat"
 local seedTimer = nil
@@ -86,9 +93,9 @@ function mod:Adrenaline(_, spellId, _, _, spellName, stack)
 	 -- adrenaline gets stacked every special
 	specialCounter = specialCounter + 1
 	if form == "cat" then
-		self:Bar(98476, leapingFlames, specialCD[specialCounter] or 3.7, 98476)
+		self:Bar(98476, leapingFlames, specialCD[stack or 1], 98476)
 	elseif form == "scorpion" then
-		self:Bar(98474, flameScythe, specialCD[specialCounter] or 3.7, 98474)
+		self:Bar(98474, flameScythe, specialCD[stack or 1], 98474)
 	end
 end
 
