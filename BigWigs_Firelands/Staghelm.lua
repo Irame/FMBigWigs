@@ -25,7 +25,7 @@ specialCD = {__index = function(tbl, key)
 	tbl[key] = val
 	return val
 end}
-local specialCounter = 1
+
 local form = "cat"
 local seedTimer = nil
 
@@ -78,7 +78,6 @@ end
 
 function mod:OnEngage(diff)
 	self:Berserk(600) -- assumed
-	specialCounter = 1
 	form = "cat"
 	seedTimer = nil
 end
@@ -91,7 +90,6 @@ function mod:Adrenaline(_, spellId, _, _, spellName, stack)
 	self:Message(97238, L["adrenaline_message"]:format(stack or 1), "Attention", spellId)
 	 -- this is power based, not time. Power regen is affected by adrenaline
 	 -- adrenaline gets stacked every special
-	specialCounter = specialCounter + 1
 	if form == "cat" then
 		self:Bar(98476, leapingFlames, specialCD[stack or 1], 98476)
 	elseif form == "scorpion" then
@@ -134,8 +132,7 @@ end
 function mod:CatForm(_, spellId, _, _, spellName)
 	form = "cat"
 	self:Message(98374, spellName, "Important", spellId, "Alert")
-	specialCounter = 1
-	self:Bar(98476, leapingFlames, specialCD[specialCounter], 98476)
+	self:Bar(98476, leapingFlames, specialCD[0], 98476)
 	--Don't open if already opened from seed
 	local spell = GetSpellInfo(98450)
 	local hasDebuff, _, _, _, _, _, remaining = UnitDebuff("player", spell)
@@ -149,8 +146,7 @@ function mod:ScorpionForm(_, spellId, _, _, spellName)
 	self:Message(98379, spellName, "Important", spellId, "Alert")
 	self:PrimaryIcon(98476)
 	self:CloseProximity(98374)
-	specialCounter = 1
-	self:Bar(98474, flameScythe, specialCD[specialCounter], 98474)
+	self:Bar(98474, flameScythe, specialCD[0], 98474)
 end
 
 function mod:SearingSeedsRemoved(player)
