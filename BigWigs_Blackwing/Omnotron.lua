@@ -536,8 +536,10 @@ do --Nef in HC
 		do --A2
 			local start = A
 			local preRot = {{31-1,A},{20+1,M}, {36,E},{33,T}}
+			local preRot2 = {{31+1,A},{20,M}, {36,E},{33,T}}
 			local rot = {{48,E}, {40,E}, {30,T}}
 			CreatePredictionTable(start, preRot, rot)
+			CreatePredictionTable(start, preRot2, rot)
 		end	
 		do --A3
 			local start = A
