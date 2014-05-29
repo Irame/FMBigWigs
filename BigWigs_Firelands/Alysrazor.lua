@@ -11,6 +11,8 @@ local woundTargets = mod:NewTargetList()
 local meteorCount, moltCount, burnCount, initiateCount = 0, 0, 0, 0
 local initiateTimes = {31, 31, 21, 21, 21}
 
+local initiateTbl = {}
+
 --------------------------------------------------------------------------------
 --  Localization
 --
@@ -77,7 +79,7 @@ end
 
 function mod:OnBossEnable()
 	-- General
-	self:Log("SPELL_AURA_APPLIED", "Molting", 99464, 99465, 100698)
+	self:Log("SPELL_AURA_APPLIED", "Molting", 99464, 99465, 100698) --9464 10nh
 	self:Log("SPELL_AURA_APPLIED_DOSE", "BlazingClaw", 99844, 101729, 101730, 101731)
 	self:Log("SPELL_AURA_APPLIED", "StartFlying", 98619)
 	self:Log("SPELL_AURA_REMOVED", "StopFlying", 98619)
@@ -86,10 +88,12 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "Wound", 100723, 100722, 100721, 100720, 100719, 100718, 100024, 99308)
 	self:Log("SPELL_AURA_APPLIED", "Tantrum", 99362)
 
-	self:Emote("BuffCheck", L["worm_emote"])
+	self:Log("SPELL_CAST_SUCCESS", "BuffCheck", 99336)
+	--self:Emote("BuffCheck", L["worm_emote"])
 
 	-- Stage 2: Tornadoes
-	self:Emote("FieryTornado", L["phase2_soon_emote"])
+	self:Log("SPELL_CAST_SUCCESS", "FieryTornadoSpell", 99816)
+	--self:Emote("FieryTornado", L["phase2_soon_emote"])
 
 	-- Stage 3: Burnout
 	self:Log("SPELL_AURA_APPLIED", "Burnout", 99432)
@@ -104,17 +108,20 @@ function mod:OnBossEnable()
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL", "Initiates")
+	self:Log("SPELL_CAST_START", "InitiateCast", 101223, 98868, 100093)
 
 	self:Death("Win", 52530)
 end
 
 function mod:OnEngage(diff)
+	initiateTbl = {}
 	meteorCount, moltCount, burnCount, initiateCount = 0, 0, 0, 0
 	wipe(initiateTimes)
 	if diff > 2 then
 		initiateTimes = {22, 63, 21, 21, 40}
 		self:Message(99816, L["engage_message"]:format(4), "Attention", "inv_misc_pheonixpet_01")
 		self:Bar(99816, L["stage_message"]:format(2), 250, 99816)
+		self:DelayedMessage(99816, 250, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
 		self:Bar(100744, firestorm, 95, 100744)
 		self:Bar("meteor", "~"..L["meteor"], 30, 100761)
 		self:Bar("eggs", "~"..GetSpellInfo(58542), 42, L["eggs_icon"])
@@ -122,13 +129,16 @@ function mod:OnEngage(diff)
 	else
 		initiateTimes = {31, 31, 21, 21, 21}
 		self:Message(99816, L["engage_message"]:format(3), "Attention", "inv_misc_pheonixpet_01")
-		self:Bar(99816, L["stage_message"]:format(2), 188.5, 99816)
-		self:Bar(99464, L["molt_bar"], 12.5, 99464)
-		--self:Bar("eggs", "~"..GetSpellInfo(58542), 42, L["eggs_icon"])
-		--self:DelayedMessage("eggs", 41.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
+		self:Bar(99816, L["stage_message"]:format(2), 200-3, 99816)
+		self:DelayedMessage(99816, 200-3, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
+		self:Bar(99464, L["molt_bar"], 12.5-2, 99464)
+		self:Bar("eggs", "~"..GetSpellInfo(58542), 42, L["eggs_icon"])
+		self:DelayedMessage("eggs", 41.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 	end
-	self:Bar("initiate", L["initiate_both"], 27, 97062)
+	self:Bar("initiate", L["initiate"], 18, 97062)
 end
+
+--10 + 73 + 73 + 73 - 30
 
 --------------------------------------------------------------------------------
 -- Event Handlers
@@ -153,19 +163,34 @@ do
 	end
 	function mod:StopFlying(player)
 		if UnitIsUnit(player, "player") then
+			self:StopBar(flying)
 			self:UnregisterEvent("UNIT_AURA")
 		end
 	end
 end
 
 do
-	local initiateLocation = {L["initiate_both"], L["initiate_east"], L["initiate_west"], L["initiate_east"], L["initiate_west"]}
+	--local initiateLocation = {L["initiate_both"], L["initiate_east"], L["initiate_west"], L["initiate_east"], L["initiate_west"]}
 	local initiate = EJ_GetSectionInfo(2834)
+	
+	local last = 0
 	function mod:Initiates(_, _, unit)
 		if unit == initiate then
+			local diff = GetTime()-last
+			last = GetTime()
 			initiateCount = initiateCount + 1
-			if initiateCount > 5 then return end
-			self:Bar("initiate", initiateLocation[initiateCount], initiateTimes[initiateCount], 97062) --Night Elf head
+			if initiateCount > 8 then return end
+			self:Bar("initiate", L.initiate, diff < 20 and (42 - diff) or 42 , 97062) --Night Elf head 
+			--initiateLocation[initiateCount], initiateTimes[initiateCount]
+		end
+	end
+	
+	function mod:InitiateCast(...)
+		local sGUID = select(11,...)
+		local unit = select(3,...)
+		if not initiateTbl[sGUID] then
+			initiateTbl[sGUID] = true
+			mod:Initiates(nil, nil, unit)
 		end
 	end
 end
@@ -173,7 +198,15 @@ end
 do
 	local feather = GetSpellInfo(97128)
 	local moonkin = GetSpellInfo(24858)
+	local last = 0
 	function mod:BuffCheck()
+	
+		if GetTime()-last < 2 then 
+			last = GetTime()
+			return 
+		end
+		last = GetTime()
+		
 		local name = UnitBuff("player", feather)
 		if not name then
 			if UnitBuff("player", moonkin) then
@@ -214,7 +247,10 @@ function mod:Molting(_, spellId, _, _, spellName)
 		moltCount = moltCount + 1
 		self:Message(99464, spellName, "Positive", spellId)
 		if moltCount < 3 then
-			self:Bar(99464, L["molt_bar"], 60, spellId)
+			self:Bar(99464, L["molt_bar"], (60+15)-2*moltCount, spellId)
+		else
+			--self:Bar(99816, L["stage_message"]:format(2), 63, 99816)--73
+			--phase 2 73
 		end
 	end
 end
@@ -244,16 +280,28 @@ function mod:Meteor(_, spellId)
 	end
 end
 
+do
+	local last = 0
+	function mod:FieryTornadoSpell()
+		local t = GetTime()
+		if t-last > 2 then
+			mod:FieryTornado()
+		end
+		last = t
+	end
+end
+
 function mod:FieryTornado()
-	self:BuffCheck()
+	--self:BuffCheck() --Too late
 	self:SendMessage("BigWigs_StopBar", self, firestorm)
 	local fieryTornado = GetSpellInfo(99816)
-	self:Bar(99816, fieryTornado, 35, 99816)
-	self:Message(99816, (L["stage_message"]:format(2))..": "..fieryTornado, "Important", 99816, "Alarm")
+	self:Bar(99816, fieryTornado, 35-8, 99816)
+	--self:Message(99816, (L["stage_message"]:format(2))..": "..fieryTornado, "Important", 99816, "Alarm")
 end
 
 function mod:BlazingClaw(player, spellId, _, _, _, stack)
-	if stack > 4 then -- 50% extra fire and physical damage taken on tank
+	if stack > 5 and stack%3 == 0 then -- 50% + extra fire and physical damage taken on tank
+		--only warn each 3rd stack - so annoying
 		self:TargetMessage(99844, L["claw_message"], player, "Urgent", spellId, "Info", stack)
 	end
 end
@@ -274,7 +322,7 @@ do
 	end
 
 	function mod:UNIT_POWER(_, unit)
-		local power = UnitPower("boss1", 0)
+		local power = UnitPower("boss1")
 		if power > 40 and not halfWarned then
 			self:Message(99925, L["halfpower_soon_message"], "Urgent", 99925)
 			halfWarned = true
@@ -285,20 +333,22 @@ do
 			self:Message(99925, (L["stage_message"]:format(1))..": "..(L["encounter_restart"]), "Positive", 99925, "Alert")
 			self:UnregisterEvent("UNIT_POWER")
 			initiateCount = 0
-			self:Bar("initiate", L["initiate_both"], 13.5, 97062)
+			self:Bar("initiate", L["initiate"], 13.5, 97062)
 			if self:Difficulty() > 2 then
 				meteorCount = 0
 				self:Bar("meteor", L["meteor"], 19, 100761)
 				self:Bar(100744, firestorm, 72, 100744)
 				self:Bar(99816, L["stage_message"]:format(2), 225, 99816) -- Just adding 60s like OnEngage
+				self:DelayedMessage(99816, 225, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
 				self:Bar("eggs", "~"..GetSpellInfo(58542), 30, L["eggs_icon"])
 				self:DelayedMessage("eggs", 29.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 			else
-				self:Bar(99816, L["stage_message"]:format(2), 165, 99816)
+				self:Bar(99816, L["stage_message"]:format(2), 165+30, 99816)
+				self:DelayedMessage(99816, 165+30, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
 				moltCount = 1
-				self:Bar(99464, L["molt_bar"], 55, 99464)
-				--self:Bar("eggs", "~"..GetSpellInfo(58542), 22.5, L["eggs_icon"])
-				--self:DelayedMessage("eggs", 22, GetSpellInfo(58542), "Positive", L["eggs_icon"])
+				self:Bar(99464, L["molt_bar"], 55+8, 99464)
+				self:Bar("eggs", "~"..GetSpellInfo(58542), 22.5+16, L["eggs_icon"])
+				self:DelayedMessage("eggs", 22+16, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 			end
 		end
 	end
@@ -313,4 +363,3 @@ do
 		self:SendMessage("BigWigs_StopBar", self, "~"..GetSpellInfo(99432))
 	end
 end
-
