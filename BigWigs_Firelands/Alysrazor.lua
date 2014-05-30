@@ -88,7 +88,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "Wound", 100723, 100722, 100721, 100720, 100719, 100718, 100024, 99308)
 	self:Log("SPELL_AURA_APPLIED", "Tantrum", 99362)
 
-	self:Log("SPELL_CAST_SUCCESS", "BuffCheck", 99336)
+	self:Log("SPELL_CAST_SUCCESS", "WormCast", 99336)
 	--self:Emote("BuffCheck", L["worm_emote"])
 
 	-- Stage 2: Tornadoes
@@ -198,21 +198,26 @@ end
 do
 	local feather = GetSpellInfo(97128)
 	local moonkin = GetSpellInfo(24858)
-	local last = 0
-	function mod:BuffCheck()
-	
-		if GetTime()-last < 2 then 
-			last = GetTime()
-			return 
-		end
-		last = GetTime()
-		
+	function mod:BuffCheck()		
 		local name = UnitBuff("player", feather)
 		if not name then
 			if UnitBuff("player", moonkin) then
 				self:Message(97128, L["moonkin_message"], "Personal", 97128)
 			else
 				self:Message(97128, L["no_stacks_message"], "Personal", 97128)
+			end
+		end
+	end
+	
+	local last = 0
+	function mod:WormCast(...)
+		local sGUID = select(11,...)
+		--we use initiateTbl, because does not matter.
+		if not initiateTbl[sGUID] then
+			initiateTbl[sGUID] = true
+			if GetTime()-last > 2 then
+				self:BuffCheck()
+				last = GetTime()
 			end
 		end
 	end
