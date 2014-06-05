@@ -18,13 +18,13 @@ local leapingFlames, flameScythe = (GetSpellInfo(98476)), (GetSpellInfo(98474))
 -- I don't have data to determine if/when it caps at 3.7, but if it does, it's somewhere much later then it used to be.
 -- So stack beyond 11-12 may falsely report 3.7 until data for more specials can be determined (although it was already wrong to begin with post 4.3 so this is unchanged)
 local specialCD = {17.3, 14.4, 12, 10.9, 9.6, 8.4, 8.4, 7.2, 7.2, 6.0, 6.0}
-specialCD = {__index = function(tbl, key)
+specialCD = setmetatable({}, {__index = function(tbl, key)
 	local enMult = (0.2*key)+1
 	local val = 100 / (5*enMult)
 	val = floor(val/2)*2 -- <- remove line on EnergyFix
 	tbl[key] = val
 	return val
-end}
+end})
 
 local form = "cat"
 local seedTimer = nil
