@@ -17,7 +17,7 @@ local phase = 1
 local lavaWavesCD, engulfingCD, dreadflameCD = 30, 40, 40
 local moltenSeed, lavaWaves, fixate, livingMeteor, wrathOfRagnaros = (GetSpellInfo(98498)), (GetSpellInfo(100292)), (GetSpellInfo(99849)), (GetSpellInfo(99317)), (GetSpellInfo(98263))
 local dreadflame, cloudburst, worldInFlames = (GetSpellInfo(100675)), (GetSpellInfo(100714)), (GetSpellInfo(100171))
-local meteorCounter, meteorNumber = 1, {1, 2, 4, 6, 8}
+local meteorCounter, meteorNumber = 1, {1, 2, 4, 6, 8} --changed OnEngage
 local intermissionHandle = nil
 
 --------------------------------------------------------------------------------
@@ -103,6 +103,24 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage(diff)
+	if diff%2 == 1 then --10NM/HM
+		meteorNumber = setmetatable({} ,{__index == function(tbl, key)
+			local val = tbl[key-1]+1
+			tbl[key] = val
+			return val
+		end})
+		meteorNumber[1] = 1
+	else --25NM/HM
+		meteorNumber = setmetatable({} ,{__index == function(tbl, key) 
+			local val = tbl[key-1]+2
+			tbl[key] = val
+			return val
+		end})
+		meteorNumber[1] = 1
+		meteorNumber[2] = 2
+	end
+	meteorCounter = 1
+
 	self:Bar(98237, L["hand_bar"], 25, 98237)
 	self:Bar(98710, lavaWaves, 30, 98710)
 	self:OpenProximity(6)
@@ -190,7 +208,7 @@ do
 		local t = GetTime()
 		if t-prev > 5 then
 			prev = t
-			self:Message(99317, ("%s (%d)"):format(spellName, meteorCounter or meteorNumber[meteorCounter]), "Attention", spellId)
+			self:Message(99317, ("%s (%d)"):format(spellName, meteorNumber[meteorCounter]), "Attention", spellId)
 			meteorCounter = meteorCounter + 1
 			self:Bar(99317, spellName, 45, spellId)
 		end
