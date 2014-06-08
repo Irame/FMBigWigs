@@ -215,7 +215,7 @@ do
 		--we use initiateTbl, because does not matter.
 		if not initiateTbl[sGUID] then
 			initiateTbl[sGUID] = true
-			if GetTime()-last > 2 then
+			if GetTime()-last > 5 then
 				self:BuffCheck()
 				last = GetTime()
 			end
