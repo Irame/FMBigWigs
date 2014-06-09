@@ -201,11 +201,11 @@ do
 	function mod:LivingMeteor(_, spellId, _, _, spellName)
 		local t = GetTime()
 		if t-prev > 5 then
-			prev = t
 			self:Message(99317, ("%s (%d)"):format(spellName, meteorNumber[meteorCounter]), "Attention", spellId)
 			meteorCounter = meteorCounter + 1
 			self:Bar(99317, spellName, 45, spellId)
 		end
+		prev = t
 	end
 end
 
@@ -347,7 +347,7 @@ end
 function mod:Deaths(mobId)
 	if mobId == 53140 then
 		sons = sons - 1
-		if sons < 4 then
+		if sons < 4 and sons > 0 then
 			self:LocalMessage(98953, L["sons_left"]:format(sons), "Positive", 100308) -- the speed buff icon on the sons
 		end
 	elseif mobId == 52409 then
