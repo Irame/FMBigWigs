@@ -40,6 +40,9 @@ if L then
 
 	L.iconomnotron = "Icon on active boss"
 	L.iconomnotron_desc = "Place the primary raid icon on the active boss (requires promoted or leader)."
+	
+	L.interrupt = GetSpellInfo(91540)
+	L.interrupt_desc = "Interrupt warning for "..GetSpellInfo(91540)
 end
 L = mod:GetLocale()
 
@@ -66,7 +69,7 @@ function mod:GetOptions()
 		{79888, "ICON", "FLASHSHAKE", "PROXIMITY"},
 		{80161, "FLASHSHAKE"}, {80157, "FLASHSHAKE", "SAY"}, 80053, {80094, "FLASHSHAKE", "WHISPER"},
 		91849, 91879, {92048, "ICON"}, 92023, 
-		{"switch", "ICON"}, "berserk", "bosskill"
+		{"switch", "ICON"}, "berserk", "bosskill", "interrupt"
 	}, {
 		[79501] = "ej:3207", -- Electron
 		[79888] = "ej:3201", -- Magmatron
@@ -95,9 +98,11 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "LightningConductor", 79888, 91433, 91431, 91432)
 	self:Log("SPELL_AURA_REMOVED", "LightningConductorRemoved", 79888, 91433, 91431, 91432)
 	self:Log("SPELL_AURA_APPLIED", "Switch", 78740, 95016, 95017, 95018)
+	
+	self:IterruptWarn("interrupt", "melee", 91540) --Arcanotron
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
-
+	
 	self:Death("Deaths", 42166, 42179, 42178, 42180)
 end
 
