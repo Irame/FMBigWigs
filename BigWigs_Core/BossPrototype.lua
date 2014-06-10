@@ -684,10 +684,15 @@ do
 	function boss:IterruptWarn(key, by, ...) --by = "melee", "range", "all"
 		local arg = {...}
 		for i = 1, #arg, 1 do
-			self.interruptTbl[GetSpellInfo(arg[i])] = {key, by}
+			local name = arg[i]
+			if type(name) == "number" then name = GetSpellInfo(name) end
+			if type(name) == "string" then
+				self.interruptTbl[name] = {key, by}
+			end
 		end
 		if self.hasInterruptHandler then return end
 		self.interruptFrame:RegisterEvent("UNIT_SPELLCAST_START")
+		self.interruptFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 		self.interruptFrame:SetScript("OnEvent",function(this,event,unit)
 			--only check Enemy-target/focus
 			if not UnitIsEnemy("player", unit) or unit ~= "target" and unit ~= "focus" then return end
