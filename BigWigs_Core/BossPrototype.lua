@@ -691,7 +691,7 @@ do
 		if self.hasInterruptHandler then return end
 		self.interruptFrame:RegisterEvent("UNIT_SPELLCAST_START")
 		self.interruptFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-		self.interruptFrame:SetScript("OnEvent",function(this, event, unit, spellName, _, spellID)
+		self.interruptFrame:SetScript("OnEvent",function(this, event, unit, spellName, _, _, spellID)
 			--only check Enemy-target/focus
 			if not UnitIsEnemy("player", unit) or unit ~= "target" and unit ~= "focus" then return end
 			
