@@ -52,6 +52,9 @@ if L then
 
 	L.eggs, L.eggs_desc = EJ_GetSectionInfo(2836)
 	L.eggs_icon = "inv_trinket_firelands_02"
+	
+	L.interrupt = "Interrupt"
+	L.interrupt_desc = "Interrupt warning for "..GetSpellInfo(101223).." and "..GetSpellInfo(99919)
 end
 L = mod:GetLocale()
 
@@ -66,7 +69,8 @@ function mod:GetOptions()
 		99432,
 		99844, 99925,
 		{100744, "FLASHSHAKE"}, "meteor",
-		"bosskill"
+		"bosskill",
+		"interrupt"
 	}, {
 		[99362] = "ej:2820", --Stage 1: Flight
 		[99816] = "ej:2821", --Stage 2: Tornadoes
@@ -109,7 +113,8 @@ function mod:OnBossEnable()
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 	self:RegisterEvent("CHAT_MSG_MONSTER_YELL", "Initiates")
 	self:Log("SPELL_CAST_START", "InitiateCast", 101223, 98868, 100093)
-
+	self:IterruptWarn("interrupt", "all", 101223, 99919) --Fyroblast, Ignition
+	
 	self:Death("Win", 52530)
 end
 
