@@ -83,7 +83,7 @@ function mod:OnBossEnable()
 	
 	self:Emote("Electrocute", L["crackle_trigger"])
 	
-	self:IterruptWarn("interrupt", "melee", 101430) --Blast Nova
+	self:IterruptWarn("interrupt", "melee", 101430, 101431, 101432, 80734) --Blast Nova
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 

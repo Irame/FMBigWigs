@@ -99,7 +99,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_REMOVED", "LightningConductorRemoved", 79888, 91433, 91431, 91432)
 	self:Log("SPELL_AURA_APPLIED", "Switch", 78740, 95016, 95017, 95018)
 	
-	self:IterruptWarn("interrupt", "melee", 91540) --Arcanotron
+	self:IterruptWarn("interrupt", "melee", 91541, 79710, 91540, 91542) --Arcanotron
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 	

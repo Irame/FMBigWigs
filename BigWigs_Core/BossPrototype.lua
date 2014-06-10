@@ -684,26 +684,24 @@ do
 	function boss:IterruptWarn(key, by, ...) --by = "melee", "range", "all"
 		local arg = {...}
 		for i = 1, #arg, 1 do
-			local name = arg[i]
-			if type(name) == "number" then name = GetSpellInfo(name) end
-			if type(name) == "string" then
-				self.interruptTbl[name] = {key, by}
+			if type(arg[i]) == "number" then 
+				self.interruptTbl[arg[i]] = {key, by}
 			end
 		end
 		if self.hasInterruptHandler then return end
 		self.interruptFrame:RegisterEvent("UNIT_SPELLCAST_START")
 		self.interruptFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-		self.interruptFrame:SetScript("OnEvent",function(this,event,unit)
+		self.interruptFrame:SetScript("OnEvent",function(this, event, unit, spellName, _, spellID)
 			--only check Enemy-target/focus
 			if not UnitIsEnemy("player", unit) or unit ~= "target" and unit ~= "focus" then return end
 			
 			local cast, _, _, _, _, castEnd, _, _, castKick = UnitCastingInfo(unit)
 			local channel, _, _, _, _, channelEnd, _, channelKick = UnitChannelInfo(unit)
 			
-			if (cast and self.interruptTbl[cast] and not castKick and canKickAt(castEnd/1000) 
-			or channel and self.interruptTbl[channel] and not channelKick and canKickAt(channelEnd/1000)) then
+			if (cast == spellName and self.interruptTbl[spellID] and not castKick and canKickAt(castEnd/1000) 
+			or channel == spellName and self.interruptTbl[spellID] and not channelKick and canKickAt(channelEnd/1000)) then
 				
-				local key, by = unpack(cast and self.interruptTbl[cast] or channel and self.interruptTbl[channel])
+				local key, by = unpack(self.interruptTbl[spellID])
 				
 				if shouldKick(by) then
 					self:Message(key, "Intrerrupt", "Important", nil, "Alert")
