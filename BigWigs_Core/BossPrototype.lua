@@ -624,6 +624,91 @@ function boss:StopBar(text)
 	end
 end
 
+do
+	boss.hasInterruptHandler = false
+	boss.interruptTbl = {}
+	boss.interruptFrame = CreateFrame("Frame")
+	
+	local function shouldKick(val)
+		local _, class = UnitClass("player")
+		local tree = GetSpecialization()
+		local cat, bear = GetSpellInfo(768), GetSpellInfo(5487)
+		if val == "all" then
+			if (class == "ROGUE" or class == "WARRIOR" or class == "DEATHKNIGHT" or class == "PALADIN" or class == "SHAMAN" or class == "MAGE" 
+			or (class == "PRIEST" and select(5,GetTalentInfo(3,11)) > 0) or (class == "HUNTER" and select(5,GetTalentInfo(2,7)) > 0) 
+			or (class == "DRUID" and (UnitBuff("player",cat) or UnitBuff("player",bear) or select(5,GetTalentInfo(1,13)) > 0))) then
+				return true
+			else
+				return false
+			end
+		elseif val == "melee" then
+			--is melee/tank or shaman with 10/5 sec Windshock <-GetTalentInfo(1,6))
+			if (class == "ROGUE" or class == "WARRIOR" or class == "DEATHKNIGHT" or (class == "DRUID" and (UnitBuff("player",cat) or UnitBuff("player",bear))) 
+			or (class == "PALADIN" and tree ~= 1) or (class == "SHAMAN" and select(5,GetTalentInfo(1,6)) > 0)) then
+				return true
+			else
+				return false
+			end
+		elseif val == "caster" then
+			if (class == "MAGE" or class == "SHAMAN" or (class == "DRUID" and select(5,GetTalentInfo(1,13)) > 0)
+			or (class == "PRIEST" and select(5,GetTalentInfo(3,11)) > 0) or (class == "HUNTER" and select(5,GetTalentInfo(2,7)) > 0)) then
+				return true
+			else
+				return false
+			end
+		end
+	end
+	
+	local function canKickAt(val)
+		val = val - 0.2 --reactionOffset
+		local _, class = UnitClass("player")
+		local tree = GetSpecialization()
+		local cat, bear = GetSpellInfo(768), GetSpellInfo(5487)
+		
+		local spell = (class == "WARRIOR" and 6552 or class == "PALADIN" and 96231 or class == "ROGUE" and 1766 or class == "DEATHKNIGHT" and 47528 
+					or class == "SHAMAN" and 57994 or class == "MAGE" and 2139 or class == "HUNTER" and select(5,GetTalentInfo(2,7)) > 0 and 34490
+					or class == "PRIEST" and select(5,GetTalentInfo(3,11)) > 0 and 15487 
+					or class == "DRUID" and (UnitBuff("player",cat) and 80965 or UnitBuff("player",bear) and 80964 or select(5,GetTalentInfo(1,13)) > 0 and 78675))
+		
+		if not spell then return false end
+		
+		local start, duration, enabled = GetSpellCooldown(spell)--these have always values (even for spells you do not have)
+		
+		if (enabled == 1 and start > 0 and duration > 0) then
+			return val > start+duration
+		else
+			return true
+		end
+	end
+	
+	function boss:IterruptWarn(key, by, ...) --by = "melee", "range", "all"
+		local arg = {...}
+		for i = 1, #arg, 1 do
+			self.interruptTbl[GetSpellInfo(arg[i])] = {key, by}
+		end
+		if self.hasInterruptHandler then return end
+		self.interruptFrame:RegisterEvent("UNIT_SPELLCAST_START")
+		self.interruptFrame:SetScript("OnEvent",function(this,event,unit)
+			--only check Enemy-target/focus
+			if not UnitIsEnemy("player", unit) or unit ~= "target" and unit ~= "focus" then return end
+			
+			local cast, _, _, _, _, castEnd, _, _, castKick = UnitCastingInfo(unit)
+			local channel, _, _, _, _, channelEnd, _, channelKick = UnitChannelInfo(unit)
+			
+			if (cast and self.interruptTbl[cast] and not castKick and canKickAt(castEnd/1000) 
+			or channel and self.interruptTbl[channel] and not channelKick and canKickAt(channelEnd/1000)) then
+				
+				local key, by = unpack(cast and self.interruptTbl[cast] or channel and self.interruptTbl[channel])
+				
+				if shouldKick(by) then
+					self:Message(key, "Intrerrupt", "Important", nil, "Alert")
+				end
+			end
+		end)
+		self.hasInterruptHandler = true
+	end
+end
+
 -- Examples of API use in a module:
 -- self:Sync("abilityPrefix", playerName)
 -- self:Sync("ability")
