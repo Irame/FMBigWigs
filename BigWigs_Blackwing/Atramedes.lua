@@ -28,6 +28,10 @@ if L then
 	L.obnoxious_soon = "Obnoxious Fiend soon!"
 
 	L.searing_soon = "Searing Flame in 10sec!"
+	
+	L.interrupt = obnoxiousFiend
+	L.interrupt_desc = "Interrupt "..obnoxiousFiend.." cast"
+	
 end
 L = mod:GetLocale()
 
@@ -40,7 +44,7 @@ function mod:GetOptions()
 		"ground_phase", 78075, 77840,
 		"air_phase",
 		{92677, "ICON", "SAY"},
-		{78092, "FLASHSHAKE", "ICON", "SAY"}, "altpower", "berserk", "bosskill"
+		{78092, "FLASHSHAKE", "ICON", "SAY"}, "altpower", "berserk", "bosskill", "interrupt"
 	}, {
 		ground_phase = L["ground_phase"],
 		air_phase = L["air_phase"],
@@ -63,6 +67,8 @@ function mod:OnBossEnable()
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
+	self:IterruptWarn("interrupt", "all", 92677)
+	
 	--INSTANCE_ENCOUNTER_ENGAGE_UNIT does not work on Frostmourne for  this boss
 	--I don't know how i should do it ...
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "CheckForEngage")
