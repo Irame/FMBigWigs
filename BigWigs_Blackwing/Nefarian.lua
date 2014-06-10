@@ -42,6 +42,9 @@ if L then
 	L.onyxia_power_message = "Explosion soon!"
 
 	L.chromatic_prototype = "Chromatic Prototype" -- 3 adds name
+	
+	L.interrupt = GetSpellInfo(101430)
+	L.interrupt_desc = "Interrupt warning for "..GetSpellInfo(101430)
 end
 L = mod:GetLocale()
 
@@ -53,7 +56,7 @@ function mod:GetOptions()
 	return {
 		77939, 78999, 81272, {81007, "FLASHSHAKE"},
 		{79339, "FLASHSHAKE", "SAY", "PROXIMITY"}, {79318, "FLASHSHAKE"}, "berserk",
-		"phase", "bosskill"
+		"phase", "bosskill", "interrupt"
 	}, {
 		[77939] = "ej:3283", -- Onyxia
 		[78999] = "normal",
@@ -79,6 +82,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "Dominion", 79318)--only know 10HM spell - maybe another for 25HM
 	
 	self:Emote("Electrocute", L["crackle_trigger"])
+	
+	self:IterruptWarn("interrupt", "melee", 101430) --Blast Nova
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
