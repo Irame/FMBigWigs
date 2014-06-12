@@ -14,14 +14,15 @@ local GetNumGroupMembers = GetNumGroupMembers or GetNumRaidMembers
 --
 
 local leapingFlames, flameScythe = (GetSpellInfo(98476)), (GetSpellInfo(98474))
--- Update, in 4.3 the rate at which his energy is affected by Adrenaline is nerfed considerbly. (Despite what tooltip says)
--- I don't have data to determine if/when it caps at 3.7, but if it does, it's somewhere much later then it used to be.
--- So stack beyond 11-12 may falsely report 3.7 until data for more specials can be determined (although it was already wrong to begin with post 4.3 so this is unchanged)
-local specialCD = {17.3, 14.4, 12, 10.9, 9.6, 8.4, 8.4, 7.2, 7.2, 6.0, 6.0}
-specialCD = setmetatable({}, {__index = function(tbl, key)
-	local enMult = (0.2*key)+1
-	local val = 100 / (5*enMult)
-	val = floor(val/2)*2 -- <- remove line on EnergyFix
+local specialCD = setmetatable({}, {__index = function(tbl, key)
+	local energyPerTick = floor(12*(1+0.2*key))
+	
+	local needTicks = 100/energyPerTick
+	if needTicks ~= floor(needTicks) then
+		needTicks = 1+floor(needTicks)
+	end
+	
+	local val = needTicks * 1.95 --average Ticktime
 	tbl[key] = val
 	return val
 end})
