@@ -9,9 +9,9 @@ mod:RegisterEnableMob(52530, 53898, 54015, 53089) --Alysrazor, Voracious Hatchli
 local firestorm = GetSpellInfo(101659)
 local woundTargets = mod:NewTargetList()
 local meteorCount, moltCount, burnCount, initiateCount = 0, 0, 0, 0
-local initiateTimes = {31, 31, 21, 21, 21}
+local initiateTimes = {31, 23, 19, 21, 21} --NM
 
-local initiateTbl = {}
+local initiateTbl, wormTbl = {}, {}
 
 --------------------------------------------------------------------------------
 --  Localization
@@ -119,7 +119,7 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage(diff)
-	initiateTbl = {}
+	initiateTbl, wormTbl = {}, {}
 	meteorCount, moltCount, burnCount, initiateCount = 0, 0, 0, 0
 	wipe(initiateTimes)
 	if diff > 2 then
@@ -132,24 +132,22 @@ function mod:OnEngage(diff)
 		self:Bar("eggs", "~"..GetSpellInfo(58542), 42, L["eggs_icon"])
 		self:DelayedMessage("eggs", 41.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 	else
-		initiateTimes = {31, 31, 21, 21, 21}
+		initiateTimes = {31, 23, 19, 21, 21}
 		self:Message(99816, L["engage_message"]:format(3), "Attention", "inv_misc_pheonixpet_01")
-		self:Bar(99816, L["stage_message"]:format(2), 200-3, 99816)
-		self:DelayedMessage(99816, 200-3, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
-		self:Bar(99464, L["molt_bar"], 12.5-2, 99464)
-		self:Bar("eggs", "~"..GetSpellInfo(58542), 42, L["eggs_icon"])
+		self:Bar(99816, L["stage_message"]:format(2), 188.5 - 17, 99816)
+		self:DelayedMessage(99816, 188.5 - 17, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
+		self:Bar(99464, L["molt_bar"], 10.5, 99464)
+		self:Bar("eggs", GetSpellInfo(58542), 42, L["eggs_icon"])
 		self:DelayedMessage("eggs", 41.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 	end
-	self:Bar("initiate", L["initiate"], 18, 97062)
+	self:Bar("initiate", L.initiate_both, 28, 97062)
 end
-
---10 + 73 + 73 + 73 - 30
 
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
 
-do
+do--flying
 	local flying = GetSpellInfo(98619)
 	local lastCheck = 0
 	function mod:UNIT_AURA(_, unit)
@@ -174,19 +172,17 @@ do
 	end
 end
 
-do
-	--local initiateLocation = {L["initiate_both"], L["initiate_east"], L["initiate_west"], L["initiate_east"], L["initiate_west"]}
+do--initiate
+	local initiateLocation = {L["initiate_both"], L["initiate_east"], L["initiate_west"], L["initiate_east"], L["initiate_west"]}
 	local initiate = EJ_GetSectionInfo(2834)
 	
 	local last = 0
 	function mod:Initiates(_, _, unit)
-		if unit == initiate then
-			local diff = GetTime()-last
+		if unit == initiate and GetTime()-last > 10 then
 			last = GetTime()
 			initiateCount = initiateCount + 1
-			if initiateCount > 8 then return end
-			self:Bar("initiate", L.initiate, diff < 20 and (42 - diff) or 42 , 97062) --Night Elf head 
-			--initiateLocation[initiateCount], initiateTimes[initiateCount]
+			if initiateCount > 5 then return end
+			self:Bar("initiate", initiateLocation[initiateCount], initiateTimes[initiateCount] , 97062) --Night Elf head
 		end
 	end
 	
@@ -207,9 +203,9 @@ do
 		local name = UnitBuff("player", feather)
 		if not name then
 			if UnitBuff("player", moonkin) then
-				self:Message(97128, L["moonkin_message"], "Personal", 97128)
+				self:Message(97128, L["moonkin_message"], "Personal", 97128, "Info")
 			else
-				self:Message(97128, L["no_stacks_message"], "Personal", 97128)
+				self:Message(97128, L["no_stacks_message"], "Personal", 97128, "Info")
 			end
 		end
 	end
@@ -217,9 +213,8 @@ do
 	local last = 0
 	function mod:WormCast(...)
 		local sGUID = select(11,...)
-		--we use initiateTbl, because does not matter.
-		if not initiateTbl[sGUID] then
-			initiateTbl[sGUID] = true
+		if not wormTbl[sGUID] then
+			wormTbl[sGUID] = true
 			if GetTime()-last > 5 then
 				self:BuffCheck()
 				last = GetTime()
@@ -257,10 +252,7 @@ function mod:Molting(_, spellId, _, _, spellName)
 		moltCount = moltCount + 1
 		self:Message(99464, spellName, "Positive", spellId)
 		if moltCount < 3 then
-			self:Bar(99464, L["molt_bar"], (60+15)-2*moltCount, spellId)
-		else
-			--self:Bar(99816, L["stage_message"]:format(2), 63, 99816)--73
-			--phase 2 73
+			self:Bar(99464, L["molt_bar"], (59.5)-2.5*moltCount, spellId)
 		end
 	end
 end
@@ -323,7 +315,6 @@ do
 	-- Alysrazor crashes to the ground
 	function mod:Burnout(_, spellId, _, _, spellName)
 		self:Message(99432, (L["stage_message"]:format(3))..": "..spellName, "Positive", spellId, "Alert")
-		self:Bar(99432, "~"..spellName, 33, spellId)
 		halfWarned, fullWarned = false, false
 		burnCount = burnCount + 1
 		if burnCount < 3 then
@@ -343,7 +334,7 @@ do
 			self:Message(99925, (L["stage_message"]:format(1))..": "..(L["encounter_restart"]), "Positive", 99925, "Alert")
 			self:UnregisterEvent("UNIT_POWER")
 			initiateCount = 0
-			self:Bar("initiate", L["initiate"], 13.5, 97062)
+			self:Bar("initiate", L["initiate_both"], 17.5, 97062)
 			if self:Difficulty() > 2 then
 				meteorCount = 0
 				self:Bar("meteor", L["meteor"], 19, 100761)
@@ -353,10 +344,10 @@ do
 				self:Bar("eggs", "~"..GetSpellInfo(58542), 30, L["eggs_icon"])
 				self:DelayedMessage("eggs", 29.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 			else
-				self:Bar(99816, L["stage_message"]:format(2), 165+30, 99816)
-				self:DelayedMessage(99816, 165+30, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
+				self:Bar(99816, L["stage_message"]:format(2), 170, 99816)
+				self:DelayedMessage(99816, 170, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
 				moltCount = 1
-				self:Bar(99464, L["molt_bar"], 55+8, 99464)
+				self:Bar(99464, L["molt_bar"], 51, 99464)
 				self:Bar("eggs", "~"..GetSpellInfo(58542), 22.5+16, L["eggs_icon"])
 				self:DelayedMessage("eggs", 22+16, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 			end
