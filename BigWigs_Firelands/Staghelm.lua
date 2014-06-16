@@ -14,17 +14,10 @@ local GetNumGroupMembers = GetNumGroupMembers or GetNumRaidMembers
 --
 
 local leapingFlames, flameScythe = (GetSpellInfo(98476)), (GetSpellInfo(98474))
-local lastSpecial = 0
-local specialCD = function(stack, left)
-	local energyPerTick = floor(12*(1+0.2*stack))
-	
-	local needTicks = left/energyPerTick
-	if needTicks ~= floor(needTicks) then
-		needTicks = 1+floor(needTicks)
-	end
-	
-	return (needTicks * 1.95) - ((GetTime()-lastSpecial)%2)
-end
+local specialCD = setmetatable({}, {__index = function(tbl, key)
+	tbl[key] = 13.3/(1+0.2*key) --13.3 = baseTime for 100energy
+	return tbl[key]
+end})
 
 local form = "cat"
 local seedTimer = nil
@@ -66,7 +59,6 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "CatForm", 98374)
 	self:Log("SPELL_AURA_APPLIED", "ScorpionForm", 98379)
 	self:Log("SPELL_CAST_SUCCESS", "LeapingFlames", 98476, 100206)
-	self:Log("SPELL_CAST_SUCCESS", "FlameScythe", 98474, 100212, 100213, 100214)
 	self:Log("SPELL_CAST_START", "RecklessLeap", 99629)
 	self:Log("SPELL_AURA_APPLIED", "SearingSeeds", 98450)
 	self:Log("SPELL_AURA_REMOVED", "SearingSeedsRemoved", 98450)
@@ -91,10 +83,11 @@ function mod:Adrenaline(_, spellId, _, _, spellName, stack)
 	self:Message(97238, L["adrenaline_message"]:format(stack or 1), "Attention", spellId)
 	 -- this is power based, not time. Power regen is affected by adrenaline
 	 -- adrenaline gets stacked every special
+	local t = (1-(UnitPower("boss1")/100)) * specialCD[stack or 1]
 	if form == "cat" then --specialCD[stack or 1]specialCD[stack or 1]
-		self:Bar(98476, leapingFlames, specialCD(stack or 1, 100-UnitPower("boss1")) , 98476)
+		self:Bar(98476, leapingFlames, t, 98476)
 	elseif form == "scorpion" then
-		self:Bar(98474, flameScythe, specialCD(stack or 1, 100-UnitPower("boss1")), 98474)
+		self:Bar(98474, flameScythe, t, 98474)
 	end
 end
 
@@ -110,11 +103,6 @@ function mod:LeapingFlames(player, ...)
 		mod:TargetMessage(98476, leapingFlames, player, "Urgent", 98476, "Long")
 		mod:PrimaryIcon(98476, player)
 	end
-	lastSpecial = GetTime()
-end
-
-function mod:FlameScythe()
-	lastSpecial = GetTime()
 end
 
 do
@@ -136,10 +124,10 @@ do
 end
 
 function mod:CatForm(_, spellId, _, _, spellName)
-	lastSpecial = GetTime()
 	form = "cat"
 	self:Message(98374, spellName, "Important", spellId, "Alert")
-	self:Bar(98476, leapingFlames, specialCD(0,100-UnitPower("boss1")), 98476)
+	local t = (1-(UnitPower("boss1")/100)) * specialCD[0]
+	self:Bar(98476, leapingFlames, t, 98476)
 	--Don't open if already opened from seed
 	local spell = GetSpellInfo(98450)
 	local hasDebuff, _, _, _, _, _, remaining = UnitDebuff("player", spell)
@@ -149,12 +137,12 @@ function mod:CatForm(_, spellId, _, _, spellName)
 end
 
 function mod:ScorpionForm(_, spellId, _, _, spellName)
-	lastSpecial = GetTime()
 	form = "scorpion"
 	self:Message(98379, spellName, "Important", spellId, "Alert")
 	self:PrimaryIcon(98476)
 	self:CloseProximity(98374)
-	self:Bar(98474, flameScythe, specialCD(0,100-UnitPower("boss1")), 98474)
+	local t = (1-(UnitPower("boss1")/100)) * specialCD[0]
+	self:Bar(98474, flameScythe, t, 98474)
 end
 
 function mod:SearingSeedsRemoved(player)
