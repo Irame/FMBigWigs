@@ -99,7 +99,6 @@ do
 	end
 	
 	function mod:OnEngage(diff)
-		last = GetTime()
 		devastateCount = 1
 		lastBroodlingTarget = ""
 		local devastate = L["devastate_message"]:format(1)
@@ -178,7 +177,6 @@ function mod:Devastate(_, spellId)
 	-- Might need to use the bosses power bar or something to adjust this
 	if devastateCount > 3 then return end
 	self:Bar(99052, L["devastate_message"]:format(devastateCount), 90, spellId)
-	last = GetTime()
 	
 	spiderlingIn(20)
 	self:ScheduleTimer(spiderlingIn, 20,31)
