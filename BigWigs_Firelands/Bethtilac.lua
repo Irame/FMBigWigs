@@ -12,6 +12,9 @@ mod:RegisterEnableMob(52498)
 
 local devastateCount = 1
 local lastBroodlingTarget = ""
+local spiderling = EJ_GetSectionInfo(2778)
+local spinner = EJ_GetSectionInfo(2770)
+local drone = EJ_GetSectionInfo(2773)
 
 --------------------------------------------------------------------------------
 --  Localization
@@ -70,29 +73,48 @@ function mod:OnBossEnable()
 	self:Death("Win", 52498)
 end
 
+local function spiderlingIn(t)
+	mod:Bar("spinner", spiderling, t, "INV_Trinket_Naxxramas04")
+	mod:DelayedMessage("spinner", t, spiderling, "Positive", "INV_Trinket_Naxxramas04")
+end
+
+local function spinnerIn(t)
+	mod:Bar("spinner", spinner, t, L["spinner_icon"])
+	mod:DelayedMessage("spinner", t, spinner, "Positive", L["spinner_icon"])
+end
+	
 do
 	local scheduled = nil
+	
 	local function droneWarning()
-		mod:Message("drone", L["drone_message"], "Attention", L["drone_icon"], "Info")
-		mod:Bar("drone", L["drone_bar"], 60, L["drone_icon"])
-		scheduled = mod:ScheduleTimer(droneWarning, 60)
+		mod:Bar("drone", drone, 54.5, L["drone_icon"])
+		mod:DelayedMessage("drone", 54.5, drone, "Attention", L["drone_icon"], "Info")
+		scheduled = mod:ScheduleTimer(droneWarning, 55)
 	end
-
+	
+	local function droneIn(t)
+		scheduled = mod:ScheduleTimer(droneWarning, t+1)
+		mod:Bar("drone", drone, t, L["drone_icon"])
+		mod:DelayedMessage("drone", t, drone, "Attention", L["drone_icon"], "Info")
+	end
+	
 	function mod:OnEngage(diff)
+		last = GetTime()
 		devastateCount = 1
 		lastBroodlingTarget = ""
 		local devastate = L["devastate_message"]:format(1)
 		self:Message(99052, CL["custom_start_s"]:format(self.displayName, devastate, 80), "Positive", "inv_misc_monsterspidercarapace_01")
-		self:Bar(99052, devastate, 80, 99052)
-		self:Bar("drone", L["drone_bar"], 45, L["drone_icon"])
-		self:Bar("spinner", L["spinner_warn"]:format(1), 12, L["spinner_icon"])
-		self:Bar("spinner", L["spinner_warn"]:format(2), 24, L["spinner_icon"])
-		self:Bar("spinner", L["spinner_warn"]:format(3), 35, L["spinner_icon"])
-		self:DelayedMessage("spinner", 12, L["spinner_warn"]:format(1), "Positive", L["spinner_icon"])
-		self:DelayedMessage("spinner", 24, L["spinner_warn"]:format(2), "Positive", L["spinner_icon"])
-		self:DelayedMessage("spinner", 35, L["spinner_warn"]:format(3), "Positive", L["spinner_icon"])
+		self:Bar(99052, devastate, 80+3, 99052)
 		self:CancelTimer(scheduled, true)
-		scheduled = self:ScheduleTimer(droneWarning, 45)
+		
+		droneIn(43)
+		
+		spinnerIn(14)
+		
+		spiderlingIn(12)
+		self:ScheduleTimer(spiderlingIn, 12,31)
+		self:ScheduleTimer(spiderlingIn, 43,30)
+		
 	end
 end
 
@@ -156,12 +178,13 @@ function mod:Devastate(_, spellId)
 	-- Might need to use the bosses power bar or something to adjust this
 	if devastateCount > 3 then return end
 	self:Bar(99052, L["devastate_message"]:format(devastateCount), 90, spellId)
-	self:Bar("spinner", L["spinner_warn"]:format(1), 20, L["spinner_icon"])
-	self:Bar("spinner", L["spinner_warn"]:format(2), 29, L["spinner_icon"])
-	self:Bar("spinner", L["spinner_warn"]:format(3), 40, L["spinner_icon"])
-	self:DelayedMessage("spinner", 20, L["spinner_warn"]:format(1), "Positive", L["spinner_icon"])
-	self:DelayedMessage("spinner", 29, L["spinner_warn"]:format(2), "Positive", L["spinner_icon"])
-	self:DelayedMessage("spinner", 40, L["spinner_warn"]:format(3), "Positive", L["spinner_icon"])
+	last = GetTime()
+	
+	spiderlingIn(20)
+	self:ScheduleTimer(spiderlingIn, 20,31)
+	self:ScheduleTimer(spiderlingIn, 51,30)
+	
+	spinnerIn(16)
 end
 
 function mod:Flare(_, spellId, _, _, spellName)
