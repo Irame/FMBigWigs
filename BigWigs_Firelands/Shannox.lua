@@ -51,7 +51,6 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_SUCCESS", "FaceRage", 99947) --99945 is the "charge"
 	self:Log("SPELL_AURA_REMOVED", "FaceRageRemoved", 99947)
 	
-	self:Log("SPELL_AURA_REMOVED", "RemovedDetermination", 101111)
 	self:Log("SPELL_CAST_START", "HurlSpear", 100002)
 	
 	
@@ -72,8 +71,6 @@ end
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
-
--- 15-25sec after lost debuff. new spear
 
 function mod:ThrowTraps(player,spellId)
 	if player then
@@ -104,14 +101,9 @@ function mod:WaryDog(unit, spellId, _, _, spellName, _, _, _, _, dGUID)
 	end
 end
 
-function mod:RemovedDetermination()
-	--15 - 23 sec after this -> Spear
-	self:Bar(100002, (GetSpellInfo(100002)).." CD", 15, 100002)
-end
-
 function mod:HurlSpear(_, _, _, _, spellName)
 	self:Message(100002, spellName, "Attention", 100002, "Info")
-	self:Bar(100002, spellName, 41-10, 100002)
+	self:Bar(100002, spellName, 42.1, 100002)
 end
 
 do
