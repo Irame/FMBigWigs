@@ -81,6 +81,10 @@ end
 local function spinnerIn(t)
 	mod:Bar("spinner", spinner, t, L["spinner_icon"])
 	mod:DelayedMessage("spinner", t, spinner, "Positive", L["spinner_icon"])
+	
+	mod:Bar("spinner", spinner.." #2", t+10, L["spinner_icon"])
+	
+	mod:Bar("spinner", spinner.." #3", t+19, L["spinner_icon"])
 end
 	
 do
@@ -108,7 +112,7 @@ do
 		
 		droneIn(43)
 		
-		spinnerIn(14)
+		spinnerIn(13)
 		
 		spiderlingIn(12)
 		self:ScheduleTimer(spiderlingIn, 12,31)
@@ -150,13 +154,14 @@ end
 
 function mod:Frenzy()
 	self:CancelAllTimers()
-	self:SendMessage("BigWigs_StopBar", self, L["drone_bar"])
+	self:StopBar(drone)
 	self:Message(99497, CL["phase"]:format(2), "Positive", 99497, "Alarm")
+	self:Bar(99506, L["kiss_message"], 10, 99506)
 end
 
 function mod:Kiss(player, spellId, _, _, spellName)
 	self:TargetMessage(99506, L["kiss_message"], player, "Urgent", spellId)
-	self:Bar(99506, L["kiss_message"], 31.5, spellId)
+	self:Bar(99506, L["kiss_message"], 32, spellId)
 	-- We play the sound manually because TargetMessage strips it unless the target is the player
 	self:PlaySound(99506, "Info")
 end
@@ -175,7 +180,10 @@ function mod:Devastate(_, spellId)
 	devastateCount = devastateCount + 1
 	-- This timer is only accurate if you dont fail with the Drones
 	-- Might need to use the bosses power bar or something to adjust this
-	if devastateCount > 3 then return end
+	if devastateCount > 3 then 
+		self:Bar(99506, L["kiss_message"], 25, 99506)
+		return 
+	end
 	self:Bar(99052, L["devastate_message"]:format(devastateCount), 90, spellId)
 	
 	spiderlingIn(20)
