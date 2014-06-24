@@ -15,7 +15,7 @@ local GetNumGroupMembers = GetNumGroupMembers or GetNumRaidMembers
 
 local leapingFlames, flameScythe = (GetSpellInfo(98476)), (GetSpellInfo(98474))
 local specialCD = setmetatable({}, {__index = function(tbl, key)
-	tbl[key] = 13.3/(1+0.2*key) --13.3 = baseTime for 100energy
+	tbl[key] = 17/(1+0.2*key) --13.3 = baseTime for 100energy
 	return tbl[key]
 end})
 
