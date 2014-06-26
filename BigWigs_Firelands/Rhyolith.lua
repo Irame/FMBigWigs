@@ -44,7 +44,7 @@ L = mod:GetLocale()
 
 function mod:GetOptions()
 	return {
-		98552, 98136, 98264,
+		98552, 98136, 98493,
 		"armor", 97282, 98255, "ej:2537", 101304, "bosskill"
 	}, {
 		[98552] = L["adds_header"],
@@ -63,7 +63,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "Superheated", 101304)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "Superheated", 101304)
 	
-	self:Log("SPELL_CAST_SUCCESS", "VulcanoActivated", 98264)
+	self:Log("SPELL_CAST_SUCCESS", "VulcanoActivated", 98493)
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
@@ -74,7 +74,7 @@ function mod:OnEngage(diff)
 	self:Berserk(diff > 2 and 300 or 360, nil, nil, 101304)
 	self:Bar(97282, L["stomp"], 15, 97282)
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
-	lastFragments = GetTime()
+	lastFragments = GetTime() --30
 end
 
 --------------------------------------------------------------------------------
@@ -82,11 +82,11 @@ end
 --
 
 do
-	last = 0
-	scheduled = nil
+	local last = 0
+	local scheduled = nil
 	function mod:VulcanoActivated(_,_,_,_, spellName)
 		last = GetTime()
-		self:Bar(98264, spellName, 39, 98264)
+		self:Bar(98493, spellName, 39, 98493)
 		
 		--if there is no Vulcano, he cant activate one and will skip this activation
 		--we assume there will never be two skipped in a row.
@@ -94,7 +94,7 @@ do
 			self:CancelTimer(scheduled, true)
 		end
 		self:ScheduleTimer(function(txt) 
-			self:Bar(98264, txt, 36, 98264)
+			self:Bar(98493, txt, 36, 98493)
 		end, 42, spellName)
 		
 	end
@@ -116,15 +116,35 @@ function mod:ObsidianStack(_, spellId, _, _, _, buffStack, _, _, _, dGUID)
 	end
 end
 
-function mod:Spark(_, spellId)
-	self:Message(98552, L["big_add_message"], "Important", spellId, "Alarm")
+do
+	local scheduled 
+	local function sparkIn(t)
+		mod:Bar(98136, L["big_add_message"], t, 98136)
+		if scheduled then mod:CancelTimer(scheduled, true) end
+		scheduled = mod:ScheduleTimer(sparkIn, 35, 25)
+	end
+	
+	function mod:Spark(_, spellId)
+		self:Message(98552, L["big_add_message"], "Important", spellId, "Alarm")
+		sparkIn(30)
+	end
 end
 
-function mod:Fragments(_, spellId)
-	local t = GetTime()
-	if lastFragments and t < (lastFragments + 5) then return end
-	lastFragments = t
-	self:Message(98136, L["small_adds_message"], "Attention", spellId, "Info")
+do
+	local scheduled 
+	local function fragmentsIn(t)
+		mod:Bar(98136, L["small_adds_message"], t, 98136)
+		if scheduled then mod:CancelTimer(scheduled, true) end
+		scheduled = mod:ScheduleTimer(fragmentsIn, 35, 25)
+	end
+	
+	function mod:Fragments(_, spellId)
+		local t = GetTime()
+		if lastFragments and t < (lastFragments + 5) then return end
+		lastFragments = t
+		self:Message(98136, L["small_adds_message"], "Attention", spellId, "Info")
+		fragmentsIn(30)
+	end
 end
 
 function mod:Stomp(_, spellId, _, _, spellName)
