@@ -44,7 +44,7 @@ L = mod:GetLocale()
 
 function mod:GetOptions()
 	return {
-		98552, 98136,
+		98552, 98136, 98264,
 		"armor", 97282, 98255, "ej:2537", 101304, "bosskill"
 	}, {
 		[98552] = L["adds_header"],
@@ -62,6 +62,8 @@ function mod:OnBossEnable()
 	
 	self:Log("SPELL_AURA_APPLIED", "Superheated", 101304)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "Superheated", 101304)
+	
+	self:Log("SPELL_CAST_SUCCESS", "VulcanoActivated", 98264)
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
@@ -78,6 +80,25 @@ end
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
+
+do
+	last = 0
+	scheduled = nil
+	function mod:VulcanoActivated(_,_,_,_, spellName)
+		last = GetTime()
+		self:Bar(98264, spellName, 39, 98264)
+		
+		--if there is no Vulcano, he cant activate one and will skip this activation
+		--we assume there will never be two skipped in a row.
+		if scheduled then
+			self:CancelTimer(scheduled, true)
+		end
+		self:ScheduleTimer(function(txt) 
+			self:Bar(98264, txt, 36, 98264)
+		end, 42, spellName)
+		
+	end
+end
 
 function mod:Superheated(player, spellId, _, _, spellName, stack)
 	self:Message(101304, spellName..": "..((stack or 1)*10).."%", "Positive", spellId)
