@@ -59,6 +59,9 @@ function mod:OnBossEnable()
 	self:Log("SPELL_SUMMON", "Fragments", 100392, 98136)
 	self:Log("SPELL_AURA_REMOVED_DOSE", "ObsidianStack", 98632)
 	self:Log("SPELL_AURA_REMOVED", "Obsidian", 98632)
+	
+	self:Log("SPELL_AURA_APPLIED", "Superheated", 101304)
+	self:Log("SPELL_AURA_APPLIED_DOSE", "Superheated", 101304)
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
@@ -75,6 +78,10 @@ end
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
+
+function mod:Superheated(player, spellId, _, _, spellName, stack)
+	self:Message(101304, spellName..": "..((stack or 1)*10).."%", "Positive", spellId)
+end
 
 function mod:Obsidian(_, spellId, _, _, _, _, _, _, _, dGUID)
 	if self:GetCID(dGUID) == 52558 then
