@@ -74,30 +74,19 @@ function mod:OnEngage(diff)
 	self:Berserk(diff > 2 and 300 or 360, nil, nil, 101304)
 	self:Bar(97282, L["stomp"], 15, 97282)
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
-	lastFragments = GetTime() --30
+	lastFragments = GetTime()
+	
+	
+	self:Bar(98552, CL["soon"]:format("Adds"), 23, 98552)
+	self:Bar(98493, GetSpellInfo(98493), 26, 98493)	-- vulcano activate
 end
 
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
 
-do
-	local last = 0
-	local scheduled = nil
-	function mod:VulcanoActivated(_,_,_,_, spellName)
-		last = GetTime()
-		self:Bar(98493, spellName, 39, 98493)
-		
-		--if there is no Vulcano, he cant activate one and will skip this activation
-		--we assume there will never be two skipped in a row.
-		if scheduled then
-			self:CancelTimer(scheduled, true)
-		end
-		self:ScheduleTimer(function(txt) 
-			self:Bar(98493, txt, 36, 98493)
-		end, 42, spellName)
-		
-	end
+function mod:VulcanoActivated(_,_,_,_, spellName)
+	self:Bar(98493, spellName, 26, 98493)	
 end
 
 function mod:Superheated(player, spellId, _, _, spellName, stack)
@@ -115,36 +104,19 @@ function mod:ObsidianStack(_, spellId, _, _, _, buffStack, _, _, _, dGUID)
 		self:Message("armor", L["armor_message"]:format(buffStack), "Positive", spellId)
 	end
 end
-
-do
-	local scheduled 
-	local function sparkIn(t)
-		mod:Bar(98136, L["big_add_message"], t, 98136)
-		if scheduled then mod:CancelTimer(scheduled, true) end
-		scheduled = mod:ScheduleTimer(sparkIn, 35, 25)
-	end
 	
-	function mod:Spark(_, spellId)
-		self:Message(98552, L["big_add_message"], "Important", spellId, "Alarm")
-		sparkIn(30)
-	end
+function mod:Spark(_, spellId)
+	self:Message(98552, L["big_add_message"], "Important", spellId, "Alarm")
+	self:Bar(98552, CL["soon"]:format("Adds"), 22, 98552)
 end
 
-do
-	local scheduled 
-	local function fragmentsIn(t)
-		mod:Bar(98136, L["small_adds_message"], t, 98136)
-		if scheduled then mod:CancelTimer(scheduled, true) end
-		scheduled = mod:ScheduleTimer(fragmentsIn, 35, 25)
-	end
+function mod:Fragments(_, spellId)
+	local t = GetTime()
+	if lastFragments and t < (lastFragments + 5) then return end
+	lastFragments = t
 	
-	function mod:Fragments(_, spellId)
-		local t = GetTime()
-		if lastFragments and t < (lastFragments + 5) then return end
-		lastFragments = t
-		self:Message(98136, L["small_adds_message"], "Attention", spellId, "Info")
-		fragmentsIn(30)
-	end
+	self:Message(98136, L["small_adds_message"], "Attention", spellId, "Info")
+	self:Bar(98552, CL["soon"]:format("Adds"), 22, 98552)
 end
 
 function mod:Stomp(_, spellId, _, _, spellName)
