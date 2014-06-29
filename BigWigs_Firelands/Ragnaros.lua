@@ -27,6 +27,7 @@ meteorNumber = setmetatable({} ,{__index = function(tbl, key)
 	return val
 end})
 local intermissionHandle = nil
+local smashCount_Seeds = 0
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -64,7 +65,7 @@ function mod:GetOptions()
 	return {
 		98237, 98263, 98164,
 		98953, {100460, "ICON", "FLASHSHAKE", "SAY"},
-		98498, 99172,
+		{98498, "PROXIMITY"}, 99172,
 		99317, {99849, "FLASHSHAKE", "SAY"},
 		100171, 100479, 100646, 100714, 100604, 100675,
 		98710, "wound", "proximity", "berserk", "bosskill"
@@ -101,6 +102,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "SplittingBlow", 98953, 98952, 98951, 100880, 100883, 100877, 100885, 100882, 100879, 100884, 100881, 100878)
 	self:Log("SPELL_SUMMON", "LivingMeteor", 99317, 100989, 100990, 100991)
 	self:Emote("Dreadflame", dreadflame)
+	
+	self:Log("SPELL_CAST_SUCCESS", "SeedExplosion", 98518, 100252, 100253, 100254)
 	
 	self:Log("SPELL_AURA_APPLIED", "Wound", 101238, 101239, 101240, 99399)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "Wound", 101238, 101239, 101240, 99399)
@@ -228,14 +231,16 @@ function mod:IntermissionEnd()
 	self:SendMessage("BigWigs_StopBar", self, L["intermission_bar"])
 	if phase == 1 then
 		lavaWavesCD = 40
-		self:OpenProximity(6)
 		if self:Difficulty() > 2 then
 			self:Bar(98498, "~"..moltenSeed, 15, 98498)
 			self:Bar(98710, lavaWaves, 7.5, 98710)
 			self:Bar(100171, worldInFlames, 40, 100171)
 		else
-			self:Bar(98498, moltenSeed, 22.7, 98498)
-			self:Bar(98710, lavaWaves, 55, 98710)
+			self:Bar(98710, lavaWaves, 14, 98710)
+			
+			self:Bar(98498, moltenSeed, 21.5, 98498)
+			self:ScheduleTimer(function() self:OpenProximity(3, 98498, nil, true) end, 11.5)
+			self:ScheduleTimer(function() self:CloseProximity(98498) end, 21.5)
 		end
 	elseif phase == 2 then
 		engulfingCD = 30
@@ -268,7 +273,7 @@ function mod:SplittingBlow(_, spellId, _, _, spellName)
 		self:SendMessage("BigWigs_StopBar", self, (GetSpellInfo(99172))) -- Engulfing Flames
 	end
 	self:Message(98953, L["intermission_message"], "Positive", spellId, "Long")
-	self:Bar(98953, spellName, 7, spellId)
+	self:Bar(98953, spellName, 8, spellId)
 	self:Bar(98953, L["intermission_bar"], self:Difficulty() > 2 and 60 or 57, spellId) -- They are probably both 60
 	self:CloseProximity()
 	sons = 8
@@ -276,6 +281,7 @@ function mod:SplittingBlow(_, spellId, _, _, spellName)
 	self:SendMessage("BigWigs_StopBar", self, lavaWaves)
 	self:SendMessage("BigWigs_StopBar", self, "~"..wrathOfRagnaros)
 	self:SendMessage("BigWigs_StopBar", self, moltenSeed)
+	self:StopBar("~"..(GetSpellInfo(98164)))
 end
 
 function mod:SulfurasSmash(_, spellId)
@@ -338,9 +344,30 @@ do
 				prev = t
 				self:Message(98498, spellName, "Urgent", spellId, "Alarm")
 				self:Bar(98498, L["seed_explosion"], 12, spellId)
-				self:Bar(98498, spellName, 60, spellId)
 			end
 		end
+	end
+	
+	local function preSeeds(self)
+		self:Message(98498, CL["soon"]:format(moltenSeed), "Urgent", 98498)
+		self:OpenProximity(3, 98498, nil, true) --reverse Proximity
+	end
+	
+	local function postSeeds(self)
+		self:CloseProximity(98498)
+	end
+	
+	local last = 0
+	function mod:SeedExplosion()
+		local t = GetTime() --each seed will cast this
+		if t-last < 5 then return end
+		last = t
+		
+		local seedsIn = 120.3-12
+		self:Bar(98498, moltenSeed, seedsIn, 98498)
+		
+		self:ScheduleTimer(preSeeds, seedsIn-10, self)
+		self:ScheduleTimer(postSeeds, seedsIn, self)
 	end
 end
 
