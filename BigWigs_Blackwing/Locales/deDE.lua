@@ -9,7 +9,7 @@ if L then
 	L.air_phase = "Luftphase"
 	L.air_phase_desc = "Warnt, wenn Atramedes abhebt."
 
-	--L.air_phase_trigger = "Ja, lauft! Jeder Schritt lässt Euer Herz stärker klopfen. Laut und heftig... ohrenbetäubend. Es gibt kein Entkommen!" -- check
+	L.air_phase_trigger = "Ja, lauft! Jeder Schritt lässt Euer Herz stärker klopfen. Laut und heftig... ohrenbetäubend. Es gibt kein Entkommen!" -- check
 
 	L.obnoxious_soon = "Nerviges Scheusal bald!"
 
@@ -18,7 +18,7 @@ end
 
 L = BigWigs:NewBossLocale("Chimaeron", "deDE")
 if L then
-	--L.bileotron_engage = "Der Gall-O-Tron springt an und stößt eine übel riechende Substanz aus."
+	L.bileotron_engage = "Der Gall-O-Tron springt an und stößt eine übel riechende Substanz aus."
 
 	L.next_system_failure = "~Systemversagen"
 	L.break_message = "%2$dx Brechen auf %1$s"
@@ -47,7 +47,7 @@ if L then
 	L.phase2 = "Phase 2"
 	L.phase2_desc = "Warnt vor dem Übergang in Phase 2 und öffnet die Anzeige naher Spieler."
 	L.phase2_message = "Phase 2!"
-	--L.phase2_yell = "Ihr könntet tatsächlich meinen Lavawurm besiegen" -- check
+	L.phase2_yell = "Ihr könntet tatsächlich meinen Lavawurm besiegen" -- check
 
 	-- normal
 	L.slump = "Nach vorne schlittern (Rodeo)"
@@ -83,17 +83,17 @@ if L then
 	L.next_phase = "Nächste Phase"
 	L.green_phase_bar = "Grüne Phase"
 
-	--L.red_phase_trigger = "Vermischen, rühren, erhitzen..."
-	--L.red_phase_emote_trigger = "rote"
+	L.red_phase_trigger = "Vermischen, rühren, erhitzen..."
+	L.red_phase_emote_trigger = "rote"
 	L.red_phase = "|cFFFF0000Rote|r Phase"
-	--L.blue_phase_trigger = "Muss rausfinden, wie die sterbliche Hülle auf extreme Temperaturen reagiert... FÜR DIE FORSCHUNG!"
-	--L.blue_phase_emote_trigger = "blaue"
+	L.blue_phase_trigger = "Muss rausfinden, wie die sterbliche Hülle auf extreme Temperaturen reagiert... FÜR DIE FORSCHUNG!"
+	L.blue_phase_emote_trigger = "blaue"
 	L.blue_phase = "|cFF809FFEBlaue|r Phase"
-	--L.green_phase_trigger = "Etwas instabil vielleicht, doch keine Forschung ohne Risiko!"
-	--L.green_phase_emote_trigger = "grüne"
+	L.green_phase_trigger = "Etwas instabil vielleicht, doch keine Forschung ohne Risiko!"
+	L.green_phase_emote_trigger = "grüne"
 	L.green_phase = "|cFF33FF00Grüne|r Phase"
-	--L.dark_phase_trigger = "Eure Mixturen sind schwach, Maloriak!" -- check
-	--L.dark_phase_emote_trigger = "dunkle" -- check
+	L.dark_phase_trigger = "Eure Mixturen sind schwach, Maloriak!" -- check
+	L.dark_phase_emote_trigger = "dunkle" -- check
 	L.dark_phase = "|cFF660099Dunkle|r Phase"
 end
 
@@ -104,14 +104,14 @@ if L then
 
 	L.discharge_bar = "~Blitzentladung"
 
-	--L.phase_two_trigger = "Verfluchte Sterbliche! Ein solcher Umgang mit dem Eigentum anderer verlangt nach Gewalt!" -- check
+	L.phase_two_trigger = "Verfluchte Sterbliche! Ein solcher Umgang mit dem Eigentum anderer verlangt nach Gewalt!" -- check
 
-	--L.phase_three_trigger = "Ich habe versucht, ein guter Gastgeber zu sein" -- check
+	L.phase_three_trigger = "Ich habe versucht, ein guter Gastgeber zu sein" -- check
 
-	--L.crackle_trigger = "Elektrizität lässt die Luft knistern!" -- check
+	L.crackle_trigger = "Elektrizität lässt die Luft knistern!" -- check
 	L.crackle_message = "Stromschlag bald!"
 
-	--L.shadowblaze_trigger = "Fleisch wird zu Asche!" -- check
+	L.shadowblaze_trigger = "Fleisch wird zu Asche!" -- check
 	L.shadowblaze_message = "Feuer"
 
 	L.onyxia_power_message = "Überladung bald!"

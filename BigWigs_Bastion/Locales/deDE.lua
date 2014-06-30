@@ -44,7 +44,7 @@ if L then
 	L.engulfingmagic_say = "Einhüllende Magie auf MIR!"
 	
 	L.valiona_fly = "Valiona fliegt los!"
-	--L.valiona_trigger = "Theralion, ich werde den Gang einhüllen. Deck ihre Flucht!"
+	L.valiona_trigger = "Theralion, ich werde den Gang einhüllen. Deck ihre Flucht!"
 
 	L.twilight_shift = "%2$dx Verschiebung auf %1$s"
 end
@@ -56,7 +56,7 @@ if L then
 	L.breath_message = "Atem kommt!"
 	L.breath_bar = "~Atem"
 
-	--L.engage_yell = "Cho'gall wird eure Köpfe fordern! ALLE!"
+	L.engage_yell = "Cho'gall wird eure Köpfe fordern! ALLE!"
 end
 
 L = BigWigs:NewBossLocale("Sinestra", "deDE")
@@ -68,8 +68,8 @@ if L then
 
 	L.egg_vulnerable = "Zeit für Omelett!"
 
-	--L.whelps_trigger = "Fresst, Kinder!" -- check
-	--L.omelet_trigger = "Ihr denkt, ich sei schwach?" -- check
+	L.whelps_trigger = "Fresst, Kinder!" -- check
+	L.omelet_trigger = "Ihr denkt, ich sei schwach?" -- check
 
 	L.phase13 = "Phase 1 und 3"
 	L.phase = "Phasen"
@@ -89,15 +89,15 @@ if L then
 	L.shield_down_message = "Schild ist UNTEN!"
 	L.shield_bar = "Schild"
 
-	--L.switch_trigger = "Wir kümmern uns um sie!"
+	L.switch_trigger = "Wir kümmern uns um sie!"
 
 	L.thundershock_quake_soon = "%s in 10 sek!"
 
-	--L.quake_trigger = "Der Boden unter Euch grollt unheilvoll..."
-	--L.thundershock_trigger = "Die Luft beginnt, vor Energie zu knistern..."
+	L.quake_trigger = "Der Boden unter Euch grollt unheilvoll..."
+	L.thundershock_trigger = "Die Luft beginnt, vor Energie zu knistern..."
 
 	L.thundershock_quake_spam = "%s in %d"
 
-	--L.last_phase_trigger = "Beeindruckende Leistung…" -- what the heck Blizz??
+	L.last_phase_trigger = "Beeindruckende Leistung…" -- what the heck Blizz??
 end
 
