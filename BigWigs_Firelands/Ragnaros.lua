@@ -27,7 +27,7 @@ meteorNumber = setmetatable({} ,{__index = function(tbl, key)
 	return val
 end})
 local intermissionHandle = nil
-local smashCount_Seeds = 0
+local seedCount = 0
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -133,6 +133,7 @@ function mod:OnEngage(diff)
 	phase = 1
 	meteorCounter = 1
 	intermissionHandle = nil
+	seedCount = 0
 end
 
 --------------------------------------------------------------------------------
@@ -241,6 +242,8 @@ function mod:IntermissionEnd()
 			self:Bar(98498, moltenSeed, 21.5, 98498)
 			self:ScheduleTimer(function() self:OpenProximity(3, 98498, nil, true) end, 11.5)
 			self:ScheduleTimer(function() self:CloseProximity(98498) end, 21.5)
+			
+			seedCount = 0
 		end
 	elseif phase == 2 then
 		engulfingCD = 30
@@ -363,7 +366,10 @@ do
 		if t-last < 5 then return end
 		last = t
 		
-		local seedsIn = 120.3-12
+		seedCount = seedCount + 1
+		local seedsIn = 60.1-12
+		seedsIn = (seedCount == 1) and seedsIn+1.5 or seedsIn
+		
 		self:Bar(98498, moltenSeed, seedsIn, 98498)
 		
 		self:ScheduleTimer(preSeeds, seedsIn-10, self)
