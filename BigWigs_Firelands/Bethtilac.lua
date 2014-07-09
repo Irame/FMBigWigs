@@ -10,6 +10,7 @@ mod:RegisterEnableMob(52498)
 -- Locals
 --
 
+local droneTbl = {}
 local devastateCount = 1
 local lastBroodlingTarget = ""
 local spiderling = EJ_GetSectionInfo(2778)
@@ -62,7 +63,11 @@ function mod:OnBossEnable()
 	self:Log("SPELL_DAMAGE", "BroodlingWatcher", "*")
 	self:Log("SPELL_MISS", "BroodlingWatcher", "*")
 
-	self:Log("SPELL_AURA_APPLIED", "Fixate", 99559, 99526)
+	self:Log("SPELL_CAST_SUCCESS", "DroneCleave", 100832)
+	self:Log("SPELL_CAST_SUCCESS", "DroneSpit", 100827)
+	
+	self:Log("SPELL_AURA_APPLIED", "Fixate", 99526)
+	self:Log("SPELL_AURA_APPLIED", "FixateDrone", 99559)
 	self:Log("SPELL_AURA_APPLIED", "Frenzy", 99497)
 	self:Log("SPELL_AURA_APPLIED", "Kiss", 99506)
 	self:Log("SPELL_CAST_START", "Devastate", 99052)
@@ -86,44 +91,53 @@ local function spinnerIn(t)
 	
 	mod:Bar("spinner", spinner.." #3", t+19, L["spinner_icon"])
 end
+
+function mod:OnEngage(diff)
+	droneTbl = {}
+	devastateCount = 1
+	lastBroodlingTarget = ""
+	local devastate = L["devastate_message"]:format(1)
+	self:Message(99052, CL["custom_start_s"]:format(self.displayName, devastate, 80), "Positive", "inv_misc_monsterspidercarapace_01")
+	self:Bar(99052, devastate, 80+3, 99052)
+	self:CancelTimer(scheduled, true)
 	
-do
-	local scheduled = nil
+	mod:Bar("drone", drone, 44, L["drone_icon"])
 	
-	local function droneWarning()
-		mod:Bar("drone", drone, 54.5, L["drone_icon"])
-		mod:DelayedMessage("drone", 54.5, drone, "Attention", L["drone_icon"], "Info")
-		scheduled = mod:ScheduleTimer(droneWarning, 55)
-	end
+	spinnerIn(13)
 	
-	local function droneIn(t)
-		scheduled = mod:ScheduleTimer(droneWarning, t+1)
-		mod:Bar("drone", drone, t, L["drone_icon"])
-		mod:DelayedMessage("drone", t, drone, "Attention", L["drone_icon"], "Info")
-	end
+	spiderlingIn(12)
+	self:ScheduleTimer(spiderlingIn, 12,31)
+	self:ScheduleTimer(spiderlingIn, 43,30)
 	
-	function mod:OnEngage(diff)
-		devastateCount = 1
-		lastBroodlingTarget = ""
-		local devastate = L["devastate_message"]:format(1)
-		self:Message(99052, CL["custom_start_s"]:format(self.displayName, devastate, 80), "Positive", "inv_misc_monsterspidercarapace_01")
-		self:Bar(99052, devastate, 80+3, 99052)
-		self:CancelTimer(scheduled, true)
-		
-		droneIn(43)
-		
-		spinnerIn(13)
-		
-		spiderlingIn(12)
-		self:ScheduleTimer(spiderlingIn, 12,31)
-		self:ScheduleTimer(spiderlingIn, 43,30)
-		
-	end
 end
 
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
+
+do
+	function mod:DroneSpit(...) --this one is not casted everytime, just if the drone has a target within sight
+		local sGUID = select(11,...) 
+		if self.GetMobIdByGUID[sGUID] ~= 52581 or droneTbl[sGUID] then return end
+		droneTbl[sGUID] = true
+		self:Bar("drone", "~"..drone, 55-2, L["drone_icon"])
+		self:Message("drone", drone, "Attention", L["drone_icon"], "Info")
+	end
+	
+	function mod:DroneCleave(...)
+		local sGUID = select(11,...)
+		if self.GetMobIdByGUID[sGUID] ~= 52581 or droneTbl[sGUID] then return end
+		droneTbl[sGUID] = true
+		self:Bar("drone", "~"..drone, 55-6, L["drone_icon"])
+	end
+	
+	function mod:FixateDrone(...)
+		local dGUID = select(10,...)
+		if droneTbl[dGUID] then return end
+		droneTbl[dGUID] = true
+		self:Bar("drone", "~"..drone, 55-15, L["drone_icon"])
+	end
+end
 
 do
 	local burst = GetSpellInfo(99990)
@@ -154,7 +168,7 @@ end
 
 function mod:Frenzy()
 	self:CancelAllTimers()
-	self:StopBar(drone)
+	self:StopBar("~"..drone)
 	self:Message(99497, CL["phase"]:format(2), "Positive", 99497, "Alarm")
 	self:Bar(99506, L["kiss_message"], 10, 99506)
 end
