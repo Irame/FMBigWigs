@@ -12,6 +12,7 @@ mod:RegisterEnableMob(52577, 53087, 52558) -- Left foot, Right Foot, Lord Rhyoli
 
 local moltenArmor = GetSpellInfo(98255)
 local lastFragments = nil
+local phase = 1
 
 --------------------------------------------------------------------------------
 --  Localization
@@ -65,6 +66,8 @@ function mod:OnBossEnable()
 	
 	self:Log("SPELL_CAST_SUCCESS", "VulcanoActivated", 98493)
 
+	self:Log("SPELL_CAST_SUCCESS", "PhaseTransition", 98598)
+	
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
 	self:Death("Win", 52558)
@@ -75,6 +78,7 @@ function mod:OnEngage(diff)
 	self:Bar(97282, L["stomp"], 15, 97282)
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
 	lastFragments = GetTime()
+	phase = 1
 	
 	
 	self:Bar(98552, CL["soon"]:format("Adds"), 23, 98552)
@@ -85,6 +89,14 @@ end
 -- Event Handlers
 --
 
+function mod:PhaseTransition()
+	self:StopBar(CL["soon"]:format("Adds"))
+	self:StopBar(GetSpellInfo(98493))
+	
+	self:Message("ej:2537", CL["phase"]:format(2), "Positive", 99846)
+	phase = 2
+end
+
 function mod:VulcanoActivated(_,_,_,_, spellName)
 	self:Bar(98493, spellName, 26, 98493)	
 end
@@ -94,13 +106,13 @@ function mod:Superheated(player, spellId, _, _, spellName, stack)
 end
 
 function mod:Obsidian(_, spellId, _, _, _, _, _, _, _, dGUID)
-	if self:GetCID(dGUID) == 52558 then
+	if self:GetCID(dGUID) == 52558 and (UnitHealth("boss1") / UnitHealthMax("boss1") > 0.26) then
 		self:Message("armor", L["armor_gone_message"], "Positive", spellId)
 	end
 end
 
 function mod:ObsidianStack(_, spellId, _, _, _, buffStack, _, _, _, dGUID)
-	if buffStack % 20 == 0 and self:GetCID(dGUID) == 52558 then -- Only warn every 20
+	if self:GetCID(dGUID) == 52558 then -- Only warn every 20
 		self:Message("armor", L["armor_message"]:format(buffStack), "Positive", spellId)
 	end
 end
@@ -121,7 +133,7 @@ end
 
 function mod:Stomp(_, spellId, _, _, spellName)
 	self:Message(97282, L["stomp_message"], "Urgent",  spellId, "Alert")
-	self:Bar(97282, L["stomp"], 30, spellId)
+	self:Bar(97282, L["stomp"], (phase == 1 and 30 or 13), spellId)
 	self:Bar(97282, CL["cast"]:format(L["stomp"]), 3, spellId)
 end
 
