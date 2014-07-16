@@ -46,7 +46,7 @@ end
 
 function mod:OnBossEnable()
 	--self:Log("SPELL_AURA_APPLIED", "WaryDog", 101208, 101209, 101210, 99838)
-	self:Log("SPELL_AURA_APPLIED", "WaryDog", 100167)
+	self:Log("SPELL_AURA_APPLIED", "WaryDog", 100167, 101215, 101216, 101217) --10, 25, 10HM, 25HM
 	
 	self:Log("SPELL_CAST_SUCCESS", "FaceRage", 99947) --99945 is the "charge"
 	self:Log("SPELL_AURA_REMOVED", "FaceRageRemoved", 99947)
