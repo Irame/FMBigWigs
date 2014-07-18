@@ -90,7 +90,7 @@ end
 --
 
 function mod:PhaseTransition()
-	if boss.GetMobIdByGUID ~= 52558 then return end --just to make sure
+	if self.GetMobIdByGUID ~= 52558 then return end --just to make sure
 	
 	self:StopBar(CL["soon"]:format("Adds"))
 	self:StopBar(GetSpellInfo(98493))
