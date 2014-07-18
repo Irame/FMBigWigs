@@ -134,8 +134,8 @@ function mod:OnEngage(diff)
 	else
 		initiateTimes = {31, 23, 19, 21, 21}
 		self:Message(99816, L["engage_message"]:format(3), "Attention", "inv_misc_pheonixpet_01")
-		self:Bar(99816, L["stage_message"]:format(2), 188.5 - 17, 99816)
-		self:DelayedMessage(99816, 188.5 - 17, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
+		self:Bar(99816, L["stage_message"]:format(2), 188.5+12, 99816)
+		self:DelayedMessage(99816, 188.5+12, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
 		self:Bar(99464, L["molt_bar"], 10.5, 99464)
 		self:Bar("eggs", GetSpellInfo(58542), 42, L["eggs_icon"])
 		self:DelayedMessage("eggs", 41.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
@@ -344,8 +344,8 @@ do
 				self:Bar("eggs", "~"..GetSpellInfo(58542), 30, L["eggs_icon"])
 				self:DelayedMessage("eggs", 29.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 			else
-				self:Bar(99816, L["stage_message"]:format(2), 170, 99816)
-				self:DelayedMessage(99816, 170, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
+				self:Bar(99816, L["stage_message"]:format(2), 170+5, 99816)
+				self:DelayedMessage(99816, 170+5, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
 				moltCount = 1
 				self:Bar(99464, L["molt_bar"], 51, 99464)
 				self:Bar("eggs", "~"..GetSpellInfo(58542), 22.5+16, L["eggs_icon"])
