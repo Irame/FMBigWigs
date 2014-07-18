@@ -66,7 +66,7 @@ function mod:OnBossEnable()
 	
 	self:Log("SPELL_CAST_SUCCESS", "VulcanoActivated", 98493)
 
-	self:Log("SPELL_CAST_SUCCESS", "PhaseTransition", 98598)
+	self:Log("SPELL_AURA_APPLIED", "PhaseTransition", 99846)
 	
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
@@ -90,6 +90,8 @@ end
 --
 
 function mod:PhaseTransition()
+	if boss.GetMobIdByGUID ~= 52558 then return end --just to make sure
+	
 	self:StopBar(CL["soon"]:format("Adds"))
 	self:StopBar(GetSpellInfo(98493))
 	
