@@ -15,7 +15,7 @@ local GetNumGroupMembers = GetNumGroupMembers or GetNumRaidMembers
 
 local leapingFlames, flameScythe = (GetSpellInfo(98476)), (GetSpellInfo(98474))
 local specialCD = setmetatable({}, {__index = function(tbl, key)
-	tbl[key] = 21/(1+0.2*key) --13.3 = baseTime for 100energy
+	tbl[key] = 22/(1+0.34*key) --22 = baseTime for 100energy --0.34 is the value which should be 0.2 by tooltip
 	return tbl[key]
 end})
 
