@@ -63,8 +63,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_DAMAGE", "BroodlingWatcher", "*")
 	self:Log("SPELL_MISS", "BroodlingWatcher", "*")
 
-	self:Log("SPELL_CAST_SUCCESS", "DroneCleave", 100832)
-	self:Log("SPELL_CAST_SUCCESS", "DroneSpit", 100827)
+	self:Log("SPELL_CAST_SUCCESS", "DroneCleave", 99463, 100121, 100832, 100833)
+	self:Log("SPELL_CAST_SUCCESS", "DroneSpit", 98471, 100826, 100827, 100828)
 	
 	self:Log("SPELL_AURA_APPLIED", "Fixate", 99526)
 	self:Log("SPELL_AURA_APPLIED", "FixateDrone", 99559)
