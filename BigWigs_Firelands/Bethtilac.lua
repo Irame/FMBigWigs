@@ -117,8 +117,8 @@ end
 
 do
 	function mod:DroneSpit(...) --this one is not casted everytime, just if the drone has a target within sight
-		local sGUID = select(11,...) 
-		if self.GetMobIdByGUID[sGUID] ~= 52581 or droneTbl[sGUID] then return end
+		local sGUID = select(11,...) --52581
+		if self.GetMobIdByGUID[sGUID] ~= 53635 or droneTbl[sGUID] then return end
 		droneTbl[sGUID] = true
 		self:Bar("drone", "~"..drone, 55-2, L["drone_icon"])
 		self:Message("drone", drone, "Attention", L["drone_icon"], "Info")
@@ -126,7 +126,7 @@ do
 	
 	function mod:DroneCleave(...)
 		local sGUID = select(11,...)
-		if self.GetMobIdByGUID[sGUID] ~= 52581 or droneTbl[sGUID] then return end
+		if self.GetMobIdByGUID[sGUID] ~= 53635 or droneTbl[sGUID] then return end
 		droneTbl[sGUID] = true
 		self:Bar("drone", "~"..drone, 55-6, L["drone_icon"])
 	end
