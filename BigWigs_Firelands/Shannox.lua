@@ -52,6 +52,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_REMOVED", "FaceRageRemoved", 99947)
 	
 	self:Log("SPELL_CAST_START", "HurlSpear", 100002)
+	self:Log("SPELL_CAST_START", "MagmaRupture", 99840, 101205, 101206, 101207)
 	
 	
 	--self:Log("SPELL_SUMMON", "Traps", 99836, 99839)
@@ -104,6 +105,11 @@ end
 function mod:HurlSpear(_, _, _, _, spellName)
 	self:Message(100002, spellName, "Attention", 100002, "Info")
 	self:Bar(100002, spellName, 42.1, 100002)
+end
+
+function mod:MagmaRupture(_, _, _, _, spellName)
+	self:Message(100002, spellName, "Attention", 99840, "Info")
+	self:Bar(100002, spellName, 18, 99840)
 end
 
 do
