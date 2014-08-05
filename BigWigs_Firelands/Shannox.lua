@@ -109,7 +109,7 @@ end
 
 function mod:MagmaRupture(_, _, _, _, spellName)
 	self:Message(100002, spellName, "Attention", 99840, "Info")
-	self:Bar(100002, spellName, 18, 99840)
+	self:Bar(100002, spellName, 16.5, 99840)
 end
 
 do
