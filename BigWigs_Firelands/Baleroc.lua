@@ -82,7 +82,7 @@ function mod:Countdown(player, spellId, _, _, spellName)
 		self:PrimaryIcon(99516, player)
 		countdownCounter = 2
 	else
-		self:Bar(99516, L["link_message"], 47.6, spellId)
+		self:Bar(99516, L["link_message"], 48, spellId)
 		self:TargetMessage(99516, L["link_message"], countdownTargets, "Important", 99516, "Alarm")
 		self:SecondaryIcon(99516, player)
 		countdownCounter = 1
