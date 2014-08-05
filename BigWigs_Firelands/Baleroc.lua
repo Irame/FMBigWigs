@@ -2,7 +2,7 @@
 -- Module Declaration
 --
 
-local mod = BigWigs:NewBoss("Baleroc", 800, 196)
+local mod, CL = BigWigs:NewBoss("Baleroc", 800, 196)
 if not mod then return end
 mod:RegisterEnableMob(53494)
 
@@ -34,7 +34,7 @@ function mod:GetOptions()
 	return {
 		99259, "torment", "ej:2598", --Blades of Baleroc
 		"berserk", "bosskill",
-		{99516, "FLASHSHAKE", "ICON"}
+		{99516, "FLASHSHAKE", "ICON", "SAY"}
 	}, {
 		[99259] = "general",
 		[99516] = "heroic"
@@ -72,10 +72,11 @@ function mod:Blades(_, spellId, _, _, spellName)
 	self:Bar("ej:2598", L["blade_bar"], 47, spellId)
 end
 
-function mod:Countdown(player, spellId)
+function mod:Countdown(player, spellId, _, _, spellName)
 	countdownTargets[#countdownTargets + 1] = player
 	if UnitIsUnit(player, "player") then
 		self:FlashShake(99516)
+		self:Say(99516, CL["say"]:format(spellName))
 	end
 	if countdownCounter == 1 then
 		self:PrimaryIcon(99516, player)
