@@ -126,12 +126,12 @@ function mod:OnEngage(diff)
 		initiateTimes = {22, 75, 19, 21, 50}
 		self:Bar("initiate", L.initiate_both, 34.5, 97062) 
 		self:Message(99816, L["engage_message"]:format(4), "Attention", "inv_misc_pheonixpet_01")
-		self:Bar(99816, L["stage_message"]:format(2), 250-8, 99816)
-		self:DelayedMessage(99816, 250-8, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
-		self:Bar(100744, firestorm, 95, 100744)
-		self:Bar("meteor", "~"..L["meteor"], 30, 100761)
-		self:Bar("eggs", "~"..GetSpellInfo(58542), 42, L["eggs_icon"])
-		self:DelayedMessage("eggs", 41.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
+		self:Bar(99816, L["stage_message"]:format(2), 250-9, 99816)
+		self:DelayedMessage(99816, 250-9, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
+		self:Bar(100744, firestorm, 93.5, 100744)
+		self:Bar("meteor", L["meteor"], 45.5, 100761)
+		self:Bar("eggs", "~"..GetSpellInfo(58542), 49, L["eggs_icon"])
+		self:DelayedMessage("eggs", 49-11.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 	else
 		initiateTimes = {31, 23, 19, 21, 21}
 		self:Bar("initiate", L.initiate_both, 28, 97062) 
@@ -255,6 +255,9 @@ function mod:Molting(_, spellId, _, _, spellName)
 		if moltCount < 3 then
 			self:Bar(99464, L["molt_bar"], (59.5)-2.5*moltCount, spellId)
 		end
+	elseif meteorCount > 0 then--ignore initial Molting
+		self:Bar("eggs", "~"..GetSpellInfo(58542), 18, L["eggs_icon"])
+		self:DelayedMessage("eggs", 18-11.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 	end
 end
 
@@ -262,9 +265,17 @@ function mod:Firestorm(_, spellId, _, _, spellName)
 	self:FlashShake(100744)
 	self:Message(100744, spellName, "Urgent", spellId, "Alert")
 	self:Bar(100744, CL["cast"]:format(spellName), 10, spellId)
+	if burnCount > 0 then
+		self:Bar("meteor", L["meteor"], meteorCount == 2 and 18 or 21.5*0, 100761)
+	else
+		self:Bar("meteor", L["meteor"], meteorCount == 2 and 22 or 21.5*0, 100761)
+	end
+	if meteorCount < 3 then
+		self:Bar(100744, GetSpellInfo(100744), 81.5, 100744)
+	end
 end
 
-function mod:FirestormOver(_, spellId, _, _, spellName)
+function mod:FirestormOver(_, spellId, _, _, spellName) --DOES NOT OCCUR!
 	-- Only show a bar for next if we have seen less than 3 meteors
 	if meteorCount < 3 then
 		self:Bar(100744, "~"..spellName, 72, spellId)
@@ -278,8 +289,8 @@ function mod:Meteor(_, spellId)
 	self:Message("meteor", L["meteor_message"], "Attention", spellId, "Alarm")
 	-- Only show a bar if this is the first or third meteor this phase
 	meteorCount = meteorCount + 1
-	if meteorCount == 1 or meteorCount == 3 then
-		self:Bar("meteor", L["meteor"], 32, spellId)
+	if meteorCount == 1 then --or meteorCount == 3
+		self:Bar("meteor", L["meteor"], 30, spellId)
 	end
 end
 
@@ -338,12 +349,12 @@ do
 			self:Bar("initiate", L["initiate_both"], 17.5, 97062)
 			if self:Difficulty() > 2 then
 				meteorCount = 0
-				self:Bar("meteor", L["meteor"], 19, 100761)
-				self:Bar(100744, firestorm, 72, 100744)
+				self:Bar("meteor", L["meteor"], 18, 100761)
+				self:Bar(100744, firestorm, 70, 100744)
 				self:Bar(99816, L["stage_message"]:format(2), 225, 99816) -- Just adding 60s like OnEngage
 				self:DelayedMessage(99816, 225, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
 				self:Bar("eggs", "~"..GetSpellInfo(58542), 30, L["eggs_icon"])
-				self:DelayedMessage("eggs", 29.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
+				self:DelayedMessage("eggs", 30-11.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 			else
 				self:Bar(99816, L["stage_message"]:format(2), 170+5, 99816)
 				self:DelayedMessage(99816, 170+5, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
