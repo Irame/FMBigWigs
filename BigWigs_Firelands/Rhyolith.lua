@@ -80,7 +80,6 @@ function mod:OnEngage(diff)
 	lastFragments = GetTime()
 	phase = 1
 	
-	
 	self:Bar(98552, CL["soon"]:format("Adds"), 23, 98552)
 	self:Bar(98493, GetSpellInfo(98493), 26, 98493)	-- vulcano activate
 end
@@ -108,13 +107,13 @@ function mod:Superheated(player, spellId, _, _, spellName, stack)
 end
 
 function mod:Obsidian(_, spellId, _, _, _, _, _, _, _, dGUID)
-	if self:GetCID(dGUID) == 52558 and (UnitHealth("boss1") / UnitHealthMax("boss1") > 0.26) then
+	if self:Difficulty() < 3 and self.GetMobIdByGUID[dGUID] == 52558 and (UnitHealth("boss1") / UnitHealthMax("boss1") > 0.26) then
 		self:Message("armor", L["armor_gone_message"], "Positive", spellId)
 	end
 end
 
 function mod:ObsidianStack(_, spellId, _, _, _, buffStack, _, _, _, dGUID)
-	if self:GetCID(dGUID) == 52558 then -- Only warn every 20
+	if self.GetMobIdByGUID[dGUID] == 53087 then --Right foot
 		self:Message("armor", L["armor_message"]:format(buffStack), "Positive", spellId)
 	end
 end
