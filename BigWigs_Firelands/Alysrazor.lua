@@ -7,6 +7,7 @@ if not mod then return end
 mod:RegisterEnableMob(52530, 53898, 54015, 53089) --Alysrazor, Voracious Hatchling, Majordomo Staghelm, Molten Feather
 
 local firestorm = GetSpellInfo(101659)
+local firestormCount = 1
 local woundTargets = mod:NewTargetList()
 local meteorCount, moltCount, burnCount, initiateCount = 0, 0, 0, 0
 local initiateTimes = {31, 23, 19, 21, 21} --NM
@@ -123,12 +124,13 @@ function mod:OnEngage(diff)
 	meteorCount, moltCount, burnCount, initiateCount = 0, 0, 0, 0
 	wipe(initiateTimes)
 	if diff > 2 then
+		firestormCount = 1
 		initiateTimes = {22, 75, 19, 21, 50}
 		self:Bar("initiate", L.initiate_both, 34.5, 97062) 
 		self:Message(99816, L["engage_message"]:format(4), "Attention", "inv_misc_pheonixpet_01")
 		self:Bar(99816, L["stage_message"]:format(2), 250-9, 99816)
 		self:DelayedMessage(99816, 250-9, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
-		self:Bar(100744, firestorm, 93.5, 100744)
+		self:Bar(100744, firestorm.." #1", 93.5, 100744)
 		self:Bar("meteor", L["meteor"], 32.5, 100761)
 		self:Bar("eggs", "~"..GetSpellInfo(58542), 49, L["eggs_icon"])
 		self:DelayedMessage("eggs", 49-11.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
@@ -260,12 +262,13 @@ end
 
 function mod:Firestorm(_, spellId, _, _, spellName)
 	self:FlashShake(100744)
-	self:Message(100744, spellName, "Urgent", spellId, "Alert")
+	self:Message(100744, spellName.." #"..firestormCount, "Urgent", spellId, "Alert")
 	
+	firestormCount = firestormCount + 1
 	self:Bar(100744, CL["cast"]:format(spellName), 10, spellId)
 		
 	if meteorCount < 3 then
-		self:Bar(100744, GetSpellInfo(100744), 81.5, 100744)
+		self:Bar(100744, spellName.." #"..firestormCount, 81.5, 100744)
 	end
 	self:Bar("meteor", L["meteor"], meteorCount == 2 and 20 or 31, 100761)
 	self:Bar("eggs", "~"..GetSpellInfo(58542), 39, L["eggs_icon"])
@@ -348,7 +351,7 @@ do
 			if self:Difficulty() > 2 then
 				meteorCount = 0
 				self:Bar("meteor", L["meteor"], 18, 100761)
-				self:Bar(100744, firestorm, 70, 100744)
+				self:Bar(100744, firestorm.." #"..firestormCount, 70, 100744)
 				self:Bar(99816, L["stage_message"]:format(2), 225, 99816) -- Just adding 60s like OnEngage
 				self:DelayedMessage(99816, 225, (L["stage_message"]:format(2))..": "..GetSpellInfo(99816), "Important", 99816, "Alarm")
 				self:Bar("eggs", "~"..GetSpellInfo(58542), 30, L["eggs_icon"])
