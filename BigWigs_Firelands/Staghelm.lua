@@ -124,6 +124,7 @@ do
 end
 
 function mod:CatForm(_, spellId, _, _, spellName)
+	self:StopBar(flameScythe)
 	form = "cat"
 	self:Message(98374, spellName, "Important", spellId, "Alert")
 	local t = (1-(UnitPower("boss1")/100)) * specialCD[0]
@@ -137,6 +138,7 @@ function mod:CatForm(_, spellId, _, _, spellName)
 end
 
 function mod:ScorpionForm(_, spellId, _, _, spellName)
+	self:StopBar(leapingFlames)
 	form = "scorpion"
 	self:Message(98379, spellName, "Important", spellId, "Alert")
 	self:PrimaryIcon(98476)
