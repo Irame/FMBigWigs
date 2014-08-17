@@ -75,7 +75,9 @@ function mod:OnBossEnable()
 
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
-	self:Death("Win", 52498)
+	--self:Death("Win", 52498)
+	--Beth won't die, but there is always someone killing her! - FUCK LOGIC
+	self:Log("PARTY_KILL", "Win", 52498)
 end
 
 local function spiderlingIn(t)
