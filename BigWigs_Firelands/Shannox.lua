@@ -15,7 +15,12 @@ if L then
 	L.safe = "%s safe"
 	L.wary_dog = "%s is Wary!"
 	L.crystal_trap = "Crystal Trap"
-
+	L.chaseother = "%s chases"
+	L.chaseyou = "%s chases YOU!"
+	
+	L.chase = "Rageface targeting (Only Heroic)"
+	L.chase_desc = "Warn whom Rageface chases after leaving a Crystal Trap."
+	L.chase_icon = 34487
 	L.traps_header = "Traps"
 	L.immolation = "Immolation Trap on Dog"
 	L.immolation_desc = "Alert when Rageface or Riplimb steps on an Immolation Trap, gaining the 'Wary' buff."
@@ -36,17 +41,18 @@ L = mod:GetLocale()
 
 function mod:GetOptions()
 	return {
-		100002, {100129, "ICON"}, "berserk", "bosskill",
-		"immolation", {"immolationyou", "FLASHSHAKE"}, {"crystal", "SAY", "FLASHSHAKE"},
+		100002, {100129, "ICON"}, "berserk", "bosskill", "chase",
+		100167, {"immolationyou", "FLASHSHAKE"}, {"crystal", "SAY", "FLASHSHAKE"},
 	}, {
 		[100002] = "general",
-		["immolation"] = L["traps_header"],
+		[100167] = L["traps_header"],
 	}
 end
 
 function mod:OnBossEnable()
 	--self:Log("SPELL_AURA_APPLIED", "WaryDog", 101208, 101209, 101210, 99838)
 	self:Log("SPELL_AURA_APPLIED", "WaryDog", 100167, 101215, 101216, 101217) --10, 25, 10HM, 25HM
+	self:Log("SPELL_AURA_REMOVED", "TrapRemoved", 99837)
 	
 	self:Log("SPELL_CAST_SUCCESS", "FaceRage", 99947) --99945 is the "charge"
 	self:Log("SPELL_AURA_REMOVED", "FaceRageRemoved", 99947)
@@ -73,6 +79,37 @@ end
 -- Event Handlers
 --
 
+do--Rageface after trapped
+	local count = 0
+	local function CheckTarget(unitID)
+		count = count + 1
+		local name = UnitName(unitID.."target")
+		if name then
+			local rageface = UnitName(unitID)
+			if UnitIsUnit("player", name) then
+				mod:Message(100167, L["chaseyou"]:format(rageface), "Personal", 34487, "Alert")
+			else
+				mod:TargetMessage(100167, L["chaseother"]:format(rageface), name, "Important", 34487)
+			end
+		elseif count < 6 then
+			mod:ScheduleTimer(CheckTarget, 0.2,unitID)
+		end
+	end
+	
+	function mod:TrapRemoved(unit, spellId, _, _, spellName, _, _, _, _, dGUID)
+		if self:Difficulty() > 2 and self.GetMobIdByGUID[dGUID] == 53695 then
+			local Rageface, i = "boss1", 1
+			while self.GetMobIdByGUID[UnitGUID(Rageface)] ~= 53695 do
+				i = i+1
+				Rageface = "boss"..i
+				if i>3 then return end --no Rageface, sorry
+			end
+			count = 0
+			CheckTarget(Rageface)
+		end
+	end
+end
+
 function mod:ThrowTraps(player,spellId)
 	if player then
 		if spellId == 99836 then
@@ -95,10 +132,10 @@ end
 function mod:WaryDog(unit, spellId, _, _, spellName, _, _, _, _, dGUID)
 	-- We use the Immolation Trap IDs as we only want to warn for Wary after a
 	-- Immolation Trap not a Crystal Trap, which also applies Wary.
-	local creatureId = self:GetCID(dGUID)
+	local creatureId = self.GetMobIdByGUID[dGUID]
 	if creatureId == 53695 or creatureId == 53694 then
-		self:Message("immolation", L["wary_dog"]:format(unit), "Attention", 100167)
-		self:Bar("immolation", L["wary_dog"]:format(unit), self:Difficulty() > 2 and 25 or 15, 100167)
+		self:Message(100167, L["wary_dog"]:format(unit), "Attention", 100167)
+		self:Bar(100167, L["wary_dog"]:format(unit), self:Difficulty() > 2 and 25 or 15, 100167)
 	end
 end
 

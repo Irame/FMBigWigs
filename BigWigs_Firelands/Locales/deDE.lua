@@ -65,7 +65,11 @@ if L then
 	L.safe = "%s ist sicher!"
 	L.wary_dog = "%s ist aufmerksam!"
 	L.crystal_trap = "Kristallfalle"
-
+	L.chaseother = "%s verfolgt"
+	L.chaseyou = "%s verfolgt DICH!"
+	
+	L.chase = "Augenkratzers Ziel (Nur Heroischer Modus)"
+	L.chase_desc = "Warnt, wen Augenkratzer beim verlassen einer Kristallfalle verfolgt."
 	L.traps_header = "Fallen"
 	L.immolation = "Feuerbrandfalle auf Hunden"
 	L.immolation_desc = "Warnt, wenn Augenkratzer oder Wadenbeißer auf eine Feuerbrandfalle tritt."
@@ -115,4 +119,3 @@ if L then
 	L.wound_desc = "Nur für Tanks. Zählt die Stapel und zeigt eine Timerleiste an."
 	L.wound_message = "%2$dx Wunde: %1$s"
 end
-
