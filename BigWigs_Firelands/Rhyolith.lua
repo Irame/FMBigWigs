@@ -81,7 +81,7 @@ function mod:OnEngage(diff)
 	phase = 1
 	
 	self:Bar(98552, CL["soon"]:format("Adds"), 23, 98552)
-	self:Bar(98493, GetSpellInfo(98493), 26, 98493)	-- vulcano activate
+	self:Bar(98493, GetSpellInfo(98493), 30, 98493)	-- vulcano activate
 end
 
 --------------------------------------------------------------------------------
