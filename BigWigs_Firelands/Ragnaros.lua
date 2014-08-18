@@ -108,6 +108,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "Wound", 101238, 101239, 101240, 99399)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "Wound", 101238, 101239, 101240, 99399)
 	
+	self:Log("SPELL_DAMAGE", "FireDamage", 99224, 100187)--10,25
+	
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 
 	self:Death("Deaths", 52409, 53140) -- Ragnaros, Son of Flame
@@ -139,6 +141,12 @@ end
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
+
+function mod:FireDamage(player, spellId, _, _, spellName)
+	if UnitIsUnit(player, "player") then
+		self:Message(99172, CL["underyou"]:format(spellName), "Important", spellId, "Alert")
+	end
+end
 
 function mod:Phase4()
 	--10% Yell is Phase 4 for heroic, and victory for normal
