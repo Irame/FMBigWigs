@@ -171,7 +171,6 @@ end
 function mod:Frenzy()
 	self:CancelAllTimers()
 	self:StopBar("~"..drone)
-	self:Message(99497, CL["phase"]:format(2), "Positive", 99497, "Alarm")
 	self:Bar(99506, L["kiss_message"], 10, 99506)
 end
 
@@ -198,6 +197,7 @@ function mod:Devastate(_, spellId)
 	-- Might need to use the bosses power bar or something to adjust this
 	if devastateCount > 3 then 
 		self:Bar(99506, L["kiss_message"], 25, 99506)
+		self:DelayedMessage(99497,8, CL["phase"]:format(2), "Positive", 99497, "Alarm")
 		return 
 	end
 	self:Bar(99052, L["devastate_message"]:format(devastateCount), 90, spellId)
