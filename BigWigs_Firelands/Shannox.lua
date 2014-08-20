@@ -110,22 +110,42 @@ do--Rageface after trapped
 	end
 end
 
-function mod:ThrowTraps(player,spellId)
-	if player then
-		if spellId == 99836 then
-			mod:TargetMessage("crystal", L["crystal_trap"], player, "Urgent", spellId, "Alarm")
-		end
+do-- Traps
+	local size = { 1587.4999389648438,1058.3332824707031 }
+	
+	local function getDist(target)
+		SetMapToCurrentZone() --for map positions
+		local srcX, srcY = GetPlayerMapPosition("player")		
+		local unitX, unitY = GetPlayerMapPosition(target)
+		local dx = (unitX - srcX) * size[1]
+		local dy = (unitY - srcY) * size[2]
 		
-		if UnitIsUnit("player", player) then
-			if spellId == 99836 then
-				mod:FlashShake("crystal")
-				mod:Say("crystal", CL["say"]:format(L["crystal_trap"]))
-			else
-				mod:FlashShake("immolationyou")
-				mod:LocalMessage("immolationyou", CL["underyou"]:format(L["immolationyou_message"]), "Personal", spellId, "Alarm")
+		return (dx * dx + dy * dy) ^ 0.5
+	end
+						
+	function mod:ThrowTraps(player,spellId , _, _, spellName, _, _, _, _, dGUID)
+		if player then
+			if UnitIsUnit("player", player) then
+				if spellId == 99836 then
+					self:FlashShake("crystal")
+					self:Say("crystal", CL["say"]:format(L["crystal_trap"]))
+					self:TargetMessage("crystal", L["crystal_trap"], player, "Urgent", spellId, "Alarm")
+				else
+					self:FlashShake("immolationyou")
+					self:LocalMessage("immolationyou", CL["underyou"]:format(L["immolationyou_message"]), "Personal", spellId, "Alarm")
+				end
+			elseif getDist(player) < 3 then
+				if spellId == 99836 then
+					self:FlashShake("crystal")
+					self:TargetMessage("crystal", L["crystal_trap"], UnitName("player"), "Urgent", spellId, "Alarm") --fake target
+				else
+					self:FlashShake("immolationyou")
+					self:LocalMessage("immolationyou", CL["underyou"]:format(L["immolationyou_message"]), "Personal", spellId, "Alarm")
+				end
+			elseif spellId == 99836 then
+				self:TargetMessage("crystal", L["crystal_trap"], player, "Urgent", spellId, "Alarm")
 			end
 		end
-		return
 	end
 end
 
