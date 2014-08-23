@@ -84,7 +84,7 @@ end
 
 function mod:OnBossEnable()
 	-- General
-	self:Log("SPELL_AURA_APPLIED", "Molting", 99464, 99465, 100698) --9464 10nh
+	self:Log("SPELL_AURA_APPLIED", "Molting", 99464, 100698) --10man, 25man (NM&HM)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "BlazingClaw", 99844, 101729, 101730, 101731)
 	self:Log("SPELL_AURA_APPLIED", "StartFlying", 98619)
 	self:Log("SPELL_AURA_REMOVED", "StopFlying", 98619)
@@ -93,7 +93,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "Wound", 100723, 100722, 100721, 100720, 100719, 100718, 100024, 99308)
 	self:Log("SPELL_AURA_APPLIED", "Tantrum", 99362)
 
-	self:Log("SPELL_CAST_SUCCESS", "WormCast", 99336)
+	self:Log("SPELL_AURA_REMOVED", "BuffCheck", 99464, 100698) --molting removed
 	--self:Emote("BuffCheck", L["worm_emote"])
 
 	-- Stage 2: Tornadoes
@@ -209,18 +209,6 @@ do
 				self:Message(97128, L["moonkin_message"], "Personal", 97128, "Info")
 			else
 				self:Message(97128, L["no_stacks_message"], "Personal", 97128, "Info")
-			end
-		end
-	end
-	
-	local last = 0
-	function mod:WormCast(...)
-		local sGUID = select(11,...)
-		if not wormTbl[sGUID] then
-			wormTbl[sGUID] = true
-			if GetTime()-last > 5 then
-				self:BuffCheck()
-				last = GetTime()
 			end
 		end
 	end
