@@ -141,10 +141,16 @@ end
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
-
-function mod:FireDamage(player, spellId, _, _, spellName)
-	if UnitIsUnit(player, "player") then
-		self:Message(99172, CL["underyou"]:format(spellName), "Important", spellId, "Alert")
+do
+	local last = 0
+	function mod:FireDamage(player, spellId, _, _, spellName)
+		if UnitIsUnit(player, "player") then
+			local t = GetTime()
+			if t-last > 2 then
+				last = t
+				self:Message(99172, CL["underyou"]:format(spellName), "Important", spellId, "Alert")
+			end
+		end
 	end
 end
 
