@@ -64,6 +64,8 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "Superheated", 101304)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "Superheated", 101304)
 	
+	self:Log("SPELL_CAST_SUCCESS", "MagmaFlow", 97225)
+	
 	self:Log("SPELL_CAST_SUCCESS", "VulcanoActivated", 98493)
 
 	self:Log("SPELL_AURA_APPLIED", "PhaseTransition", 99846)
@@ -87,6 +89,10 @@ end
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
+
+function mod:MagmaFlow(player, spellId, _, _, spellName)
+	self:Message(98493, spellName, "Important", "Alert")
+end
 
 function mod:PhaseTransition()
 	if self.GetMobIdByGUID ~= 52558 then return end --just to make sure
