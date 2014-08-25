@@ -183,7 +183,7 @@ end
 
 function mod:EmpowerSulfuras(_, spellId, _, _, spellName)
 	self:Message(100604, spellName, "Urgent", spellId)
-	self:Bar(100604, "~"..spellName, 56, spellId)
+	self:Bar(100604, spellName.." CD", 56, spellId)
 	self:Bar(100604, spellName, 5, spellId)
 end
 
