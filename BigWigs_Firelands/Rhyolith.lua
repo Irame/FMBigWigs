@@ -91,7 +91,7 @@ end
 --
 
 function mod:MagmaFlow(player, spellId, _, _, spellName)
-	self:Message(98493, spellName, "Important", "Alert")
+	self:Message(98493, spellName, "Important", "Long")
 end
 
 function mod:PhaseTransition()
