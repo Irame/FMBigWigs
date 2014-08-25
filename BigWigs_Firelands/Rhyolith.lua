@@ -94,8 +94,8 @@ function mod:MagmaFlow(player, spellId, _, _, spellName)
 	self:Message(98493, spellName, "Important", "Long")
 end
 
-function mod:PhaseTransition()
-	if self.GetMobIdByGUID ~= 52558 then return end --just to make sure
+function mod:PhaseTransition(_, spellId, _, _, _, _, _, _, _, dGUID)
+	if self.GetMobIdByGUID[dGUID] ~= 52558 then return end --just to make sure
 	
 	self:StopBar(CL["soon"]:format("Adds"))
 	self:StopBar(GetSpellInfo(98493))
