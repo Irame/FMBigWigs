@@ -45,7 +45,7 @@ L = mod:GetLocale()
 
 function mod:GetOptions()
 	return {
-		98552, 98136, 98493,
+		98552, 98136, 98493, 97225,
 		"armor", 97282, 98255, "ej:2537", 101304, "bosskill"
 	}, {
 		[98552] = L["adds_header"],
@@ -91,7 +91,7 @@ end
 --
 
 function mod:MagmaFlow(player, spellId, _, _, spellName)
-	self:Message(98493, spellName, "Important", "Long")
+	self:Message(97225, spellName, "Important", "Long")
 end
 
 function mod:PhaseTransition(_, spellId, _, _, _, _, _, _, _, dGUID)
