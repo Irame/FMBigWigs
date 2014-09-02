@@ -11,7 +11,8 @@ mod:RegisterEnableMob(52577, 53087, 52558) -- Left foot, Right Foot, Lord Rhyoli
 --
 
 local moltenArmor, magmaFlow = GetSpellInfo(98255), GetSpellInfo(97225)
-local lastFragments = nil
+local fragment, spark = EJ_GetSectionInfo(2531), EJ_GetSectionInfo(2532)
+local addCount = 0
 local phase = 1
 
 --------------------------------------------------------------------------------
@@ -80,10 +81,11 @@ function mod:OnEngage(diff)
 	self:Berserk(diff > 2 and 300 or 360, nil, nil, 101304)
 	self:Bar(97282, L["stomp"], 15, 97282)
 	self:RegisterEvent("UNIT_HEALTH_FREQUENT")
-	lastFragments = GetTime()
-	phase = 1
 	
-	self:Bar(98552, CL["soon"]:format("Adds"), 23, 98552)
+	phase = 1
+	addCount = 0
+	
+	self:Bar(98136, fragment, 23, 98136)
 	self:Bar(98493, GetSpellInfo(98493), 30, 98493)	-- vulcano activate
 end
 
@@ -127,18 +129,31 @@ function mod:ObsidianStack(_, spellId, _, _, _, buffStack, _, _, _, dGUID)
 	end
 end
 	
-function mod:Spark(_, spellId)
-	self:Message(98552, L["big_add_message"], "Important", spellId, "Alarm")
-	self:Bar(98552, CL["soon"]:format("Adds"), 22, 98552)
-end
-
-function mod:Fragments(_, spellId)
-	local t = GetTime()
-	if lastFragments and t < (lastFragments + 5) then return end
-	lastFragments = t
+do --Adds
+	local function nextIn(t) --Fragments -> Spark -> Fragments -> Fragments -> Spark -> Fragments ...
+		if addCount%3 == 1 then
+			mod:Bar(98552, spark, t, 98552)
+		else
+			mod:Bar(98136, fragment, t, 98136)
+		end 
+	end
 	
-	self:Message(98136, L["small_adds_message"], "Attention", spellId, "Info")
-	self:Bar(98552, CL["soon"]:format("Adds"), 22, 98552)
+	function mod:Spark(_, spellId)
+		addCount = 2 --when Spark is spawned, we are in 2nd Spot of the "Rotation"
+		self:Message(98552, L["big_add_message"], "Important", spellId, "Alarm")
+		nextIn(22)
+	end
+	
+	local lastFragments = 0
+	function mod:Fragments(_, spellId, _, _, spellName, stack, _, _, _, dGUID, sGUID)
+		local t = GetTime()
+		if t-lastFragments < 5 then return end
+		lastFragments = t
+		
+		addCount = addCount + 1
+		self:Message(98136, L["small_adds_message"], "Attention", spellId, "Info")
+		nextIn(22)
+	end
 end
 
 function mod:Stomp(_, spellId, _, _, spellName)
