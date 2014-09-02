@@ -10,7 +10,7 @@ mod:RegisterEnableMob(52577, 53087, 52558) -- Left foot, Right Foot, Lord Rhyoli
 -- Locales
 --
 
-local moltenArmor, magmaFlow = GetSpellInfo(98255), GetSpellInfo(97225)
+local moltenArmor = GetSpellInfo(98255)
 local fragment, spark = EJ_GetSectionInfo(2531), EJ_GetSectionInfo(2532)
 local addCount = 0
 local phase = 1
@@ -65,8 +65,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "Superheated", 101304)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "Superheated", 101304)
 	
-	--commented until hack is no more needed.
-	--self:Log("SPELL_CAST_SUCCESS", "MagmaFlow", 97225)
+	self:Log("SPELL_CAST_SUCCESS", "MagmaFlow", 97225)
 	
 	self:Log("SPELL_CAST_SUCCESS", "VulcanoActivated", 98493)
 
@@ -118,14 +117,12 @@ end
 function mod:Obsidian(_, spellId, _, _, _, _, _, _, _, dGUID)
 	if self:Difficulty() < 3 and self.GetMobIdByGUID[dGUID] == 52558 and (UnitHealth("boss1") / UnitHealthMax("boss1") > 0.26) then
 		self:Message("armor", L["armor_gone_message"], "Positive", spellId)
-		self:StompedVolcano() --stomped on active Volcano
 	end
 end
 
 function mod:ObsidianStack(_, spellId, _, _, _, buffStack, _, _, _, dGUID)
 	if self.GetMobIdByGUID[dGUID] == 53087 then --Right foot
 		self:Message("armor", L["armor_message"]:format(buffStack), "Positive", spellId)
-		self:StompedVolcano() --stomped on active Volcano
 	end
 end
 	
@@ -165,7 +162,6 @@ end
 function mod:MoltenArmor(player, spellId, _, _, spellName, stack, _, _, _, dGUID)
 	if stack > 3 and stack % 2 == 0 and self:GetCID(dGUID) == 52558 then
 		self:Message(98255, L["molten_message"]:format(stack), "Attention", spellId)
-		self:StompedVolcano() --stomped on inactive Volcano
 	end
 end
 
@@ -181,15 +177,5 @@ function mod:UNIT_HEALTH_FREQUENT(_, unitId)
 				self:Message(98255, L["molten_message"]:format(stack), "Important", 98255, "Alarm")
 			end
 		end
-	end
-end
-
-do --Hack MagmaFlow
-	local function MagmaFlow()
-		mod:MagmaFlow(nil, 97225, nil, nil, magmaFlow)
-	end
-	
-	function mod:StompedVolcano() --this may be pretty spammy...
-		self:ScheduleTimer(MagmaFlow, 19) --Message a sec pre cast
 	end
 end
