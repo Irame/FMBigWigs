@@ -259,8 +259,8 @@ function mod:Firestorm(_, spellId, _, _, spellName)
 		self:Bar(100744, spellName.." #"..firestormCount, 81.5, 100744)
 	end
 	self:Bar("meteor", L["meteor"], meteorCount == 2 and 20 or 31, 100761)
-	self:Bar("eggs", "~"..GetSpellInfo(58542), 39, L["eggs_icon"])
-	self:DelayedMessage("eggs", 39-11.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
+	self:Bar("eggs", "~"..GetSpellInfo(58542), 29, L["eggs_icon"])
+	self:DelayedMessage("eggs", 29-11.5, GetSpellInfo(58542), "Positive", L["eggs_icon"])
 end
 
 --Will not be called - everything implemented in mod:Firestorm()
@@ -276,7 +276,7 @@ end
 
 function mod:Meteor(_, spellId)
 	self:Message("meteor", L["meteor_message"], "Attention", spellId, "Alarm")
-	-- Only show a bar if this is the first or third meteor this phase
+	-- Only show a bar if this is the first or third meteor this phase (of 5)
 	meteorCount = meteorCount + 1
 	if meteorCount == 1 or meteorCount == 3 then
 		self:Bar("meteor", L["meteor"], 31, spellId)
