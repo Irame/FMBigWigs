@@ -56,7 +56,7 @@ function mod:GetOptions()
 end
 
 function mod:OnBossEnable()
-	self:Emote("AboutToRoll", L["about_to_roll"])
+	--self:Emote("AboutToRoll", L["about_to_roll"])
 	self:Emote("Rolls", L["rolling"])
 	self:Emote("Level", L["level_trigger"])
 

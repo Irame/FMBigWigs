@@ -78,10 +78,10 @@ end
 
 function mod:OnEngage(diff)
 	self:Berserk(420) -- confirmed
-	self:Bar("stomp_boss", L["stomp_boss"], 11, L["stomp_boss_icon"])
-	self:Bar("crystal_boss", L["crystal"], 16, L["crystal_boss_icon"])
-	self:Bar(103851, "~"..L["blood"], 56, 103851)
-	crystalCount, stompCount = 0, 1
+	self:Bar("stomp_boss", L["stomp_boss"], 11+1, L["stomp_boss_icon"])
+	self:Bar("crystal_boss", L["crystal"], 16+4, L["crystal_boss_icon"])
+	self:Bar(103851, L["blood"], 56-2, 103851)
+	crystalCount, stompCount = 1, 2 --0 ,1
 end
 
 --------------------------------------------------------------------------------
@@ -95,18 +95,20 @@ function mod:SummonKohcrom(_, spellId, _, _, spellName)
 	self:SendMessage("BigWigs_StopBar", self, "~"..L["stomp_boss"])
 end
 
+local function AfterBloodTimers(self, add)
+	self:Bar(103851, L["blood"], 75-2+add, 103851)
+	if self:Difficulty() > 2 then
+		self:Bar("stomp_boss", "~"..self.displayName.." - "..L["stomp_boss"], 15+add, L["stomp_boss_icon"])
+		self:Bar("crystal_boss", "~"..self.displayName.." - "..L["crystal"], 22+add, L["crystal_boss_icon"])
+	else
+		self:Bar("stomp_boss", L["stomp_boss"], 5+14+add, L["stomp_boss_icon"])
+		self:Bar("crystal_boss", L["crystal"], 29-12+add, L["crystal_boss_icon"])
+	end
+end
 -- I know it's ugly to use this, but if we were to start bars at :BlackBlood then we are subject to BlackBlood duration changes
 function mod:BloodOver(_, unit, _, _, _, spellId)
 	if unit == "boss1" and spellId == 103851 then
-		self:Bar(spellId, L["blood"], 75, spellId)
-		crystalCount, stompCount = 0, 1
-		if self:Difficulty() > 2 then
-			self:Bar("stomp_boss", "~"..self.displayName.." - "..L["stomp_boss"], 15, L["stomp_boss_icon"])
-			self:Bar("crystal_boss", "~"..self.displayName.." - "..L["crystal"], 22, L["crystal_boss_icon"])
-		else
-			self:Bar("stomp_boss", "~"..L["stomp_boss"], 5, L["stomp_boss_icon"])
-			self:Bar("crystal_boss", L["crystal"], 29, L["crystal_boss_icon"])
-		end
+		AfterBloodTimers(self, 0)
 	end
 end
 
@@ -123,8 +125,8 @@ function mod:Stomp(_, spellId, source, _, spellName)
 			stompCount = stompCount + 1
 		end
 	else -- Not heroic, or Kohcrom isn't out yet, just do normal bar.
-		if stompCount < 4 then
-			self:Bar("stomp_boss", "~"..spellName, 12, spellId)
+		if stompCount < 5 then
+			self:Bar("stomp_boss", spellName, 12, spellId)
 			self:Message("stomp_boss", spellName, "Important", spellId)
 			stompCount = stompCount + 1
 		end
@@ -141,8 +143,10 @@ do
 		local t = GetTime()
 		if t-prev > 5 then
 			prev = t
+			crystalCount, stompCount = 0, 1
 			self:Message(103851, spellName, "Personal", spellId, "Long") -- not really personal, but we tend to associate personal with fns
 			self:Bar(103851, CL["cast"]:format(L["blood"]), 17, spellId)
+			AfterBloodTimers(self, 17)
 		end
 	end
 end
@@ -170,6 +174,12 @@ function mod:ResonatingCrystal(_, spellId, source, _, spellName)
 	else
 		self:Message("crystal_boss", spellName, "Urgent", spellId, "Alarm")
 		self:Bar("crystal_boss", L["explosion"], 12, spellId)
+		if crystalCount < 3 then --there are only 3 crystals in normalmode per Bloodphase. 
+			self:ScheduleTimer(function(this) 
+				this:Bar("crystal_boss", L["crystal"], 20-12, L["crystal_boss_icon"])
+			end, 12, self)
+			
+		end
 	end
 end
 

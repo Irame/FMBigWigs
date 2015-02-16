@@ -83,7 +83,7 @@ end
 function mod:Assault(_, spellId, _, _, spellName)
 	if self:Tank() or self:Healer() then
 		self:LocalMessage("assault", spellName, "Urgent", spellId)
-		self:Bar("assault", "~"..spellName, 15, spellId)
+		self:Bar("assault", spellName, 15, spellId)
 		self:Bar("assault", "<"..spellName..">", 5, spellId)
 	end
 end
@@ -106,6 +106,7 @@ function mod:FrostFlakeRemoved(player)
 end
 
 function mod:WaterShield(_, spellId)
+print("Waterschield")
 	self:SendMessage("BigWigs_StopBar", self, "~"..(GetSpellInfo(107851))) -- Focused Assault
 	self:Message(105409, L["lightning_next"], "Attention", spellId)
 	nextPhase = L["ice_next"]
