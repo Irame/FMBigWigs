@@ -102,11 +102,8 @@ end
 
 function mod:Torment(player, spellId, _, _, _, stack)
 	if UnitIsUnit("focus", player) and stack > 1 then
-		if stack > 7 then
-			self:LocalMessage("torment", L["focus_message"]:format(stack), "Personal", spellId, "Info")
-		elseif stack%2 == 0 then
-			self:LocalMessage("torment", L["focus_message"]:format(stack), "Personal", spellId)
-		end
+		local sound = stack > 7 and "Info" or nil
+		self:LocalMessage("torment", L["focus_message"]:format(stack), "Personal", spellId, sound)
 	end
 end
 

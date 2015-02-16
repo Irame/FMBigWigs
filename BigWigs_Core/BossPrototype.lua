@@ -619,8 +619,9 @@ function boss:Bar(key, text, length, icon, barColor, barEmphasized, barText, bar
 end
 
 function boss:StopBar(text)
-	if tostring(text) then
-		self:SendMessage("BigWigs_StopBar", self, tostring(text))
+	local text = tostring(text)
+	if text then
+		self:SendMessage("BigWigs_StopBar", self, text)
 	end
 end
 
