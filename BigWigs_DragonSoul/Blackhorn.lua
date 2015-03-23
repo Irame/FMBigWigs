@@ -35,6 +35,10 @@ if L then
 	L.sapper_icon = 73457
 
 	L.stage2_trigger = "Looks like I'm doing this myself. Good!"
+	
+	L.rider = "Dragonriders"
+	L.rider_desc = "The two dragonriders dropping onto the ship"
+	L.rider_icon = "inv_misc_monsterhorn_07"
 end
 L = mod:GetLocale()
 L.sunder = L.sunder.." "..INLINE_TANK_ICON
@@ -45,7 +49,7 @@ L.sunder = L.sunder.." "..INLINE_TANK_ICON
 
 function mod:GetOptions(CL)
 	return {
-		107588, "sapper",
+		107588, "sapper", 108038, "rider",
 		"sunder", {108046, "SAY", "FLASHSHAKE"}, {108076, "SAY", "FLASHSHAKE", "ICON"}, 108044,
 		"warmup", "berserk", "bosskill",
 	}, {
@@ -70,19 +74,24 @@ function mod:OnBossEnable()
 	self:Emote("Sapper", L["sapper_trigger"])
 	self:Yell("Stage2", L["stage2_trigger"])
 
+	self:Log("SPELL_AURA_APPLIED", "Harpoon", 108038)
+	
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 	self:Death("Win", 56427)
 end
 
 function mod:OnEngage(diff)
-	self:Bar(107588, (GetSpellInfo(107588)), 47, 107588) -- Twilight Onslaught
+	self:Bar(107588, (GetSpellInfo(107588)), 48, 107588) -- Twilight Onslaught
 	if not self:LFR() then
-		self:Bar("sapper", L["sapper"], 70, L["sapper_icon"])
+		self:Bar("sapper", L["sapper"], 70+10, L["sapper_icon"])
+		self:ScheduleTimer("Sapper", 80)
 	end
 	onslaughtCounter = 1
-	self:Bar("warmup", _G["COMBAT"], 20, L["warmup_icon"])
-	self:DelayedMessage("warmup", 20, CL["phase"]:format(1), "Positive", L["warmup_icon"])
+	self:Bar("warmup", _G["COMBAT"], 32, L["warmup_icon"])
+	self:DelayedMessage("warmup", 32, CL["phase"]:format(1), "Positive", L["warmup_icon"])
 	warned = false
+	self:Bar(108038, GetSpellInfo(108038), 56, 108038) --Harpoon
+	addcount = 0
 end
 
 function mod:OnWin()
@@ -93,10 +102,11 @@ end
 -- Event Handlers
 --
 
-function mod:Sapper()
+function mod:Sapper() --All 40 sec
 	self:Message("sapper", L["sapper"], "Important", L["sapper_icon"], "Info")
 	if warned then return end
 	self:Bar("sapper", L["sapper"], 40, L["sapper_icon"])
+	self:ScheduleTimer("Sapper", 40)
 end
 
 do
@@ -110,6 +120,9 @@ do
 	function mod:Stage2()
 		self:SendMessage("BigWigs_StopBar", self, (GetSpellInfo(107588))) -- Twilight Onslaught
 		self:SendMessage("BigWigs_StopBar", self, L["sapper"])
+		self:StopBar(L.rider.." ("..(addcount+1)..")") --last AddspawnTimer
+		self:StopBar(GetSpellInfo(108038)) --Harpoon
+		
 		self:Bar(108046, "~"..GetSpellInfo(108046), 14, 108046) -- Shockwave
 		self:Message("warmup", CL["phase"]:format(2) .. ": " .. self.displayName, "Positive", L["warmup_icon"])
 		if not self:LFR() then
@@ -147,35 +160,33 @@ function mod:TwilightOnslaught(_, spellId, _, _, spellName)
 end
 
 do
-	local timer, fired = nil, 0
-	local function shockWarn()
-		fired = fired + 1
-		local player = UnitName("boss2target")
-		if player and (not UnitDetailedThreatSituation("boss2target", "boss2") or fired > 11) then
+	-- local timer, fired = nil, 0
+	-- local function shockWarn()
+		-- fired = fired + 1
+		-- local player = UnitName("boss2target")
+		-- if player and (not UnitDetailedThreatSituation("boss2target", "boss2") or fired > 11) then
 			-- If we've done 12 (0.6s) checks and still not passing the threat check, it's probably being cast on the tank
-			local shockwave = GetSpellInfo(108046)
-			mod:TargetMessage(108046, shockwave, player, "Attention", 108046, "Alarm")
-			mod:CancelTimer(timer, true)
-			timer = nil
-			if UnitIsUnit("boss2target", "player") then
-				mod:FlashShake(108046)
-				mod:Say(108046, CL["say"]:format(shockwave))
-			end
-			return
-		end
+			-- local shockwave = GetSpellInfo(108046)
+			-- mod:TargetMessage(108046, shockwave, player, "Attention", 108046, "Alarm")
+			-- mod:CancelTimer(timer, true)
+			-- timer = nil
+			-- if UnitIsUnit("boss2target", "player") then
+				-- mod:FlashShake(108046)
+				-- mod:Say(108046, CL["say"]:format(shockwave))
+			-- end
+			-- return
+		-- end
 		-- 19 == 0.95sec
 		-- Safety check if the unit doesn't exist
-		if fired > 18 then
-			mod:CancelTimer(timer, true)
-			timer = nil
-		end
-	end
+		-- if fired > 18 then
+			-- mod:CancelTimer(timer, true)
+			-- timer = nil
+		-- end
+	-- end
+	
 	function mod:Shockwave(_, spellId, _, _, spellName)
-		self:Bar(108046, "~"..spellName, 23, spellId) -- 23-26
-		fired = 0
-		if not timer then
-			timer = self:ScheduleRepeatingTimer(shockWarn, 0.05)
-		end
+		self:Bar(108046,spellName, 23, spellId)
+		self:Message(108046, spellName, "Positive", spellId, "Alarm")
 	end
 end
 
@@ -189,7 +200,20 @@ function mod:Sunder(player, spellId, _, _, spellName, buffStack)
 end
 
 function mod:Roar(_, spellId, _, _, spellName)
-	self:Bar(108044, "~"..spellName, 20, spellId) -- 20-23
+	self:Bar(108044, spellName, 18.5, spellId) -- 20-23
 	self:Message(108044, spellName, "Positive", spellId, "Alert")
 end
 
+do
+	local last = 0
+	function mod:Harpoon(player, spellId, source, auraType, spellName, buffStack)
+		local now = GetTime()
+		if now - last < 5 then return end
+		last = now
+		
+		self:Message(108038, spellName, "Positive", spellId, "Alert")
+		self:Bar(108038, spellName, 61, spellId)
+		addcount = addcount + 1 --addWaves that came till now
+		self:Bar("rider", L.rider.." ("..(addcount+1)..")", 37, "inv_misc_monsterhorn_07")--next wave
+	end
+end

@@ -105,6 +105,9 @@ if L then
 	L.sapper_desc = "Der Pionier (Schurke) spawnt und fügt dem Schiff Schaden zu."
 
 	L.stage2_trigger = "Scheint, als ob ich mich selbst drum kümmern muss. Gut!"
+	
+	L.rider = "Drachenreiter"
+	L.rider_desc = "Die zwei Drachenreiter, welche auf das Schiff springen"
 end
 
 L = BigWigs:NewBossLocale("Spine of Deathwing", "deDE")
