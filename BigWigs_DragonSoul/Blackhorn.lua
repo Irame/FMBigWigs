@@ -13,6 +13,7 @@ mod:RegisterEnableMob(56781, 56427, 56598, 42288, 55870)
 
 local canEnable, warned = true, false
 local onslaughtCounter = 1
+local sapper = nil --placeholder for Timer Schedule
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -84,7 +85,7 @@ function mod:OnEngage(diff)
 	self:Bar(107588, (GetSpellInfo(107588)), 48, 107588) -- Twilight Onslaught
 	if not self:LFR() then
 		self:Bar("sapper", L["sapper"], 70+10, L["sapper_icon"])
-		self:ScheduleTimer("Sapper", 80)
+		sapper = self:ScheduleTimer("Sapper", 80)
 	end
 	onslaughtCounter = 1
 	self:Bar("warmup", _G["COMBAT"], 32, L["warmup_icon"])
@@ -106,7 +107,7 @@ function mod:Sapper() --All 40 sec
 	self:Message("sapper", L["sapper"], "Important", L["sapper_icon"], "Info")
 	if warned then return end
 	self:Bar("sapper", L["sapper"], 40, L["sapper_icon"])
-	self:ScheduleTimer("Sapper", 40)
+	sapper = self:ScheduleTimer("Sapper", 40)
 end
 
 do
@@ -122,6 +123,9 @@ do
 		self:SendMessage("BigWigs_StopBar", self, L["sapper"])
 		self:StopBar(L.rider.." ("..(addcount+1)..")") --last AddspawnTimer
 		self:StopBar(GetSpellInfo(108038)) --Harpoon
+		if sapper ~= nil then
+			self:CancelTimer(sapper, true)
+		end
 		
 		self:Bar(108046, "~"..GetSpellInfo(108046), 14, 108046) -- Shockwave
 		self:Message("warmup", CL["phase"]:format(2) .. ": " .. self.displayName, "Positive", L["warmup_icon"])
@@ -207,8 +211,8 @@ end
 do
 	local last = 0
 	function mod:Harpoon(player, spellId, source, auraType, spellName, buffStack)
-		local now = GetTime()
-		if now - last < 5 then return end
+		local now = GetTime() --high diff, because one of the first Drakes can be slowed (so can be much later harpooned)
+		if now - last < 50 then return end
 		last = now
 		
 		self:Message(108038, spellName, "Positive", spellId, "Alert")
