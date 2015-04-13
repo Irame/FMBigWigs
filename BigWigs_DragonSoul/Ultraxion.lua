@@ -12,6 +12,8 @@ mod:RegisterEnableMob(55294, 56667) -- Ultraxion, Thrall
 
 local hourCounter = 1
 local lightTargets = mod:NewTargetList()
+local lightCounter = 0
+local fadingLight = GetSpellInfo(110080)
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -51,6 +53,11 @@ if L then
 	L.lighttank_bar = "<%s Explodes>"
 	L.lighttank_message = "Exploding Tank"
 	L.lighttank_icon = 105925
+	
+	L.lightcool = "Fading Light Cooldown"
+	L.lighttank_desc = "Shows a Br for the Cooldown of Fading Light"
+	L.lighttank_icon = 105925
+	
 end
 L = mod:GetLocale()
 L.lighttank = L.lighttank.." "..INLINE_TANK_ICON
@@ -62,8 +69,8 @@ L.lighttank = L.lighttank.." "..INLINE_TANK_ICON
 function mod:GetOptions(CL)
 	return {
 		{106371, "FLASHSHAKE"}, "cast",
-		105925, {"lightself", "FLASHSHAKE"}, {"lighttank", "FLASHSHAKE"},
-		"warmup", "crystal", "berserk", "bosskill",
+		105925, {"lightself", "FLASHSHAKE"}, {"lighttank", "FLASHSHAKE"}, "lightcool",
+		--[["warmup"]], "crystal", "berserk", "bosskill",
 	}, {
 		[106371] = L["twilight"],
 		[105925] = GetSpellInfo(105925),
@@ -73,9 +80,10 @@ end
 
 function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "HourofTwilight", 106371, 109415, 109416, 109417)
-	self:Log("SPELL_AURA_APPLIED", "FadingLight", 109075, 110078, 110079, 110080, 110070, 110069, 105925, 110068)
+	self:Log("SPELL_AURA_APPLIED", "FadingLight", 109075, 110078, 110079, 110080)
+	self:Log("SPELL_AURA_APPLIED", "FadingLightTank", 105925, 110068, 110069, 110070) --This forwards to mod:FadingLight()
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
-	self:Yell("Warmup", L["warmup_trigger"])
+	--self:Yell("Warmup", L["warmup_trigger"])
 	self:Emote("Gift", L["crystal_icon"])
 	self:Emote("Dreams", L["crystal_green_icon"])
 	self:Emote("Magic", L["crystal_blue_icon"])
@@ -93,6 +101,7 @@ function mod:OnEngage(diff)
 	self:Bar(106371, GetSpellInfo(106371), 45, 106371) -- Hour of Twilight
 	self:Bar("crystal", L["crystal_red"], 80, L["crystal_icon"])
 	hourCounter = 1
+	lightCounter = 0
 end
 
 --------------------------------------------------------------------------------
@@ -124,6 +133,14 @@ function mod:HourofTwilight(_, spellId, _, _, spellName)
 	self:Bar(106371, ("%s (%d)"):format(spellName, hourCounter), 45, spellId)
 	self:Bar("cast", CL["cast"]:format(L["twilight"]), self:Difficulty() > 2 and 3 or 5, spellId)
 	self:FlashShake(106371)
+	
+	--Cooldowns from DBM
+	lightCounter = 0
+	if self:Difficulty() > 2  then--Heroic
+		self:Bar("lightcool", fadingLight, 13, 110080)
+	else
+		self:Bar("lightcool", fadingLight, 20, 110080)
+	end
 end
 
 do
@@ -138,19 +155,32 @@ do
 			local duration = select(6, UnitDebuff("player", spellName))
 			self:Bar("lightself", L["lightself_bar"], duration, spellId)
 			self:FlashShake("lightself")
-		else -- This is mainly a tanking assist
-			if (spellId == 110070 or spellId == 110069 or spellId == 105925 or spellId == 110068) and self:Tank() then
-				self:FlashShake("lighttank")
-				local duration = select(6, UnitDebuff(player, spellName))
-				self:Bar("lighttank", L["lighttank_bar"]:format(player), duration, spellId)
-				self:LocalMessage("lighttank", L["lighttank_message"], "Attention", spellId, player)
-				self:PlaySound("lighttank", "Alarm")
-			end
 		end
 		if not scheduled then
 			scheduled = true
 			self:ScheduleTimer(fadingLight, 0.2, spellName)
 		end
+	end
+	
+	function mod:FadingLightTank(player, spellId, _, _, spellName, ...)
+		lightCounter = lightCounter + 1
+		mod:FadingLight(player, spellId, _, _, spellName, ...)
+		
+		if not UnitIsUnit(player, "player") and self:Tank() then -- is on the other Tank
+			self:FlashShake("lighttank")
+			local duration = select(6, UnitDebuff(player, spellName))
+			self:Bar("lighttank", L["lighttank_bar"]:format(player), duration, spellId)
+			self:LocalMessage("lighttank", L["lighttank_message"], "Attention", spellId, player)
+			self:PlaySound("lighttank", "Alarm")
+		end
+		
+		local isHeroic = self:Difficulty() > 2
+		local cd = isHeroic and 10 or 15
+		
+		if lightCount < 2 or isHeroic and lightCount < 3 then
+			self:Bar("lightcool", spellName, cd, spellId)
+		end
+		
 	end
 end
 
