@@ -89,6 +89,10 @@ if L then
 	L.lighttank_desc = "Nur für Tanks. Wenn ein Tank von schwindendem Licht betroffen ist, werden eine Timerleiste sowie Flash & Shake für die Explosion angezeigt."
 	L.lighttank_bar = "<%s Explodiert>"
 	L.lighttank_message = "Explodierender Tank"
+	
+	L.lightcool = "Schwindendes Licht Cooldown"
+	L.lightcool_desc = "Zeigt eine Leiste mit dem übrigen Cooldown auf Schwindendes Licht an."
+	L.lightcool_icon = 105925
 end
 
 L = BigWigs:NewBossLocale("Warmaster Blackhorn", "deDE")

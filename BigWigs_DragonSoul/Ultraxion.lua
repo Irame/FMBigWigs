@@ -56,8 +56,8 @@ if L then
 	L.lighttank_icon = 105925
 	
 	L.lightcool = "Fading Light Cooldown"
-	L.lighttank_desc = "Shows a Bar for the Cooldown of Fading Light"
-	L.lighttank_icon = 105925
+	L.lightcool_desc = "Shows a Bar for the Cooldown of Fading Light"
+	L.lightcool_icon = 105925
 	
 end
 L = mod:GetLocale()
