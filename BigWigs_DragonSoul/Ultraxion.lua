@@ -14,6 +14,7 @@ local hourCounter = 1
 local lightTargets = mod:NewTargetList()
 local lightCounter = 0
 local fadingLight = GetSpellInfo(110080)
+local yellFrame = CreateFrame("Frame")
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -55,7 +56,7 @@ if L then
 	L.lighttank_icon = 105925
 	
 	L.lightcool = "Fading Light Cooldown"
-	L.lighttank_desc = "Shows a Br for the Cooldown of Fading Light"
+	L.lighttank_desc = "Shows a Bar for the Cooldown of Fading Light"
 	L.lighttank_icon = 105925
 	
 end
@@ -70,7 +71,7 @@ function mod:GetOptions(CL)
 	return {
 		{106371, "FLASHSHAKE"}, "cast",
 		105925, {"lightself", "FLASHSHAKE"}, {"lighttank", "FLASHSHAKE"}, "lightcool",
-		--[["warmup"]], "crystal", "berserk", "bosskill",
+		--[["warmup",]] "crystal", "berserk", "bosskill",
 	}, {
 		[106371] = L["twilight"],
 		[105925] = GetSpellInfo(105925),
@@ -83,13 +84,13 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "FadingLight", 109075, 110078, 110079, 110080)
 	self:Log("SPELL_AURA_APPLIED", "FadingLightTank", 105925, 110068, 110069, 110070) --This forwards to mod:FadingLight()
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
-	--self:Yell("Warmup", L["warmup_trigger"])
-	self:Emote("Gift", L["crystal_icon"])
-	self:Emote("Dreams", L["crystal_green_icon"])
+	--self:Yell("Warmup", L["warmup_trigger"]) --not needed, cause no instant pull
+	--self:Emote("Gift", L["crystal_icon"]) --Does not happen
+	--self:Emote("Dreams", L["crystal_green_icon"]) --Does not happen
 	self:Emote("Magic", L["crystal_blue_icon"])
 	self:Emote("Loop", L["crystal_bronze_icon"])
 
-	self:Death("Win", 55294)
+	self:Death("ScheduleWin", 55294)
 end
 
 function mod:Warmup()
@@ -102,6 +103,15 @@ function mod:OnEngage(diff)
 	self:Bar("crystal", L["crystal_red"], 80, L["crystal_icon"])
 	hourCounter = 1
 	lightCounter = 0
+	
+	if self:Difficulty() > 2  then--Heroic
+		self:Bar("lightcool", fadingLight, 45+13, 110080)
+	else
+		self:Bar("lightcool", fadingLight, 45+20, 110080)
+	end
+	
+	yellFrame:RegisterEvent("CHAT_MSG_MONSTER_YELL")
+	self:BuildYell()
 end
 
 --------------------------------------------------------------------------------
@@ -119,7 +129,7 @@ function mod:Dreams()
 end
 
 function mod:Magic()
-	self:Bar("crystal", EJ_GetSectionInfo(4241), 75, L["crystal_bronze_icon"]) -- Timeloop
+	self:Bar("crystal", EJ_GetSectionInfo(4241), 80, L["crystal_bronze_icon"]) -- Timeloop
 	self:Message("crystal", L["crystal_blue"], "Positive", L["crystal_blue_icon"], "Info")
 end
 
@@ -177,10 +187,60 @@ do
 		local isHeroic = self:Difficulty() > 2
 		local cd = isHeroic and 10 or 15
 		
-		if lightCount < 2 or isHeroic and lightCount < 3 then
+		if lightCounter < 2 or isHeroic and lightCounter < 3 then
 			self:Bar("lightcool", spellName, cd, spellId)
 		end
 		
 	end
 end
 
+function mod:OnWipe(...)
+	yellFrame:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
+end
+
+function mod:ScheduleWin(...)
+	yellFrame:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
+	self:Win(...)
+end
+
+do--Yell workaround for Crystals
+	--Yells: (except Ultraxion)
+	--#1 Thrall --buffs CD Reduction
+	--#2 Alexstrasza --places Red Crystal
+	--#3 Ysera --places Green Crystal
+	-- more not needed
+	
+	local yellCount = 0
+	local thrall = EJ_GetSectionInfo(4242)
+	
+	function mod:BuildYell()
+		local this = self --dont know if needed, but this way im safe
+		yellFrame:SetScript("OnEvent", function(self , event, txt, sourceName, ...)
+			if not this.isEngaged then
+				self:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
+				return
+			end
+			
+			--Ultraxion is not needed for our purpose and would only make the whole thing harder
+			if sourceName == this.displayName then return end
+			
+			--Thrall is the first Yell of our rotation
+			if sourceName == thrall then
+				yellCount = 1
+			else
+				print(sourceName)
+				yellCount = yellCount + 1
+				if yellCount == 2 then --Thrown red crystal
+					print("red")
+					this:Gift()
+				elseif yellCount == 3 then --Thrown green crystal
+					print("green")
+					this:Dreams()
+					--Blue crystal has its needed Emote - we do not need to track further.
+					self:UnregisterEvent("CHAT_MSG_MONSTER_YELL") 
+				end
+			end
+		end)
+	end
+	
+end
