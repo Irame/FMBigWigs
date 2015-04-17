@@ -228,13 +228,10 @@ do--Yell workaround for Crystals
 			if sourceName == thrall then
 				yellCount = 1
 			else
-				print(sourceName)
 				yellCount = yellCount + 1
 				if yellCount == 2 then --Thrown red crystal
-					print("red")
 					this:Gift()
 				elseif yellCount == 3 then --Thrown green crystal
-					print("green")
 					this:Dreams()
 					--Blue crystal has its needed Emote - we do not need to track further.
 					self:UnregisterEvent("CHAT_MSG_MONSTER_YELL") 
