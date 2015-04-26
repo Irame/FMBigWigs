@@ -134,13 +134,13 @@ do
 
 	function boss:COMBAT_LOG_EVENT_UNFILTERED(_, _, event, _, sGUID, source, sFlags, _, dGUID, player, dFlags, _, spellId, spellName, _, secSpellId, buffStack, ...)
 		if event == "UNIT_DIED" then
-			local numericId = tonumber(dGUID:sub(7, 10), 16)
+			local numericId = self:GetCID(dGUID) --tonumber(dGUID:sub(7, 10), 16)
 			local d = deathMap[self][numericId]
 			if not d then return end
 			if type(d) == "function" then d(numericId, dGUID, player, dFlags)
 			else self[d](self, numericId, dGUID, player, dFlags) end
 		elseif event == "PARTY_KILL" then
-			local numericId = tonumber(dGUID:sub(7, 10), 16)
+			local numericId = self:GetCID(dGUID) --tonumber(dGUID:sub(7, 10), 16)
 			local m = combatLogMap[self][event]
 			if m and (m[numericId] or m["*"]) then
 				local func = m[numericId] or m["*"]
@@ -321,7 +321,7 @@ do
 	end
 
 	function boss:GetCID(guid)
-		local creatureId = tonumber(guid:sub(7, 10), 16)
+		local creatureId = boss.GetMobIdByGUID[guid]
 		return creatureId
 	end
 
@@ -612,16 +612,51 @@ function boss:PlaySound(key, sound)
 end
 
 
-function boss:Bar(key, text, length, icon, barColor, barEmphasized, barText, barBackground, ...)
-	if checkFlag(self, key, C.BAR) and length > 0 then
-		self:SendMessage("BigWigs_StartBar", self, key, text, length, icons[icon], ...)
+do
+	function boss:Bar(key, text, length, icon, barColor, barEmphasized, barText, barBackground, ...)
+		if checkFlag(self, key, C.BAR) and length > 0 then
+			self:SendMessage("BigWigs_StartBar", self, key, text, length, icons[icon], ...)
+		end
 	end
-end
 
-function boss:StopBar(text)
-	local text = tostring(text)
-	if text then
-		self:SendMessage("BigWigs_StopBar", self, text)
+	local delayedBars = setmetatable({}, metaMap) --Bar[text] = {timer,...}
+	
+	local function startBar(t)
+		local text = t[2]
+		local this = t.module
+		
+		local index
+		for i, v in ipairs(delayedBars[text]) do
+			if v == t.timer then
+				index = i
+				break;
+			end
+		end
+		
+		table.remove(delayedBars[text], index)
+		this:Bar(unpack(t))
+	end
+	
+	function boss:DelayedBar(key, delay, text, ...)
+		local x = {key, text, ...}
+		x.module = self
+		x.timer = self:ScheduleTimer(startBar, delay, x)
+		table.insert(delayedBars[text], x.timer)
+	end
+	
+	function boss:StopDelayedBars(text)
+		for i, timer in ipairs(delayedBars[text]) do --never nil, because delayedBars is metaMapped
+			self:CancelTimer(timer, true)
+		end
+		delayedBars[text] = nil
+	end	
+
+	function boss:StopBar(text)
+		local text = tostring(text)
+		if text then
+			self:StopDelayedBars(text)
+			self:SendMessage("BigWigs_StopBar", self, text)
+		end
 	end
 end
 
