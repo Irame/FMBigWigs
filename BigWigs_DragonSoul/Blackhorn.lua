@@ -14,6 +14,8 @@ mod:RegisterEnableMob(56781, 56427, 56598, 42288, 55870)
 local canEnable, warned = true, false
 local onslaughtCounter = 1
 local sapper = nil --placeholder for Timer Schedule
+local drakes = {}
+local addcount = 0
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -76,6 +78,8 @@ function mod:OnBossEnable()
 	self:Yell("Stage2", L["stage2_trigger"])
 
 	self:Log("SPELL_AURA_APPLIED", "Harpoon", 108038)
+	self:Log("SPELL_AURA_REMOVED", "HarpoonFade", 108038)
+	self:Death("DrakeDeath", 56587, 56855) --LEFT/RIGHT
 	
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
 	self:Death("Win", 56427)
@@ -93,6 +97,7 @@ function mod:OnEngage(diff)
 	warned = false
 	self:Bar(108038, GetSpellInfo(108038), 56, 108038) --Harpoon
 	addcount = 0
+	drakes = {}
 end
 
 function mod:OnWin()
@@ -209,15 +214,58 @@ function mod:Roar(_, spellId, _, _, spellName)
 end
 
 do
-	local last = 0
-	function mod:Harpoon(player, spellId, source, auraType, spellName, buffStack)
-		local now = GetTime() --high diff, because one of the first Drakes can be slowed (so can be much later harpooned)
-		if now - last < 50 then return end
-		last = now
+	local harpoonTxt = GetSpellInfo(108038).." (%s)"
+
+	local lastHarp = 0
+	local lastDrakes = 0
+	function mod:Harpoon(player, spellId, source, auraType, spellName, buffStack, event, sFlags, dFlags, dGUID, sGUID)
+		if dGUID == sGUID then return end --we want the Drakes as dGUID - not the Harpoon (both get the Buff)
 		
-		self:Message(108038, spellName, "Positive", spellId, "Alert")
-		self:Bar(108038, spellName, 61, spellId)
-		addcount = addcount + 1 --addWaves that came till now
-		self:Bar("rider", L.rider.." ("..(addcount+1)..")", 37, "inv_misc_monsterhorn_07")--next wave
+		--drakes has max. 9 entrys (6drakes, 3waves) thus clearing only here is not that problematic.
+		if addcount == 0 then wipe(drakes) end
+		
+		self:Bar(108038, CL.cast:format(spellName) ,20, spellId)
+		
+		if not drakes[dGUID] then
+			local now = GetTime()
+			if now - lastHarp > 5 then
+				addcount = addcount + 1 --just now Harpooned wave
+				lastHarp = now
+				
+				self:Bar("rider", L.rider.." ("..(addcount+1)..")", 37, "inv_misc_monsterhorn_07")--next wave
+				self:DelayedBar(108038, 37, harpoonTxt:format(addcount+1) , 61-37, spellId) --start HarpoonTimer for Harpoon of next wave.
+			end
+		
+			drakes[dGUID] = addcount
+			drakes[addcount] = drakes[addcount] or {}
+			table.insert(drakes[addcount], dGUID) 
+		end
+	end
+	
+	function mod:DrakeDeath(mobId, dGUID, name, dFlags)
+		local drakewave = drakes[dGUID]
+		drakes[dGUID] = nil
+		if drakewave then
+			for i, v in ipairs(drakes[drakewave]) do
+				if v == dGUID then
+					table.remove(drakes[drakewave], i)
+					break
+				end
+			end
+			if #drakes[drakewave] == 0 then
+				drakes[drakewave] = nil
+				self:StopBar(harpoonTxt:format(drakewave))
+			end
+		end
+	end
+	
+	function mod:HarpoonFade(player, spellId, source, secSpellId, spellName, buffStack, event, sFlags, dFlags, dGUID, sGUID)
+		if dGUID ~= sGUID then --only, those Buffs that hit the Drakes.
+			local drakewave = drakes[dGUID] --wave the drake belongs to
+			if drakewave then --did the Drake die already?
+				--no -> Bar to next Harpoon (13 sec)
+				self:Bar(108038, harpoonTxt:format(drakewave), 13, 108038)
+			end
+		end	
 	end
 end
