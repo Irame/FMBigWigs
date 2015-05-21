@@ -4,8 +4,8 @@
 
 local mod, CL = BigWigs:NewBoss("Warmaster Blackhorn", 824, 332)
 if not mod then return end
--- Goriona, Blackhorn, The Skyfire, Ka'anu Reevs, Sky Captain Swayze
-mod:RegisterEnableMob(56781, 56427, 56598, 42288, 55870)
+-- Goriona, Blackhorn, The Skyfire, Ka'anu Reevs, Sky Captain Swayze, 2Cannons, People on Deck
+mod:RegisterEnableMob(56781, 56427, 56598, 42288, 55870, 57265, 56681, 57260)
 
 --------------------------------------------------------------------------------
 -- Locales
@@ -231,9 +231,10 @@ do
 			if now - lastHarp > 5 then
 				addcount = addcount + 1 --just now Harpooned wave
 				lastHarp = now
-				
-				self:Bar("rider", L.rider.." ("..(addcount+1)..")", 37, "inv_misc_monsterhorn_07")--next wave
-				self:DelayedBar(108038, 37, harpoonTxt:format(addcount+1) , 61-37, spellId) --start HarpoonTimer for Harpoon of next wave.
+				if addcount < 3 then--there are only 3 waves
+					self:Bar("rider", L.rider.." ("..(addcount+1)..")", 37, "inv_misc_monsterhorn_07")--next wave
+					self:DelayedBar(108038, 37, harpoonTxt:format(addcount+1) , 61-37, spellId) --start HarpoonTimer for Harpoon of next wave.
+				end
 			end
 		
 			drakes[dGUID] = addcount
