@@ -5,7 +5,7 @@
 local mod, CL = BigWigs:NewBoss("Spine of Deathwing", 824, 318)
 if not mod then return end
 -- Deathwing, Burning Tendons, Burning Tendons, Corruption, Corruption, Corruption
-mod:RegisterEnableMob(53879, 56575, 56341, 53891, 56161, 56162)
+mod:RegisterEnableMob(53879, 56575, 56341, 53891, 56161, 56162,         57265, 56681, 57260, 55860, 55891) --2Cannons, People on Deck, Ka'anu, Swayze
 
 --------------------------------------------------------------------------------
 -- Locales
@@ -14,6 +14,7 @@ mod:RegisterEnableMob(53879, 56575, 56341, 53891, 56161, 56162)
 local gripTargets = mod:NewTargetList()
 local fieryGrip = GetSpellInfo(105490)
 local bloodCount = 0
+
 
 -- Locals for Fiery Grip, described in comments below
 local corruptionStatus, lastBar, nextGrip = {}, true, 0
@@ -73,8 +74,9 @@ function mod:OnBossEnable()
 	self:Log("SPELL_CAST_START", "Nuclear", 105845)
 	self:Log("SPELL_CAST_START", "Seal", 105847, 105848) -- Left, Right
 
-	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
-	self:Yell("Engage", L["engage_trigger"])
+	--self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus") Far too early
+	--self:Yell("Engage", L["engage_trigger"]) Does not Yell
+	self:RegisterEvent("PLAY_MOVIE", "Movie") --Movie = 74
 	self:Death("Deaths", 53879, 56575, 56341)
 end
 
@@ -93,6 +95,12 @@ function mod:OnEngage()
 			-- 10 man has 4 casts of 8s
 			self:Bar(105490, "~"..fieryGrip, 27, 105490)
 		end
+	end
+end
+
+function mod:Movie(event, id)
+	if id == 74 then
+		self:ScheduleTimer("Engage", 4)
 	end
 end
 
@@ -245,8 +253,10 @@ do
 		end
 	end
 	local function residueDecrease(GUID)
-		bloodCount = bloodCount - 1
-		deadBlood[GUID] = nil
+		if deadBlood[GUID]then
+			bloodCount = bloodCount - 1
+			deadBlood[GUID] = nil
+		end
 	end
 	function mod:ResidueChange(_, spellId, _, _, _, _, _, _, _, _, sGUID)
 		if spellId == 109371 or spellId == 109372 or spellId == 109373 or spellId == 105219 then
