@@ -76,7 +76,7 @@ end
 
 function mod:OnBossEnable()
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
+	--self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus") --Too often Called!
 	self:Log("SPELL_CAST_SUCCESS", "ElementiumBolt", 105651)
 	self:Log("SPELL_CAST_SUCCESS", "Impale", 106400)
 	self:Log("SPELL_CAST_SUCCESS", "AgonizingPain", 106548)
@@ -86,7 +86,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "Shrapnel", 106794, 110141, 110140, 110139) -- 106794 10N, 110141 LFR
 	self:Log("SPELL_AURA_APPLIED", "Parasite", 108649)
 	self:Log("SPELL_AURA_REMOVED", "ParasiteRemoved", 108649)
-
+	
 	self:Yell("Engage", L["engage_trigger"])
 	self:Log("SPELL_CAST_SUCCESS", "Win", 110063) -- Astral Recall
 	self:Death("TentacleKilled", 56471)
@@ -107,7 +107,7 @@ end
 
 function mod:Impale(_, spellId, _, _, spellName)
 	self:LocalMessage("impale", spellName, "Urgent", spellId, "Alarm")
-	self:Bar("impale", spellName, 35, spellId)
+	self:Bar("impale", spellName, 35-0.5, spellId)
 end
 
 function mod:TentacleKilled()
@@ -119,9 +119,9 @@ do
 	local fragment = GetSpellInfo(109568)
 	function mod:UNIT_SPELLCAST_SUCCEEDED(_, unit, spellName, _, _, spellId)
 		if unit == "boss1" or unit == "boss2" or unit == "boss3" or unit == "boss4" then
-			if spellName == hemorrhage then
-				self:Message("hemorrhage", spellName, "Urgent", L["hemorrhage_icon"], "Alarm")
-			elseif spellName == fragment then
+			-- if spellName == hemorrhage then --Does not happen often enought
+				-- self:Message("hemorrhage", spellName, "Urgent", L["hemorrhage_icon"], "Alarm")
+			--[[else]]if spellName == fragment then
 				self:Message("fragment", L["fragment"], "Urgent", L["fragment_icon"], "Alarm")
 				self:Bar("fragment", L["fragment"], 90, L["fragment_icon"])
 			elseif spellId == 105551 then
@@ -137,47 +137,48 @@ end
 
 function mod:LastPhase(_, spellId)
 	self:Message("last_phase", EJ_GetSectionInfo(4046), "Attention", spellId) -- Stage 2: The Last Stand
-	self:Bar("fragment", L["fragment"], 10.5, L["fragment_icon"])
+	self:Bar("fragment", L["fragment"], 10.5-5, L["fragment_icon"])
 	self:Bar("terror", L["terror"], 35.5, L["terror_icon"])
 	if self:Difficulty() > 2 then
 		self:RegisterEvent("UNIT_HEALTH_FREQUENT")
 	end
 end
 
+local function hemmorageIn(self, t)
+	self:Bar("hemorrhage", hemorrhage, t, 105863)
+	self:DelayedMessage("hemorrhage", t, hemorrhage, "Urgent", L["hemorrhage_icon"], "Alarm")
+end
+
 function mod:AssaultAspects()
+	self:ScheduleTimer("UpdatePlatform", 5)
+
 	paraCount = 0
 	if curPercent == 100 then
 		curPercent = 20
-		self:Bar("impale", impale, 22, 106400)
-		self:Bar(105651, GetSpellInfo(105651), 40.5, 105651) -- Elementium Bolt
+		self:Bar("impale", impale, 22+1+0.5, 106400)
+		self:Bar(105651, GetSpellInfo(105651), 40.5+0.5, 105651) -- Elementium Bolt
 		if self:Difficulty() > 2 then
-			self:Bar("hemorrhage", hemorrhage, 55.5, 105863)
+			hemmorageIn(self, 55.5)
 			self:Bar("ej:4347", L["parasite"], 11, 108649)
 		else
-			self:Bar("hemorrhage", hemorrhage, 85.5, 105863)
+			hemmorageIn(self, 85.5+1)
 		end
-		self:Bar(106523, cataclysm, 175, 106523)
+		self:Bar(106523, cataclysm, 117, 106523)
 		self:Bar("bigtentacle", L["bigtentacle"], 11.2, L["bigtentacle_icon"])
 		self:DelayedMessage("bigtentacle", 11.2, L["bigtentacle"] , "Urgent", L["bigtentacle_icon"], "Alert")
 	else
-		self:Bar("impale", impale, 27.5, 106400)
-		self:Bar(105651, GetSpellInfo(105651), 55.5, 105651) -- Elementium Bolt
+		self:Bar("impale", impale, 27.5+5+1, 106400)
+		self:Bar(105651, GetSpellInfo(105651), 55.5+0.5, 105651) -- Elementium Bolt
 		if self:Difficulty() > 2 then
-			self:Bar("hemorrhage", hemorrhage, 70.5, 105863)
+			hemmorageIn(self, 70.5)
 			self:Bar("ej:4347", L["parasite"], 22.5, 108649)
 		else
-			self:Bar("hemorrhage", hemorrhage, 100.5, 105863)
+			hemmorageIn(self, 100.5+2)
 		end
-		self:Bar(106523, cataclysm, 190, 106523)
-		self:Bar("bigtentacle", L["bigtentacle"], 16.7, L["bigtentacle_icon"])
-		self:DelayedMessage("bigtentacle", 16.7, L["bigtentacle"] , "Urgent", L["bigtentacle_icon"], "Alert")
+		self:Bar(106523, cataclysm, 132, 106523)
+		self:Bar("bigtentacle", L["bigtentacle"], 16.7-2, L["bigtentacle_icon"])
+		self:DelayedMessage("bigtentacle", 16.7-2, L["bigtentacle"] , "Urgent", L["bigtentacle_icon"], "Alert")
 	end
-end
-
-function mod:ElementiumBolt(_, spellId, _, _, spellName)
-	self:FlashShake(105651)
-	self:Message(105651, spellName, "Important", spellId, "Long")
-	self:Bar(105651, L["bolt_explode"], UnitBuff("player", (GetSpellInfo(109624))) and 18 or 8, spellId)
 end
 
 function mod:Cataclysm(_, spellId, _, _, spellName)
@@ -188,6 +189,9 @@ end
 
 function mod:AgonizingPain()
 	self:SendMessage("BigWigs_StopBar", self, CL["cast"]:format(cataclysm))
+	self:StopBar(GetSpellInfo(105651))-- Elementium Bolt
+	self:StopBar(cataclysm)
+	self:StopBar(hemorrhage)
 end
 
 function mod:Shrapnel(player, spellId, _, _, spellName)
@@ -240,3 +244,52 @@ function mod:UNIT_HEALTH_FREQUENT(_, unitId)
 	end
 end
 
+do
+	local ref = {[EJ_GetSectionInfo(4133)] = "blue", 
+		[EJ_GetSectionInfo(4130)] = "green", 
+		[EJ_GetSectionInfo(4127)] = "yellow",
+		[EJ_GetSectionInfo(4124)] = "red"}
+	local waitNextYell = false
+	local currPlatform = "green"
+	
+	--some Hacky shit, because we do not want to handle a new Frame.
+	local old = mod.CHAT_MSG_MONSTER_YELL
+	function mod:CHAT_MSG_MONSTER_YELL(...)
+		local _, _, sourceName = ...
+		if waitNextYell and ref[sourceName] then
+			waitNextYell = false --whee we found our Platform!
+			currPlatform = ref[sourceName]
+		else
+			old(self, ...)
+		end
+	end
+		
+	function mod:UpdatePlatform()
+		waitNextYell = true
+	end
+	
+	local yellowBuff = GetSpellInfo(109624)
+	local function flyTime()
+		local isSlowed = UnitBuff("player", yellowBuff)
+		
+		if currPlatform == "green" then
+			return isSlowed and 8.5 or 4
+		elseif currPlatform == "red" then
+			return isSlowed and 7.5 or 4.5
+		elseif currPlatform == "blue" then
+			return isSlowed and 10 or 4
+		elseif currPlatform == "yellow" then
+			return 11.5 --cannot be not slowed.
+		end
+		
+		--not needed - just be sure to always return something.
+		return isSlowed and 8 or 4
+		
+	end
+	
+	function mod:ElementiumBolt(_, spellId, _, _, spellName)
+		self:FlashShake(105651)
+		self:Message(105651, spellName, "Important", spellId, "Long")
+		self:Bar(105651, L["bolt_explode"], flyTime(), spellId)
+	end
+end
