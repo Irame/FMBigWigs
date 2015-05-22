@@ -75,7 +75,7 @@ function mod:VerifyEnable()
 end
 
 function mod:OnBossEnable()
-	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+	--self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED") --nothing helpful.
 	--self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus") --Too often Called!
 	self:Log("SPELL_CAST_SUCCESS", "ElementiumBolt", 105651)
 	self:Log("SPELL_CAST_SUCCESS", "Impale", 106400)
@@ -87,6 +87,7 @@ function mod:OnBossEnable()
 	self:Log("SPELL_AURA_APPLIED", "Parasite", 108649)
 	self:Log("SPELL_AURA_REMOVED", "ParasiteRemoved", 108649)
 	
+	self:Emote("SmallTentacles","ability_warrior_bloodnova")
 	self:Yell("Engage", L["engage_trigger"])
 	self:Log("SPELL_CAST_SUCCESS", "Win", 110063) -- Astral Recall
 	self:Death("TentacleKilled", 56471)
@@ -115,32 +116,42 @@ function mod:TentacleKilled()
 	self:SendMessage("BigWigs_StopBar", self, L["parasite"])
 end
 
+function mod:SmallTentacles()
+	self:Message("smalltentacles", L["smalltentacles"], "Urgent", L["smalltentacles_icon"], "Alarm")
+end
+
 do
-	local fragment = GetSpellInfo(109568)
-	function mod:UNIT_SPELLCAST_SUCCEEDED(_, unit, spellName, _, _, spellId)
-		if unit == "boss1" or unit == "boss2" or unit == "boss3" or unit == "boss4" then
-			-- if spellName == hemorrhage then --Does not happen often enought
-				-- self:Message("hemorrhage", spellName, "Urgent", L["hemorrhage_icon"], "Alarm")
-			--[[else]]if spellName == fragment then
-				self:Message("fragment", L["fragment"], "Urgent", L["fragment_icon"], "Alarm")
-				self:Bar("fragment", L["fragment"], 90, L["fragment_icon"])
-			elseif spellId == 105551 then
-				local hp = UnitHealth(unit) / UnitHealthMax(unit) * 100
-				self:Message("smalltentacles", ("%d%% - %s"):format(hp > 50 and 70 or 40, L["smalltentacles"]), "Urgent", L["smalltentacles_icon"], "Alarm")
-			elseif spellId == 106765 then
-				self:Message("terror", L["terror"], "Important", L["terror_icon"])
-				self:Bar("terror", L["terror"], 90, L["terror_icon"])
+	local function stillInCombat()
+		for i = 1, 4,1 do
+			local guid = UnitGUID("boss"..i)
+			if guid and mod:GetCID(guid) == 57962 then--Deathwing
+				return true
 			end
 		end
 	end
-end
+	
+	function mod:Fragments()
+		if not stillInCombat() then return end
+		self:Message("fragment", L["fragment"], "Urgent", L["fragment_icon"], "Alarm")
+		self:Bar("fragment", L["fragment"], 90+1, L["fragment_icon"])
+		self:ScheduleTimer("Fragments", 90+1)
+	end
+	function mod:Terrors()
+		if not stillInCombat() then return end
+		self:Message("terror", L["terror"], "Important", L["terror_icon"])
+		self:Bar("terror", L["terror"], 90+1, L["terror_icon"])
+		self:ScheduleTimer("Terrors", 90+1)
+	end
 
-function mod:LastPhase(_, spellId)
-	self:Message("last_phase", EJ_GetSectionInfo(4046), "Attention", spellId) -- Stage 2: The Last Stand
-	self:Bar("fragment", L["fragment"], 10.5-5, L["fragment_icon"])
-	self:Bar("terror", L["terror"], 35.5, L["terror_icon"])
-	if self:Difficulty() > 2 then
-		self:RegisterEvent("UNIT_HEALTH_FREQUENT")
+	function mod:LastPhase(_, spellId)
+		self:Message("last_phase", EJ_GetSectionInfo(4046), "Attention", spellId) -- Stage 2: The Last Stand
+		self:Bar("fragment", L["fragment"], 3, L["fragment_icon"])
+		self:ScheduleTimer("Fragments", 3)
+		self:Bar("terror", L["terror"], 39, L["terror_icon"])
+		self:ScheduleTimer("Terrors", 39)
+		if self:Difficulty() > 2 then
+			self:RegisterEvent("UNIT_HEALTH_FREQUENT")
+		end
 	end
 end
 
@@ -177,7 +188,7 @@ function mod:AssaultAspects()
 		end
 		self:Bar(106523, cataclysm, 132, 106523)
 		self:Bar("bigtentacle", L["bigtentacle"], 16.7-2, L["bigtentacle_icon"])
-		self:DelayedMessage("bigtentacle", 16.7-2, L["bigtentacle"] , "Urgent", L["bigtentacle_icon"], "Alert")
+		self:DelayedMessage("bigtentacle", 16.7-2+0.5, L["bigtentacle"] , "Urgent", L["bigtentacle_icon"], "Alert")
 	end
 end
 
@@ -192,6 +203,7 @@ function mod:AgonizingPain()
 	self:StopBar(GetSpellInfo(105651))-- Elementium Bolt
 	self:StopBar(cataclysm)
 	self:StopBar(hemorrhage)
+	self:CancelDelayedMessage(hemorrhage)
 end
 
 function mod:Shrapnel(player, spellId, _, _, spellName)
