@@ -8,6 +8,7 @@ mod:RegisterEnableMob(55265)
 
 local kohcrom = EJ_GetSectionInfo(4262)
 local crystalCount, stompCount = 0, 1
+local nextCrystal, nextStomp = 0,0
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -23,9 +24,9 @@ if L then
 	L.crystal_boss_icon = 103640
 
 	L.stomp_add, L.stomp_add_desc =  EJ_GetSectionInfo(3879)
-	L.stomp_add_icon = 103414
+	L.stomp_add_icon = "INV_DataCrystal12"--103414
 	L.crystal_add, L.crystal_add_desc = EJ_GetSectionInfo(3876)
-	L.crystal_add_icon = 103640
+	L.crystal_add_icon = "Spell_Nature_AbolishMagic"--103640
 
 	L.crush = "Crush Armor"
 	L.crush_desc = "Tank alert only. Count the stacks of crush armor and show a duration bar."
@@ -58,7 +59,7 @@ end
 
 function mod:OnBossEnable()
 	--Heroic
-	self:Log("SPELL_CAST_SUCCESS", "SummonKohcrom", 109017)
+	self:Log("SPELL_SUMMON", "SummonKohcrom", 109017)
 
 	--Normal
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "BloodOver")
@@ -79,8 +80,11 @@ end
 function mod:OnEngage(diff)
 	self:Berserk(420) -- confirmed
 	self:Bar("stomp_boss", L["stomp_boss"], 11+1, L["stomp_boss_icon"])
-	self:Bar("crystal_boss", L["crystal"], 16+4, L["crystal_boss_icon"])
-	self:Bar(103851, L["blood"], 56-2, 103851)
+	self:Bar("crystal_boss", L["crystal"], 16+3, L["crystal_boss_icon"])
+	local now = GetTime()
+	nextCrystal,nextStomp = now+16+3, now+11+1
+	
+	self:Bar(103851, L["blood"], 56+2+3, 103851)
 	crystalCount, stompCount = 1, 2 --0 ,1
 end
 
@@ -89,20 +93,49 @@ end
 --
 
 function mod:SummonKohcrom(_, spellId, _, _, spellName)
-	self:Bar("stomp_boss", "~"..self.displayName.." - "..L["stomp_boss"], 6, L["stomp_boss_icon"]) -- 6-12s
-	self:Message(109017, spellName, "Positive", spellId)
 	self:SendMessage("BigWigs_StopBar", self, L["crystal"])
-	self:SendMessage("BigWigs_StopBar", self, "~"..L["stomp_boss"])
+	self:SendMessage("BigWigs_StopBar", self, L["stomp_boss"].." CD")
+	self:SendMessage("BigWigs_StopBar", self, L["stomp_boss"])
+	
+	self:Message(109017, spellName, "Positive", spellId)
+	local offset = (self:Difficulty() == 3) and 6 or 5
+	if nextStomp > nextCrystal then
+		--crystal -> 5.5
+		--stomp -> 12
+		self:Bar("stomp_boss", self.displayName.." - "..L["stomp_boss"], 12, L["stomp_boss_icon"])
+		self:Bar("crystal_boss", self.displayName.." - "..L["crystal"], 5.5, L["crystal_boss_icon"])
+		
+		self:Bar("stomp_add", kohcrom.." - "..L["stomp_boss"], 12+offset, L["stomp_add_icon"])
+		self:Bar("crystal_add", kohcrom.." - "..L["crystal"], 5.5+offset, L["crystal_add_icon"])
+		
+	else
+		--crystal -> 15
+		--stomp -> 6
+		self:Bar("stomp_boss", self.displayName.." - "..L["stomp_boss"], 6, L["stomp_boss_icon"])
+		self:Bar("crystal_boss", self.displayName.." - "..L["crystal"], 15, L["crystal_boss_icon"])
+		
+		self:Bar("stomp_add", kohcrom.." - "..L["stomp_boss"], 6+offset, L["stomp_add_icon"])
+		self:Bar("crystal_add", kohcrom.." - "..L["crystal"], 15+offset, L["crystal_add_icon"])
+	end
 end
 
 local function AfterBloodTimers(self, add)
-	self:Bar(103851, L["blood"], 75-2+add, 103851)
-	if self:Difficulty() > 2 then
-		self:Bar("stomp_boss", "~"..self.displayName.." - "..L["stomp_boss"], 15+add, L["stomp_boss_icon"])
-		self:Bar("crystal_boss", "~"..self.displayName.." - "..L["crystal"], 22+add, L["crystal_boss_icon"])
+	self:Bar(103851, L["blood"], 75+add, 103851)
+	if self:Difficulty() > 2 and UnitExists("boss2") then
+		local crystal, stomp = 26+add, 19+add
+		local offset = (self:Difficulty() == 3) and 6 or 5
+		
+		self:Bar("stomp_boss", self.displayName.." - "..L["stomp_boss"], stomp, L["stomp_boss_icon"])
+		self:Bar("crystal_boss", self.displayName.." - "..L["crystal"], crystal, L["crystal_boss_icon"])
+		
+		self:Bar("stomp_add", kohcrom.." - "..L["stomp_boss"], stomp+offset, L["stomp_add_icon"])
+		self:Bar("crystal_add", kohcrom.." - "..L["crystal"], crystal+14+offset, L["crystal_add_icon"])
 	else
+		local now = GetTime();
 		self:Bar("stomp_boss", L["stomp_boss"], 5+14+add, L["stomp_boss_icon"])
-		self:Bar("crystal_boss", L["crystal"], 29-12+add, L["crystal_boss_icon"])
+		nextStomp = now+5+14+add
+		self:Bar("crystal_boss", L["crystal"], 29-2+add, L["crystal_boss_icon"])
+		nextCrystal = now+29-2+add
 	end
 end
 -- I know it's ugly to use this, but if we were to start bars at :BlackBlood then we are subject to BlackBlood duration changes
@@ -114,20 +147,25 @@ end
 
 function mod:Stomp(_, spellId, source, _, spellName)
 	if self:Difficulty() > 2 and UnitExists("boss2") then -- Check if heroic and if kohncrom has spawned yet.
+		local offset = (self:Difficulty() == 3) and 6 or 5
 		if source == kohcrom then
-			self:Message("stomp_add", source.." - "..spellName, "Important", spellId)
-		else -- Since we trigger bars off morchok casts, we gotta make sure kohcrom isn't caster to avoid bad timers.
-			self:Bar("stomp_add", "~"..kohcrom.." - "..spellName, (self:Difficulty() == 3) and 6 or 5, spellId) -- 6sec after on 10 man, 5 sec on 25
-			self:Message("stomp_boss", source.." - "..spellName, "Important", spellId)
+			self:Message("stomp_add", source.." - "..spellName, "Important", L["stomp_add_icon"])
 			if stompCount < 4 then
-				self:Bar("stomp_boss", "~"..source.." - "..spellName, 12, spellId)
+				self:Bar("stomp_add", source.." - "..spellName, 12, L["stomp_add_icon"])
+			end
+		else -- Since we trigger bars off morchok casts, we gotta make sure kohcrom isn't caster to avoid bad timers.
+			self:Message("stomp_boss", source.." - "..spellName, "Important", L["stomp_boss_icon"])
+			if stompCount < 4 then
+				self:Bar("stomp_add", kohcrom.." - "..spellName, offset, L["stomp_add_icon"])
+				self:Bar("stomp_boss", source.." - "..spellName.." CD", 12, L["stomp_boss_icon"])
 			end
 			stompCount = stompCount + 1
 		end
 	else -- Not heroic, or Kohcrom isn't out yet, just do normal bar.
-		if stompCount < 5 then
-			self:Bar("stomp_boss", spellName, 12, spellId)
-			self:Message("stomp_boss", spellName, "Important", spellId)
+		if stompCount < 4 then
+			nextStomp = GetTime()+12
+			self:Bar("stomp_boss", spellName.." CD", 12, L["stomp_boss_icon"])
+			self:Message("stomp_boss", spellName, "Important", L["stomp_boss_icon"])
 			stompCount = stompCount + 1
 		end
 	end
@@ -165,21 +203,18 @@ end
 
 function mod:ResonatingCrystal(_, spellId, source, _, spellName)
 	if source == self.displayName then crystalCount = crystalCount + 1 end -- Only increment count off morchok casts.
-	if self:Difficulty() > 2 then
-		self:Message((source == kohcrom) and "crystal_add" or "crystal_boss", source.." - "..L["crystal"], "Urgent", spellId, "Alarm")
-		self:Bar((source == kohcrom) and "crystal_add" or "crystal_boss", source.." - "..(L["explosion"]), 12, spellId)
-		if UnitExists("boss2") and crystalCount > 1 and source == self.displayName then -- The CD bar will only start off morchok's 2nd crystal, if kohcrom is already summoned.
-			self:Bar("crystal_add", "~"..kohcrom.." - "..L["crystal"], (self:Difficulty() == 3) and 6 or 5, spellId) -- Same as stomp, 6/5
+	if self:Difficulty() > 2 and UnitExists("boss2") then
+		if source == kohcrom then
+			self:Message("crystal_add", source.." - "..L["crystal"], "Urgent", L["crystal_add_icon"], "Alarm")
+			self:Bar("crystal_add", source.." - "..(L["explosion"]), 12, L["crystal_add_icon"])
+		else
+			self:Message("crystal_boss", source.." - "..L["crystal"], "Urgent", L["crystal_boss_icon"], "Alarm")
+			self:Bar("crystal_boss", source.." - "..(L["explosion"]), 12, L["crystal_boss_icon"])
 		end
 	else
-		self:Message("crystal_boss", spellName, "Urgent", spellId, "Alarm")
-		self:Bar("crystal_boss", L["explosion"], 12, spellId)
-		if crystalCount < 3 then --there are only 3 crystals in normalmode per Bloodphase. 
-			self:ScheduleTimer(function(this) 
-				this:Bar("crystal_boss", L["crystal"], 20-12, L["crystal_boss_icon"])
-			end, 12, self)
-			
-		end
+		self:Message("crystal_boss", L["crystal"], "Urgent", L["crystal_boss_icon"], "Alarm")
+		self:Bar("crystal_boss", L["explosion"], 12, L["crystal_boss_icon"])
+		nextCrystal = GetTime()+14
 	end
 end
 
