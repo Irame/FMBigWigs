@@ -282,21 +282,17 @@ do
 	
 	local yellowBuff = GetSpellInfo(109624)
 	local function flyTime()
-		local isSlowed = UnitBuff("player", yellowBuff)
-		
-		if currPlatform == "green" then
-			return isSlowed and 8.5 or 4
-		elseif currPlatform == "red" then
-			return isSlowed and 7.5 or 4.5
-		elseif currPlatform == "blue" then
-			return isSlowed and 10 or 4
+		local isSlowed = UnitBuff("player", yellowBuff) and true
+		if currPlatform == "red" then
+			return isSlowed and 12.5 or 4.25
 		elseif currPlatform == "yellow" then
-			return 11.5 --cannot be not slowed.
+			return 11.75 --cannot be unslowed
+		elseif currPlatform == "green" then
+			return isSlowed and 11.75 or 3.75
+		elseif currPlatform == "blue" then
+			return isSlowed and 11.5 or 3.7
 		end
-		
-		--not needed - just be sure to always return something.
-		return isSlowed and 8 or 4
-		
+		--returns always - currPlatform is always initialized and only gets those variables assigned
 	end
 	
 	function mod:ElementiumBolt(_, spellId, _, _, spellName)
