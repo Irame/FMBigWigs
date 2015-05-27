@@ -42,13 +42,21 @@ L.bolt = L.bolt.." "..INLINE_TANK_ICON
 --
 
 local colorCombinations = {
-	[105420] = { L.purple, L.green, L.blue, L.black },
+	[105420] = { L.purple, L.green, L.blue},
+	[105435] = { L.green, L.red, L.black},
+	[105436] = { L.green, L.yellow, L.red},
+	[105437] = { L.purple, L.blue, L.yellow},
+	[105439] = { L.blue, L.black, L.yellow},
+	[105440] = { L.purple, L.red, L.black},
+}
+
+local colorCombinationsHM = {
+	[105420] = { L.purple, L.green, L.black, L.blue },
 	[105435] = { L.green, L.red, L.black, L.blue },
 	[105436] = { L.green, L.yellow, L.red, L.black },
-	[105437] = { L.purple, L.blue, L.yellow, L.green },
-	[105439] = { L.blue, L.black, L.yellow, L.purple },
+	[105437] = { L.yellow, L.green, L.purple, L.blue },
+	[105439] = { L.purple, L.black, L.yellow, L.blue },
 	[105440] = { L.purple, L.red, L.black, L.yellow },
-	--[105441] this is some generic thing, don't use it
 }
 
 --------------------------------------------------------------------------------
@@ -97,10 +105,10 @@ end
 function mod:Blobs(_, unit, spellName, _, _, spellId)
 	if (unit == "boss1" or unit == "boss2" or unit == "boss3" or unit == "boss4") and colorCombinations[spellId] then
 		if self:Difficulty() > 2 then
-			self:Message("blobs", ("%s, %s, %s, %s"):format(colorCombinations[spellId][1], colorCombinations[spellId][2], colorCombinations[spellId][4], colorCombinations[spellId][3]), "Urgent", L["blobs_icon"], "Alarm")
+			self:Message("blobs", ("%s, %s, %s, %s"):format(unpack(colorCombinationsHM[spellId])), "Urgent", L["blobs_icon"], "Alarm")
 			self:Bar("blobs", L["blobs_bar"], 75, L["blobs_icon"])
 		else
-			self:Message("blobs", ("%s, %s, %s"):format(colorCombinations[spellId][1], colorCombinations[spellId][2], colorCombinations[spellId][3]), "Urgent", L["blobs_icon"], "Alarm")
+			self:Message("blobs", ("%s, %s, %s"):format(unpack(colorCombinations[spellId])), "Urgent", L["blobs_icon"], "Alarm")
 			self:Bar("blobs", L["blobs_bar"], 90, L["blobs_icon"])
 		end
 	end
