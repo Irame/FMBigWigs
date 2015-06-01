@@ -53,7 +53,7 @@ L.sunder = L.sunder.." "..INLINE_TANK_ICON
 function mod:GetOptions(CL)
 	return {
 		107588, "sapper", 108038, "rider",
-		"sunder", {108046, "SAY", "FLASHSHAKE"}, {108076, "SAY", "FLASHSHAKE", "ICON"}, 108044,
+		"sunder", 108046, 108076, 108044,
 		"warmup", "berserk", "bosskill",
 	}, {
 		[107588] = "ej:4027",
@@ -67,13 +67,14 @@ function mod:VerifyEnable()
 end
 
 function mod:OnBossEnable()
-	self:Log("SPELL_SUMMON", "TwilightFlames", 108076) -- did they just remove this?
+	--self:Log("SPELL_SUMMON", "TwilightFlames", 108076) -- did they just remove this?
 	self:Log("SPELL_CAST_START", "TwilightOnslaught", 107588)
 	self:Log("SPELL_CAST_START", "Shockwave", 108046)
 	self:Log("SPELL_AURA_APPLIED", "Sunder", 108043)
 	self:Log("SPELL_AURA_APPLIED", "PreStage2", 108040)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "Sunder", 108043)
 	self:Log("SPELL_CAST_SUCCESS", "Roar", 109228, 108044, 109229, 109230) --LFR/25N, 10N, ??, ??
+	self:Log("SPELL_DAMAGE", "WarnFire", 108076, 110095)
 	self:Emote("Sapper", L["sapper_trigger"])
 	self:Yell("Stage2", L["stage2_trigger"])
 
@@ -86,16 +87,16 @@ function mod:OnBossEnable()
 end
 
 function mod:OnEngage(diff)
-	self:Bar(107588, (GetSpellInfo(107588)), 48, 107588) -- Twilight Onslaught
+	self:Bar(107588, (GetSpellInfo(107588)), 48+0.5, 107588) -- Twilight Onslaught
 	if not self:LFR() then
-		self:Bar("sapper", L["sapper"], 70+10, L["sapper_icon"])
-		sapper = self:ScheduleTimer("Sapper", 80)
+		self:Bar("sapper", L["sapper"], 70+10+13, L["sapper_icon"])
+		sapper = self:ScheduleTimer("Sapper", 80+13)
 	end
 	onslaughtCounter = 1
 	self:Bar("warmup", _G["COMBAT"], 32, L["warmup_icon"])
 	self:DelayedMessage("warmup", 32, CL["phase"]:format(1), "Positive", L["warmup_icon"])
 	warned = false
-	self:Bar(108038, GetSpellInfo(108038), 56, 108038) --Harpoon
+	self:Bar(108038, GetSpellInfo(108038), 56+1, 108038) --Harpoon
 	addcount = 0
 	drakes = {}
 end
@@ -107,6 +108,19 @@ end
 --------------------------------------------------------------------------------
 -- Event Handlers
 --
+
+do
+	local last = GetTime()
+	function mod:WarnFire(player, spellId, _, _, spellName)
+		local now = GetTime()
+		if now - last < 1 then return end
+		last = now
+		
+		if UnitIsUnit("player", player) then
+			self:Message(108076, CL.underyou:format(spellName), "Important", 108076, "Info")
+		end
+	end
+end
 
 function mod:Sapper() --All 40 sec
 	self:Message("sapper", L["sapper"], "Important", L["sapper_icon"], "Info")
@@ -140,63 +154,16 @@ do
 	end
 end
 
-do
-	local function checkTarget(sGUID)
-		local mobId = mod:GetUnitIdByGUID(sGUID)
-		if mobId then
-			local player = UnitName(mobId.."target")
-			if not player then return end
-			if UnitIsUnit("player", player) then
-				local twilightFlames = GetSpellInfo(108076)
-				mod:Say(108076, CL["say"]:format(twilightFlames))
-				mod:FlashShake(108076)
-				mod:LocalMessage(108076, twilightFlames, "Personal", 108076, "Long")
-			end
-			mod:PrimaryIcon(108076, player)
-		end
-	end
-	function mod:TwilightFlames(...)
-		local sGUID = select(11, ...)
-		self:ScheduleTimer(checkTarget, 0.1, sGUID)
-	end
-end
-
 function mod:TwilightOnslaught(_, spellId, _, _, spellName)
 	self:Message(107588, spellName, "Urgent", spellId, "Alarm")
 	onslaughtCounter = onslaughtCounter + 1
 	if warned then return end
-	self:Bar(107588, ("%s (%d)"):format(spellName, onslaughtCounter), 35, spellId)
+	self:Bar(107588, ("%s (%d)"):format(spellName, onslaughtCounter), 35+0.5, spellId)
 end
 
-do
-	-- local timer, fired = nil, 0
-	-- local function shockWarn()
-		-- fired = fired + 1
-		-- local player = UnitName("boss2target")
-		-- if player and (not UnitDetailedThreatSituation("boss2target", "boss2") or fired > 11) then
-			-- If we've done 12 (0.6s) checks and still not passing the threat check, it's probably being cast on the tank
-			-- local shockwave = GetSpellInfo(108046)
-			-- mod:TargetMessage(108046, shockwave, player, "Attention", 108046, "Alarm")
-			-- mod:CancelTimer(timer, true)
-			-- timer = nil
-			-- if UnitIsUnit("boss2target", "player") then
-				-- mod:FlashShake(108046)
-				-- mod:Say(108046, CL["say"]:format(shockwave))
-			-- end
-			-- return
-		-- end
-		-- 19 == 0.95sec
-		-- Safety check if the unit doesn't exist
-		-- if fired > 18 then
-			-- mod:CancelTimer(timer, true)
-			-- timer = nil
-		-- end
-	-- end
-	
-	function mod:Shockwave(_, spellId, _, _, spellName)
-		self:Bar(108046,spellName, 23, spellId)
-		self:Message(108046, spellName, "Positive", spellId, "Alarm")
-	end
+function mod:Shockwave(_, spellId, _, _, spellName)
+	self:Bar(108046,spellName, 23, spellId)
+	self:Message(108046, spellName, "Positive", spellId, "Alarm")
 end
 
 function mod:Sunder(player, spellId, _, _, spellName, buffStack)
@@ -224,11 +191,11 @@ do
 		--drakes has max. 9 entrys (6drakes, 3waves) thus clearing only here is not that problematic.
 		if addcount == 0 then wipe(drakes) end
 		
-		self:Bar(108038, CL.cast:format(spellName) ,20, spellId)
+		--self:Bar(108038, CL.cast:format(spellName) ,20, spellId)
 		
 		if not drakes[dGUID] then
 			local now = GetTime()
-			if now - lastHarp > 5 then
+			if now - lastHarp > 10 then
 				addcount = addcount + 1 --just now Harpooned wave
 				lastHarp = now
 				if addcount < 3 then--there are only 3 waves
