@@ -73,7 +73,7 @@ function mod:OnBossEnable()
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "Blobs")
 	self:Log("SPELL_AURA_APPLIED", "AcidicApplied", 104898)
 	self:Log("SPELL_AURA_REMOVED", "AcidicRemoved", 104898)
-	self:Log("SPELL_CAST_SUCCESS", "DeepCorruption", 105171)
+	self:Log("SPELL_AURA_APPLIED", "DeepCorruption", 105171)
 	self:Log("SPELL_AURA_APPLIED", "Bolt", 108383, 108384, 108385, 104849, 105416, 109549, 109550, 109551)
 	self:Log("SPELL_AURA_APPLIED_DOSE", "Bolt", 108383, 108384, 108385, 104849, 105416, 109549, 109550, 109551)
 	self:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT", "CheckBossStatus")
@@ -86,7 +86,7 @@ end
 
 function mod:OnEngage()
 	self:Berserk(600)
-	self:Bar("blobs", L["blobs_bar"], 21, L["blobs_icon"])
+	self:Bar("blobs", L["blobs_bar"], 21+1, L["blobs_icon"])
 end
 
 --------------------------------------------------------------------------------
@@ -104,12 +104,13 @@ end
 
 function mod:Blobs(_, unit, spellName, _, _, spellId)
 	if (unit == "boss1" or unit == "boss2" or unit == "boss3" or unit == "boss4") and colorCombinations[spellId] then
+		self:Bar("blobs", L["blobs_bar"], 90+1, L["blobs_icon"])
 		if self:Difficulty() > 2 then
 			self:Message("blobs", ("%s, %s, %s, %s"):format(unpack(colorCombinationsHM[spellId])), "Urgent", L["blobs_icon"], "Alarm")
-			self:Bar("blobs", L["blobs_bar"], 75, L["blobs_icon"])
+			--self:Bar("blobs", L["blobs_bar"], 75, L["blobs_icon"])
 		else
 			self:Message("blobs", ("%s, %s, %s"):format(unpack(colorCombinations[spellId])), "Urgent", L["blobs_icon"], "Alarm")
-			self:Bar("blobs", L["blobs_bar"], 90, L["blobs_icon"])
+			--self:Bar("blobs", L["blobs_bar"], 90, L["blobs_icon"])
 		end
 	end
 end
@@ -126,8 +127,17 @@ function mod:AcidicRemoved()
 	end
 end
 
-function mod:DeepCorruption(_, spellId)
-	self:LocalMessage("ej:4321", GetSpellInfo(23401), "Personal", spellId, "Alert") -- Corrupted Healing
+do
+	local last = GetTime()
+	function mod:DeepCorruption(_, spellId)
+		local now = GetTime()
+		if now - last > 5 then
+			last = now
+			local txt = GetSpellInfo(23401)
+			self:LocalMessage("ej:4321", txt, "Personal", spellId, "Alert") -- Corrupted Healing
+			self:Bar("ej:4321", txt, 25, spellId)
+		end
+	end
 end
 
 do
