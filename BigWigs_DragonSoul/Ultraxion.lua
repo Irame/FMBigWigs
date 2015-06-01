@@ -14,7 +14,6 @@ local hourCounter = 1
 local lightTargets = mod:NewTargetList()
 local lightCounter = 0
 local fadingLight = GetSpellInfo(110080)
-local yellFrame = CreateFrame("Frame")
 
 --------------------------------------------------------------------------------
 -- Localization
@@ -75,7 +74,7 @@ function mod:GetOptions(CL)
 	}, {
 		[106371] = L["twilight"],
 		[105925] = GetSpellInfo(105925),
-		warmup = CL["general"],
+		crystal = CL["general"],
 	}
 end
 
@@ -90,7 +89,7 @@ function mod:OnBossEnable()
 	self:Emote("Magic", L["crystal_blue_icon"])
 	self:Emote("Loop", L["crystal_bronze_icon"])
 
-	self:Death("ScheduleWin", 55294)
+	self:Death("Win", 55294)
 end
 
 function mod:Warmup()
@@ -109,9 +108,6 @@ function mod:OnEngage(diff)
 	else
 		self:Bar("lightcool", fadingLight, 45+20, 110080)
 	end
-	
-	yellFrame:RegisterEvent("CHAT_MSG_MONSTER_YELL")
-	self:BuildYell()
 end
 
 --------------------------------------------------------------------------------
@@ -194,15 +190,6 @@ do
 	end
 end
 
-function mod:OnWipe(...)
-	yellFrame:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
-end
-
-function mod:ScheduleWin(...)
-	yellFrame:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
-	self:Win(...)
-end
-
 do--Yell workaround for Crystals
 	--Yells: (except Ultraxion)
 	--#1 Thrall --buffs CD Reduction
@@ -210,35 +197,28 @@ do--Yell workaround for Crystals
 	--#3 Ysera --places Green Crystal
 	-- more not needed
 	
-	local yellCount = 0
+	local yellCount = 1
 	local thrall = EJ_GetSectionInfo(4242)
-	
-	function mod:BuildYell()
-		local this = self --dont know if needed, but this way im safe
-		yellFrame:SetScript("OnEvent", function(self , event, txt, sourceName, ...)
-			if not this.isEngaged then
-				self:UnregisterEvent("CHAT_MSG_MONSTER_YELL")
-				return
+		
+	--some Hacky shit, because we do not want to handle a new Frame.
+	local old = mod.CHAT_MSG_MONSTER_YELL
+	function mod:CHAT_MSG_MONSTER_YELL(...)
+		local _, _, sourceName = ...
+		--Ultraxion is not needed for our purpose and would only make the whole thing harder to time
+		if sourceName == self.displayName then return end
+		
+		--Thrall is the first Yell of our rotation
+		if sourceName == thrall then
+			yellCount = 1
+		else
+			yellCount = yellCount + 1
+			if yellCount == 2 then --Thrown red crystal
+				self:Gift()
+			elseif yellCount == 3 then --Thrown green crystal
+				self:Dreams()
 			end
-			
-			--Ultraxion is not needed for our purpose and would only make the whole thing harder
-			if sourceName == this.displayName then return end
-			
-			--Thrall is the first Yell of our rotation
-			if sourceName == thrall then
-				yellCount = 1
-			else
-				yellCount = yellCount + 1
-				if yellCount == 2 then --Thrown red crystal
-					this:Gift()
-				elseif yellCount == 3 then --Thrown green crystal
-					this:Dreams()
-					--Blue crystal has its needed Emote - we do not need to track further.
-					self:UnregisterEvent("CHAT_MSG_MONSTER_YELL") 
-				end
-			end
-		end)
+		end
+		old(self, ...)
 	end
-	
 end
 
